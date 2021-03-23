@@ -1,0 +1,51 @@
+{% extends '::app.html.twig' %}
+
+{% block title %}Promotion{% endblock %}
+
+{% block description %}Redirecting you to payment{% endblock %}
+
+{% block stylesheet %}
+        {% stylesheets
+            '@VocalizrAppBundle/Resources/public/css/membership.css'
+        %}
+        <link rel="stylesheet" href="{{ asset_url }}" />
+        {% endstylesheets %}
+{% endblock %}
+
+{% block javascript %}
+    <script>
+        $('#paypal-submit').click();
+    </script>
+{% endblock %}
+
+{% block body %}
+    <div class="row">
+        <div class="col-sm-12 page-content">
+            {% if not app.user.isSubscribed %}
+            <h1 class="main-title text-center">Redirecting you to payment...</h1>
+
+                <form id="paypal-form" action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top" style="display: none">
+                    <input type="hidden" name="cmd" value="_s-xclick">
+                    <input type="hidden" name="custom" value="{{ app.user.uniqueStr }}">
+                    <input type="hidden" name="src" value="1">
+                    <input type="hidden" name="sra" value="1">
+                    <input type="hidden" name="hosted_button_id" value="DUACTQH336V9N">
+                    <input type="hidden" name="on0" value="Frequency">
+                    {% if app.request.get('plan') == "yearly" %}
+                        <input type="hidden" name="os0" value="Pay Yearly" class="paypal-option">
+                    {% else %}
+                    <input type="hidden" name="os0" value="Pay Monthly" class="paypal-option">
+                    {% endif %}
+                    <input type="hidden" name="currency_code" value="USD">
+                    <button id="paypal-submit" name="submit" type="submit" class="btn btn-primary">Make Payment</button>
+                </form>            
+            {% else %}
+            <h1 class="main-title">Sorry, you are already a PRO member</h1>
+            
+            <p>This promotion is only valid for new PRO members.</p>
+            
+            <p><a href="{{ path('dashboard') }}" class="btn btn-default">See Activity</a></p>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,74 @@
+{% extends '::website.html.twig' %}
+
+{% block title %}Contact us{% endblock %}
+
+{% block body %}
+<div class="nav-wrapper">
+    <nav id="nav" class="navbar navbar-default" role="navigation">
+      <div class="container">
+          <a href="{{ path('home') }}"><img src="/images/logo_dark.png" alt="vocalizr" title="vocalizr logo" width="108" height="32"></a>
+          {% if app.user %}
+            <a href="{{ path('dashboard') }}" class="btn btn-login pull-right">Dashboard</a>
+          {% else %}
+            <a href="{{ path('login') }}" class="btn btn-login pull-right">Login</a><a href="{{ path('register') }}" class="btn btn-signup pull-right">Sign up</a>
+          {% endif %}
+      </div>
+    </nav>
+</div>
+<div class="std-content sub-page">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-8 content-wrapper text-left contact">
+
+                <h1>Contact Us</h1>
+                <form class="form contact-form clearfix" action="{{ path('website_contact') }}" method="post" novalidate>
+                    <div class="form-group">
+                        {{ form_label(form.name) }}
+                        {{ form_widget(form.name) }}
+                    </div> 
+                    <div class="form-group">
+                        {{ form_label(form.username) }}
+                        {{ form_widget(form.username) }}
+                    </div> 
+                    <div class="form-group">
+                        {{ form_label(form.email) }}
+                        {{ form_widget(form.email) }}
+                    </div>
+                    <div class="form-group">
+                        {{ form_label(form.subject) }}
+                        {{ form_widget(form.subject) }}
+                    </div>
+                    <div class="form-group">
+                        {{ form_label(form.message) }}
+                        {{ form_widget(form.message) }}
+                    </div>
+                    
+                    {{ form_row(form._token) }}
+                    <input type="submit" name="login_submit" value="Submit" class="btn btn-contact" tabindex="4">
+                    
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<nav class="footer navbar navbar-default navbar-fixed-bottom" role="navigation">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12">
+                © Copyright Vocalizr {{ "now"|date('Y') }}
+
+                <ul id="footer-nav">
+                    <li class="share"><a href="https://www.facebook.com/Vocalizr"><i class="fab fa-facebook-square"></i></a></li>
+                    <li class="share"><a href="https://twitter.com/vocalizr"><i class="fab fa-twitter-square"></i></a></li>
+                    <li><a href="{{ path('website_contact') }}">Contact Us</a></li>
+                    <li><a href="{{ path('website_faq') }}">FAQs</a></li>
+                    <li><a href="http://blog.vocalizr.com/" target="_blank">Blog</a></li>
+                    <li><a href="{{ path('website_fees') }}">Fees & Charges</a></li>
+                    <li><a href="{{ path('website_terms') }}">Terms</a></li>
+                    <li><a href="{{ path('website_privacy') }}">Privacy</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</nav>
+{% endblock %}

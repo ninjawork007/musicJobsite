@@ -1,0 +1,52 @@
+{% if user is not defined %}
+    {% set user = app.user %}
+{% endif %}
+
+Hey <strong>{{ userInfo.usernameOrFirstName }}</strong>,
+
+<p>I would like you to place a bid on my {% if project.publishType == "private" %}<strong>PRIVATE </strong>{% endif %}gig I created.</p>
+
+<div style="background: #f1f1f1;padding:10px;border:1px solid #ccc;">
+    <table cellspacing="0" cellpadding="0" border="0" width="100%">
+        <tr>
+            <td colspan="2"><a href="{{ url('project_view', {uuid: project.uuid}) }}" style="font-weight: bold; color: #14b9d6; text-decoration: none;">{{ project.title }}</a></td>
+        </tr>
+        <tr>
+            <td width="75%" style="font-family: sans-serif; font-size: 14px;">
+                Genre: {% for genre in project.genres %}{{ genre.title }}{% if not loop.last %}, {% endif %}{% endfor %}<br>
+                Budget: {% if project.budgetFrom and project.budgetTo %}
+                    ${{ project.budgetFrom }} to ${{ project.budgetTo }}
+                    {% elseif project.budgetFrom %}
+                    ${{ project.budgetFrom }} upwards
+                    {% elseif project.budgetTo %}
+                    up to ${{ project.budgetTo }}
+                    {% endif %}
+                    {% if project.royalty > 0 %}
+                            - Royalty: {{ project.royalty}}%
+                            {% if project.royaltyMechanical %}
+                                (Mechanical)
+                            {% endif %}
+                            {% if project.royaltyPerformance %}
+                                (Performance)
+                            {% endif %}
+                    {% endif %}
+            </td>
+            <td width="25%" style="text-align: right;">
+                <a href="{{ url('project_view', { uuid: project.uuid }) }}" style="color: #fff; font-size: 14px; background-color: #14b9d6; text-decoration: none; border-radius: 3px; padding: 8px 16px; border-width: 1px; border-style: solid; border-color: #1aadc7;">Bid Now!</a>
+            </td>
+        </tr>
+    </table>
+</div>
+
+<div style="margin-top: 20px;">
+    <p>Thanks,</p>
+
+    <table cellspacing="0" cellpadding="0" border="0">
+        <tr>
+            <td width="80"><img src="{{ url('circle_avatar', {path: project.userInfo.path}) }}" width="65" style="display: inline-block;"></td>
+            <td style="vertical-align: middle;font-family: sans-serif; font-size: 14px;">{{ project.userInfo.displayName }}<br>
+                <strong>{% if project.userInfo.isVocalist and project.userInfo.isProducer %}Producer, Vocalist{% else %}{% if project.userInfo.isVocalist %}Vocalist{% endif %}{% if project.userInfo.isProducer %}Producer{% endif %}{% endif %}</strong><br>
+                from {% if user.city %}{{ user.city }}, {% endif %}{% if user.userCountry %}{{ user.userCountry.title }}{% endif %}</td>
+        </tr>
+    </table>
+</div>

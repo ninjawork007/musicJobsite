@@ -1,0 +1,204 @@
+{% extends '::app.html.twig' %}
+
+{% block title %}Marketplace{% endblock %}
+
+{% block javascript %}
+
+        {% javascripts
+            '@VocalizrAppBundle/Resources/public/js/uploader/plupload.full.min.js'
+            '@VocalizrAppBundle/Resources/public/js/audio-uploader.js'
+         %}
+            <script type="text/javascript" src="{{ asset_url }}"></script>
+        {% endjavascripts %}
+
+        <script>
+            AudioUploader.init('marketplace-upload-audio-container', 'upload-audio-btn');
+        </script>
+{% endblock %}
+
+{% block body %}
+<div class="row">
+    <div id="gig-view" class="col-sm-8">
+        <div class="row">
+           <div class="col-sm-12">
+                {% include 'VocalizrAppBundle::messages.html.twig' %}
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-12 view-marketplace-item">
+
+                <h1>{{ marketplaceItem.title }}</h1>
+
+                <div class="gig-genre">Genre: <span class="white-highlight">
+                    {% if marketplaceItem.genres|length > 0 %}
+                        <ul class="comma-list">
+                        {% for genre in marketplaceItem.genres %}
+                        <li>{{ genre.title }}</li>
+                        {% endfor %}
+                        </ul>
+                    {% endif %}
+                </span></div>
+
+                {% if defaultItemAudio %}
+                <div class="gig-view-track">
+                    <div class="playlist track-waveform small">
+                        <a href="{{ cdn_url }}{{ path('marketplace_item_audio', {uuid: marketplaceItem.uuid, slug: defaultItemAudio.slug}) }}" class="track" type="audio/mp3" data-project="{{ defaultItemAudio.slug }}">Play</a>
+                        {% if defaultItemAudio.waveGenerated %}
+                        <img src="/waveform/{{ defaultItemAudio.slug }}.png">
+                        <img src="/waveform/{{ defaultItemAudio.slug }}-roll.png" class="roll hide">
+                        {% else %}
+                        <img src="/images/default-waveform.png">
+                        <img src="/images/default-waveform-roll.png" class="roll hide">
+                        {% endif %}
+                    </div>
+                </div>
+                {% endif %}
+
+            </div>
+        </div>
+
+        <hr>
+        <div class="gig-created-by">
+            <a href="{{ path('user_view', { username: marketplaceItem.userInfo.username }) }}">
+            {% if marketplaceItem.userInfo.path is empty %}
+            <img src="{{ asset('images/default_avatar.svg') }}" width="40" height="40" class="img-circle avatar" alt="{{ marketplaceItem.userInfo.username }}" />
+            {% else %}
+            <img src="{{ asset('uploads/avatar/small/' ~ marketplaceItem.userInfo.path ) }}" width="40" height="40" class="img-circle avatar" alt="{{ marketplaceItem.userInfo.username }}" />
+            {% endif %}
+            </a>
+            <a href="{{ path('user_view', { username: marketplaceItem.userInfo.username }) }}">{{ marketplaceItem.userInfo.displayName }}</a> <span class="white-highlight">posted this item</span> <small>{{ marketplaceItem.publishedAt|timeAgoString }} ago</small>
+            <div class="gig-budget">Price: <span class="white-highlight">${{ marketplaceItem.buyoutPrice }}</span></div>
+        </div>
+
+        {% if marketplaceItem.royaltyMaster > 0 or marketplaceItem.royaltyPublishing > 0 or marketplaceItem.royaltyMechanical > 0 or marketplaceItem.royaltyPerformance > 0 %}
+            <hr>
+
+            <div id="item-royalty-info">
+                {% if marketplaceItem.royaltyMaster > 0 %}
+                    <span class="key-info">
+                        Master Royalties:
+                        <span class="highlight">
+                            {{ marketplaceItem.royaltyMaster|upper }}%
+                        </span>
+                    </span>
+                {% else %}
+                    {% if marketplaceItem.royaltyPublishing > 0 %}
+                        <span class="key-info">
+                            Publishing Royalties:
+                            <span class="highlight">
+                                {{ marketplaceItem.royaltyPublishing|upper }}%
+                            </span>
+                        </span>
+                    {% endif %}
+                    {% if marketplaceItem.royaltyMechanical> 0 %}
+                        <span class="key-info">
+                            Mechanical Royalties:
+                            <span class="highlight">
+                                {{ marketplaceItem.royaltyMechanical|upper }}%
+                            </span>
+                        </span>
+                    {% endif %}
+                    {% if marketplaceItem.royaltyPerformance > 0 %}
+                        <span class="key-info">
+                            Performance Royalties:
+                            <span class="highlight">
+                                {{ marketplaceItem.royaltyPerformance|upper }}%
+                            </span>
+                        </span>
+                    {% endif %}
+                {% endif %}
+            </div>
+        {% endif %}
+
+                <hr>
+        <div id="gig-key-info">
+            <span class="key-info">
+                Item Type:
+                <span class="highlight">
+                    {{ marketplaceItem.itemType|upper }}
+                </span>
+            </span>
+            <span class="key-info gender">Gender:
+                <span class="highlight">
+                    {% if not marketplaceItem.gender is null %}{{ marketplaceItem.gender|upper }}{% else %}Not Specified{% endif %}
+                </span>
+            </span>
+            <span class="key-info">
+                BPM:
+                <span class="highlight">
+                    {{ marketplaceItem.bpm|upper }}
+                </span>
+            </span>
+            <span class="key-info">
+                KEY:
+                <span class="highlight">
+                    {{ marketplaceItem.audioKey|upper }}
+                </span>
+            </span>
+        </div>
+
+        {% if not marketplaceItem.additionalInfo is null %}
+            <hr>
+
+            <div id="gig-desc">
+                 {{ marketplaceItem.additionalInfo|nl2br }}
+            </div>
+        {% endif %}
+
+        <hr>
+        <br>
+        {% if marketplaceItem.UserInfo.id == app.user.id or app.user.isAdmin%}
+            <hr>
+            <br>
+            <h4>
+                Assets<a href="{{ path('marketplace_assets', {uuid: marketplaceItem.uuid}) }}" class="pull-right btn btn-sm btn-default">EDIT ASSETS</a>
+            </h4>
+
+
+            {% for asset in assets %}
+                <div class="track-list-item">
+                    {% if asset.dropboxLink %}
+                        <i class="fa fa-dropbox" style="font-size: 16px;color: #00b9d7;"></i>
+                        <span style="font-size: 10px;margin-right: 14px;vertical-align: 1px;color: #00b9d7;font-weight: 600;">DROPBOX</span>
+                        <span class="track-title">{{ asset.title }}</span>
+                    {% else %}
+                        {% if asset.previewPath and asset.previewPath|marketplaceItemAssetExists(marketplaceItem.id) %}
+                        <div class="ui360 track-play inline"><a href="{{ path('marketplace_asset_stream', {uuid: marketplaceItem.uuid, slug: asset.slug}) }}" type="audio/mp3"><span>PLAY</span></a></div>
+                        {% else %}
+                        <div class="no-play">N/A</div>
+                        {% endif %}
+                        <span class="track-title">{{ asset.title }}</span>
+                        <span class="track-length">({{ asset.durationString }})</span>
+                        <span class="badge badge-featured">PREVIEW</span>
+                    {% endif %}
+                </div>
+
+            {% endfor %}
+        {% endif %}
+    </div>
+
+    <div class="col-sm-4">
+
+        <div class="row">
+            <div id="item-status-widget" class="col-sm-12">
+                {{ render(controller('VocalizrAppBundle:Marketplace:itemStatusWidget', {
+                    'uuid': marketplaceItem.uuid,
+                    'fromPage' : 'view'
+                })) }}
+            </div>
+        </div>
+
+        <div class="banner-wrapper is-mrec">
+            <!-- /353537636/Vocalizr_MREC1_300x250 -->
+            <div id='div-gpt-ad-1494936661372-5' style='height:250px; width:300px;'>
+                <script>
+                    googletag.cmd.push(function() { googletag.display('div-gpt-ad-1494936661372-5'); });
+                </script>
+            </div>
+        </div>
+
+    </div>
+
+
+</div>
+{% endblock %}

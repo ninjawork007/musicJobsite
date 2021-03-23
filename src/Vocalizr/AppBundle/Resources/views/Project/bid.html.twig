@@ -1,0 +1,180 @@
+<div id="bidModal" class="modal-dialog">
+    <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <h4 class="modal-title">Place your {% if resubmit %}new {% endif %}bid</h4>
+        </div>
+        <div class="modal-sub-header">
+            {% if project.projectType != 'paid' %}
+            <div class="badge badge-orange gig-type">COLLABORATION</div>
+            {% endif %}
+            TITLE: <span>{{ project.title }}</span>
+        </div>
+        <div class="modal-body">
+          
+            <form id="bid-form" action="{{ path('project_bid', {uuid: project.uuid, resubmit: resubmit} ) }}" method="post">
+                {{ form_row(bidForm._token) }}
+                {% if project.projectType == 'paid' %}
+                    <div class="modal-row">
+                        <div id="bid-error" class="alert alert-block alert-error"></div>
+                        <div class="bid-amount pull-left">
+                            <label>BID AMOUNT (USD)</label>
+                            <input id="bid-amount" type="text" name="{{ bidForm.amount.vars.full_name }}" class="form-control" value="">
+                        </div>
+                        <div class="bid-gig-details pull-left">
+                            <div class="royalty">
+                                Royalty offer: <span class="white-highlight">{{ project.royalty }}%</span>
+                                {% if project.royaltyMechanical %}
+                                    <span class="icon-royalty-mechanical" data-text="Mechanical royalties offered">M</span>
+                                {% endif %}
+                                {% if project.royaltyPerformance %}
+                                    <span class="icon-royalty-performance" data-text="Performance royalties offered">P</span>
+                                {% endif %}                        
+                            </div>
+                            <div class="budget">Budget: <span class="white-highlight">
+                            {% if project.budgetFrom and project.budgetTo %}
+                            ${{ project.budgetFrom }} to ${{ project.budgetTo }}
+                            {% elseif project.budgetFrom %}
+                            from ${{ project.budgetFrom }}
+                            {% elseif project.budgetTo %}
+                            up to ${{ project.budgetTo }}
+                            {% endif %} USD    
+                            </span></div>
+                            <div class="average-bid">Average Bid: <span class="white-highlight">
+                                                        {% if bidStats.avgBidAmount is empty %}$0{% else %}${{ bidStats.avgBidAmount|number_format(0) }}{% endif %} USD
+                            </span></div>
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="modal-row">     
+                        <div id="bid-error" class="alert alert-block alert-error"></div>
+                        <div class="bid-collaboration-details">
+                            <div class="collab-help">
+                            This gig is a collaboration.
+                            </div>
+                            <div class="royalty">
+                                Royalty offer: <span class="white-highlight">{{ project.royalty }}%</span>
+                                {% if project.royaltyMechanical %}
+                                    <span class="icon-royalty-mechanical" data-text="Mechanical royalties offered">M</span>
+                                {% endif %}
+                                {% if project.royaltyPerformance %}
+                                    <span class="icon-royalty-performance" data-text="Performance royalties offered">P</span>
+                                {% endif %}                        
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+                <div id="audition-options" class="modal-row">
+                    <label>UPLOAD AUDIO:</label> <span class="help-note">MP3,AAC,M4A FILES ONLY</span>
+                    <div id="bid-audio-options">
+                        <a href="" id="upload-audio-btn"  class="btn btn-sm btn-default">UPLOAD FILE</a>
+                        {% if userAudio|length %}
+                            <span class="or">OR</span>
+                            {% if userAudio[0].sc_id %}
+                                <a href="{{ userAudio[0].sc_stream_url }}?client_id={{ soundcloud_client_id }}" id="use-profile-audio" alt="{{ userAudio[0].title }}" class="btn btn-sm btn-default">
+                                    SELECT FROM PROFILE
+                                </a>
+                            {% else %}
+                                <a href="{{ path('user_audio', {slug: userAudio[0].slug}) }}" id="use-profile-audio" alt="{{ userAudio[0].title }}" class="btn btn-sm btn-default">
+                                    SELECT FROM PROFILE
+                                </a>
+                            {% endif %}
+                        {% endif %}
+                    </div>
+                    
+                    <div id="bid-upload-audio-container" data-url="{{ path('upload_audio') }}" data-extensions="{{ upload_audio_allowed_extended }}" data-form="bid-form">
+                        <div class="upload-audio-error hide"></div>
+                        <div class="upload-audio-bar-container">
+                            Uploading...
+                            <div class="progress"><div class="upload-audio-bar progress-bar" style="width: 0;"></div></div>
+                        </div>
+                        <div class="audio-upload-preview">
+                            <div class="track-list-item">
+                                <div class="track-play inline"><a href="" type="audio/mp3"><span>PLAY</span></a></div>
+                                <span class="track-title"></span>
+                                <span class="track-length"></span>
+                                <span class="badge badge-featured">PREVIEW</span>
+                                <a href="" class="btn btn-sm btn-default remove">CANCEL</a>
+                            </div>
+                        </div>
+                        <div class="profile-audio-preview-container">
+                            {% for audio in userAudio %}
+                                {% if audio.sc_id %}
+                                    {% set audioUrl = audio.sc_stream_url %}
+                                {% else %}
+                                    {% set audioUrl = cdn_url ~ path('user_audio', {slug: audio.slug}) %}
+                                {% endif %}
+                                <div class="user-audio-upload" data-audio-slug="{{ audio.slug }}">
+                                    <div class="track-list-item">
+                                        <div class="track-play inline">
+                                            <a href="{{ audioUrl }}" type="audio/mp3"></a>
+                                        </div>
+                                        <span class="track-title">{{ audio.title }}</span>
+                                        <span class="track-length"></span>
+                                        <a href="#" class="btn btn-sm btn-default js-select-profile-audio">SELECT</a>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                <div id="recorder-container"></div>
+                <div id="record-start" class="modal-row">
+                    <a id="recorder-record" href="" class="btn-record record">RECORD</a> 
+                    <div id="record-start-msg" class="record-info">To start recording, click the REC button. You have 30 seconds.<br><a href="" id="audition-cancel">Upload instead</a></div>
+                </div>
+                <div id="bid-audio-audition" class="modal-row">
+                    <div id="record-action-container">
+                        <div id="record-info">
+                            <a id="recorder-play" href="" class="btn-record play record-btn hide">PLAY</a> 
+                            <a id="recorder-record-stop" href="" class="btn-record record record-btn hide">STOP</a> 
+                            <a id="recorder-stop" href="" class="btn-record stop record-btn hide">STOP</a> 
+                            <div id="recorder-time" class="pull-right"><span id="recorder-timer">0:00</span> / <span id="recorder-total-time">0:30</span></div>
+                        </div>
+                        <div id="record-actions" class="hide">
+                            <a id="record-start-over" href="">Start Over</a>
+                            <a id="save-audition" href="" class="btn btn-sm btn-default pull-right">ATTACH AUDITION</a>
+                        </div>
+                    </div>
+                </div>
+                <div id="bid-audio-uploading" class="modal-row">
+                    <img src="{{ asset('images/loading.gif') }}"> <span id="bid-audio-message">Attaching your audition</span>
+                </div>
+                <div class="modal-row">
+                    <button id="place-bid-now" type="submit" name="place_bid" class="btn btn-primary"><i class="vocalizr-icon icon-white-thumb"></i> Place your bid now</button> Please read the
+                    {% if project.projectType == "paid" %}<a href="{{ path('project_agreement', {uuid: project.uuid, type: 'gig'}) }}">agreement</a>{% else %}<a href="{{ path('project_agreement', {uuid: project.uuid, type: 'collaboration'}) }}">agreement</a>{% endif %} before placing your bid.
+                </div>
+            </form>
+        </div>
+    </div><!-- /.modal-content -->
+</div><!-- /.modal-dialog -->
+
+<script>
+    AudioUploader.init('bid-upload-audio-container', 'upload-audio-btn');
+    
+    /* Setup bid audition vars */
+    var params = {
+        recordAudioName: "{{ 'now'|date('U') }}-{{ project.id }}-{{ app.user.id }}.mp3",
+        recordHandler: "{{ path('upload_record') }}",
+        uploadAudioTmp: "{{ path('upload_audio_tmp') }}"
+    };
+    BidAudition.init(params);
+    
+    $('.bid-gig-details .icon-royalty-mechanical').each(function() {
+        var text = $(this).data('text');
+        Tipped.create(this, text, {
+            skin: 'dark-vskin', 
+            hook: 'bottommiddle',
+            maxWidth: 250
+        });
+    });
+
+    $('.bid-gig-details .icon-royalty-performance').each(function() {
+        var text = $(this).data('text');
+        Tipped.create(this, text, {
+            skin: 'dark-vskin', 
+            hook: 'bottommiddle',
+            maxWidth: 250
+        });
+    });
+</script>

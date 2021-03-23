@@ -1,0 +1,37 @@
+{# @var UserInfo|array userInfo #}
+{# @var UserAudio userAudio #}
+{# @var audioLikes #}
+<div class="playlist">
+    {% set played_callback_url = path('record_audio_play', {slug: userAudio.slug}) %}
+    {% set played_counter = '.total-plays.' ~ userAudio.slug ~ '-count' %}
+    {% if not userAudio.scId %}
+        {% include "@VocalizrApp/Project/view/include/waveformed_player.html.twig" with {
+            caption: userAudio.title,
+            audio: userAudio,
+            audioUrl: path('user_audio', {slug: userAudio.slug}),
+            wide: true,
+        } %}
+    {% else %}
+        {% include "@VocalizrApp/Project/view/include/waveformed_player.html.twig" with {
+            caption: userAudio.title,
+            audio: userAudio,
+            audioUrl: userAudio.scStreamUrl  ~ '?client_id=' ~ soundcloud_client_id,
+            is_full_url: true,
+            wide: true,
+        } %}
+    {% endif %}
+</div>
+
+<div id="{{ userAudio.slug }}-actions" class="user-audio-actions">
+    <div class="user-audio-like">
+        {% if app.user and app.user.id != userInfo.id %}
+            <a href="{{ path('audio_like', {slug: userAudio.slug, status: 0} ) }}" class="btn btn-unlike btn-sm btn-default roll-alt{% if userAudio.id not in audioLikes %} hide{% endif %}">UNLIKE</a>
+            <a href="{{ path('audio_like', {slug: userAudio.slug, status: 1} ) }}" class="btn btn-like btn-sm btn-default{% if userAudio.id in audioLikes %} hide{% endif %}">LIKE</a>
+        {% endif %}
+        {#<i class="vocalizr-icon icon-light-thumb"></i>#}
+        <span class="like-text"><span class="members-like"><a class="allow-audio-play" data-toggle="vmodal" href="{{ path('audio_likes', {slug: userAudio.slug}) }}"><span class="total-likes">{{ userAudio.totalLikes }}</span> <span class="member-text">like{% if userAudio.totalLikes != 1 %}s{% endif %}</span></a></span></span>
+    </div>
+    <div class="user-audio-plays" title="{{ userAudio.playCount }} play{% if userAudio.playCount != 1 %}s{% endif %}">
+        <i class="fa fa-play"></i> <span><span class="total-plays {{ userAudio.slug }}-count">{{ userAudio.playCount }} </span><span> play{% if userAudio.playCount != 1 %}s{% endif %}</span></span>
+    </div>
+</div>

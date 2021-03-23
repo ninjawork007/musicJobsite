@@ -1,0 +1,8 @@
+{% for bid in bids %}
+    {% embed '@VocalizrApp/Contest/include/audio.ownerBid.html.twig' %}
+    {% endembed %}
+{% endfor %}
+{% if page != maxPage %}
+    <div class="clearfix"></div>
+    <a href="{{ path('contest_view_owner_bids', {uuid: project.uuid, page: page + 1, filter: filter, dir: dir} ) }}" class="btn btn-block btn-default btn-more-bids">LOAD MORE ENTRIES</a>
+{% endif %}

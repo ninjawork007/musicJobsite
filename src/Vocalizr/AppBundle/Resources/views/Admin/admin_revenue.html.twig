@@ -1,0 +1,100 @@
+{% extends '::app.html.twig' %}
+
+{% block title %}Admin{% endblock %}
+
+{% block body %}
+    <div class="row">
+        <div class="col-sm-12">
+            <h1 class="d-b">Revenue</h1>
+            <div class="d-b">
+                <div class="withdrawal-buttons">
+                    <a href="{{ path('admin') }}" class="btn btn-default back-admin">Back to Admin</a>
+                </div>
+            </div>
+            {% if app.session.hasFlash('notice') %}
+                <div class="alert alert-success">
+                    {{ app.session.flash('notice') }}
+                </div>
+                {{ app.session.removeFlash('notice') }}
+            {% endif %}
+            {% if app.session.hasFlash('error') %}
+                <div class="alert alert-error">
+                    {{ app.session.flash('error') }}
+                </div>
+                {{ app.session.removeFlash('error') }}
+            {% endif %}
+            <p>
+                March 2021<br>
+                Current Month to Date
+            </p>
+            <table cellspacing="0" cellpadding="0" border="0" class="table table-dark withdrawals revenue" width="100%">
+
+                <thead>
+                <tr>
+                    <th>Total Revenue</th>
+                    <th>Subs Total</th>
+                    <th>Subs Stripe</th>
+                    <th>Subs PayPal</th>
+                    <th>Commissions</th>
+                    <th>Job Upgrades</th>
+                    <th>Bid Upgrades</th>
+                    <th>Certs</th>
+                    <th>Connections</th>
+                    <th>Contest Ext</th>
+                </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>{{ revenueCurrentMonth['total'] }}</td>
+                        <td>{{ revenueCurrentMonth['subs_total'] }}</td>
+                        <td>{{ revenueCurrentMonth['stripe_subs'] }}</td>
+                        <td>{{ revenueCurrentMonth['paypal_subs'] }}</td>
+                        <td>{{ revenueCurrentMonth['commissions'] }}</td>
+                        <td>{{ revenueCurrentMonth['job_upgrade'] }}</td>
+                        <td>{{ revenueCurrentMonth['bid_upgrade'] }}</td>
+                        <td>{{ revenueCurrentMonth['cert'] }}</td>
+                        <td>{{ revenueCurrentMonth['connections'] }}</td>
+                        <td>{{ revenueCurrentMonth['contest_ext'] }}</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>
+                Previous Months
+            </p>
+            <table cellspacing="0" cellpadding="0" border="0" class="table table-dark withdrawals revenue" width="100%" id="table2csv">
+
+                <thead>
+                    <tr>
+                        <th>Total</th>
+                        <th>Subs Total</th>
+                        <th>Commissions</th>
+                        <th>Job Upgrades</th>
+                        <th>Bid Upgrades</th>
+                        <th>Certs</th>
+                        <th>Connections</th>
+                        <th>Month/Year</th>
+                        <th>Download CSV</th>
+                    </tr>
+                    <button class="btn btn-primary create" id="buttonTable2csv">Download all</button>
+                </thead>
+                <tbody>
+                {% for date, revenue in revenueAllTime %}
+                    <tr>
+                        <td>{{ revenue['total'] }}</td>
+                        <td>{{ revenue['subs_total'] }}</td>
+                        <td>{{ revenue['commissions'] }}</td>
+                        <td>{{ revenue['job_upgrade'] }}</td>
+                        <td>{{ revenue['bid_upgrade'] }}</td>
+                        <td>{{ revenue['cert'] }}</td>
+                        <td>{{ revenue['connections'] }}</td>
+                        <td>{{ revenue['date'] }}</td>
+                        <td><button class="btn btn-primary create buttonRowTable2csv">Download row</button></td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+
+{% endblock %}

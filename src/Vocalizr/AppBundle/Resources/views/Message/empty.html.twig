@@ -1,0 +1,28 @@
+{% extends '::app.html.twig' %}
+
+{% block title %}Message Center{% endblock %}
+
+{% block description %}messages{% endblock %}
+
+{% block javascript %}
+    
+    <script>
+        MessageCenter.init();
+    </script>
+{% endblock %}
+
+
+{% block body %}
+    <div class="row message-center">
+        <div class="col-sm-12">
+            <h3>You have not received any messages yet!</h3>
+            
+            <p>Employers can message bidders to discuss bids and ask questions.</p>
+            <p>This is an important part of the bidding process as it allows for questions to be<br>answered before a gig is awarded.</p>
+            <p>Keep an eye out for new messages by watching the envelope next to your username above.</p>
+            
+            <p><a href="{{ path('gig_hunter') }}" class="btn btn-primary">Browse Gigs</a> &nbsp; or &nbsp; <a href="{{ path('project_start') }}" data-toggle="vmodal" class="btn btn-primary">Create Gig or Contest</a>
+        </div>
+    </div>
+            
+{% endblock %}

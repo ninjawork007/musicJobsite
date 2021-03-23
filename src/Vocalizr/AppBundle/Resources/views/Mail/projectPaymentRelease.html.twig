@@ -1,0 +1,12 @@
+{% extends '::email.html.twig' %}
+
+{% block body %}
+
+
+    <p>Hello {{ user.getFirstName }},</p>
+    
+    <p>{{ project.UserInfo.username }} has released payment of ${{project.ProjectEscrow.amount }} into your vocalizr wallet for the work you did on {{ project.title }}.</p>
+    
+    
+
+{% endblock %}

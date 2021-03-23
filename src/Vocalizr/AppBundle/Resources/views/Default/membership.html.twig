@@ -1,0 +1,25 @@
+{% extends '@VocalizrApp/Register/onboard_membership.html.twig' %}
+
+{% block pro_plan %}
+    {% embed "@VocalizrApp/User/include/pro-plan-panel.html.twig" %}
+        {% block panel_footer %}
+            {% if app.user.subscribed %}
+                <a href="{{ app.request.server.get('http-referer')|default(path('dashboard')) }}" class="btn btn-primary">
+                    Continue with <b class="bold900">Access Pass</b>
+                </a>
+            {% else %}
+                <a href="{{ path('user_upgrade', {'source': 'membership'}) }}" class="btn btn-primary">
+                    Continue with <b class="bold900">Access Pass</b>
+                </a>
+            {% endif %}
+        {% endblock %}
+    {% endembed %}
+{% endblock %}
+
+{% block free_footer %}
+    {% if not app.user.subscribed %}
+        <a href="{{ path('dashboard') }}" class="btn btn-default">
+            Continue with Free
+        </a>
+    {% endif %}
+{% endblock %}

@@ -1,0 +1,216 @@
+<?php
+namespace Vocalizr\AppBundle\Entity;
+
+use Doctrine\ORM\Mapping as ORM;
+
+/**
+ * @ORM\Entity(repositoryClass="Vocalizr\AppBundle\Repository\UserWalletTransactionRepository")
+ * @ORM\HasLifecycleCallbacks()
+ * @ORM\Table(name="user_wallet_transaction")
+ */
+class UserWalletTransaction
+{
+    /**
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="AUTO")
+     * @ORM\Column(type="integer")
+     */
+    public $id;
+    
+    /**
+     * @ORM\ManyToOne(targetEntity="UserInfo", inversedBy="user_wallet_transactions")
+     */
+    protected $user_info;
+    
+    /**
+     * @ORM\Column(type="text", nullable=true)
+     */
+    protected $description = null;
+    
+    /**
+     * @ORM\Column(type="integer", length=11)
+     */
+    protected $amount = 0;
+    
+    /**
+     * @ORM\Column(type="string", length=3, nullable=true)
+     */
+    protected $currency = null;
+    
+    /**
+     * @ORM\Column(type="text", nullable=true)
+     */
+    protected $data = null;
+    
+    /**
+     * @ORM\Column(type="datetime")
+     */
+    protected $created_at;
+    
+    /**
+     * @ORM\PrePersist
+     */
+    public function prePersist()
+    {
+        $this->created_at = new \DateTime();
+    }
+    
+    /**
+     * Get amount in dollars.
+     * Converts cents to dollars
+     * 
+     * @return float
+     */
+    public function getAmountDollars()
+    {
+        return number_format($this->amount / 100, 2);
+    }
+
+    /**
+     * Get id
+     *
+     * @return integer 
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * Set description
+     *
+     * @param string $description
+     * @return UserWalletTransaction
+     */
+    public function setDescription($description)
+    {
+        $this->description = $description;
+    
+        return $this;
+    }
+
+    /**
+     * Get description
+     *
+     * @return string 
+     */
+    public function getDescription()
+    {
+        return $this->description;
+    }
+
+    /**
+     * Set amount
+     *
+     * @param float $amount
+     * @return UserWalletTransaction
+     */
+    public function setAmount($amount)
+    {
+        $this->amount = $amount;
+    
+        return $this;
+    }
+
+    /**
+     * Get amount
+     *
+     * @return float 
+     */
+    public function getAmount()
+    {
+        return $this->amount;
+    }
+
+    /**
+     * Set currency
+     *
+     * @param string $currency
+     * @return UserWalletTransaction
+     */
+    public function setCurrency($currency)
+    {
+        $this->currency = $currency;
+    
+        return $this;
+    }
+
+    /**
+     * Get currency
+     *
+     * @return string 
+     */
+    public function getCurrency()
+    {
+        return $this->currency;
+    }
+
+    /**
+     * Set created_at
+     *
+     * @param \DateTime $createdAt
+     * @return UserWalletTransaction
+     */
+    public function setCreatedAt($createdAt)
+    {
+        $this->created_at = $createdAt;
+    
+        return $this;
+    }
+
+    /**
+     * Get created_at
+     *
+     * @return \DateTime 
+     */
+    public function getCreatedAt()
+    {
+        return $this->created_at;
+    }
+
+    /**
+     * Set user_info
+     *
+     * @param \Vocalizr\AppBundle\Entity\UserInfo $userInfo
+     * @return UserWalletTransaction
+     */
+    public function setUserInfo(\Vocalizr\AppBundle\Entity\UserInfo $userInfo = null)
+    {
+        $this->user_info = $userInfo;
+    
+        return $this;
+    }
+
+    /**
+     * Get user_info
+     *
+     * @return \Vocalizr\AppBundle\Entity\UserInfo 
+     */
+    public function getUserInfo()
+    {
+        return $this->user_info;
+    }
+
+    /**
+     * Set data
+     *
+     * @param string $data
+     * @return UserWalletTransaction
+     */
+    public function setData($data)
+    {
+        $this->data = $data;
+    
+        return $this;
+    }
+
+    /**
+     * Get data
+     *
+     * @return string 
+     */
+    public function getData()
+    {
+        return $this->data;
+    }
+}

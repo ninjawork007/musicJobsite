@@ -1,0 +1,230 @@
+{% extends '::website.html.twig' %}
+
+
+{% block body %}
+<div class="nav-wrapper">
+    <nav id="nav" class="navbar navbar-default" role="navigation">
+      <div class="container">
+          <a href="{{ path('home') }}"><img src="/images/logo_dark.png" alt="vocalizr" title="vocalizr logo" width="108" height="32"></a>
+          {% if app.user %}
+              <a href="{{ path('dashboard') }}" class="btn btn-login pull-right">Dashboard</a>
+          {% else %}
+          <a href="{{ path('login') }}" class="btn btn-login pull-right">Login</a><a href="{{ path('register') }}" class="btn btn-signup pull-right">Sign up</a>
+          {% endif %}
+      </div>
+    </nav>
+</div>
+<div class="std-content sub-page">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12 content-wrapper text-left terms">
+              <h4><strong>Vocalizr Pty Ltd Website terms and conditions and Conditions of Use</strong><br><small> (Last updated April 2016)</small></h4>
+
+              <p>Welcome to the vocalizr.com website (<strong>Website</strong>). These General terms and conditions terms and conditions apply to the Website and the services, features, content or applications offered by Vocalizr (hereafter, collectively referred to as the "<strong>Site</strong>").  </p>
+
+              <p>Please read these terms and conditions carefully. These terms and conditions will set forth a binding agreement between the user (hereafter “you”, or “your”) and Vocalizr Pty Ltd (hereafter “Vocalizr”, “we”, “our”, or “us”).</p>
+
+              <p>Prior to using the Site please take the time to read these terms and conditions of use (<strong>terms and conditions</strong>) and ensure that you understand them. By clicking ‘Complete Registration’, you agree to be bound by the terms and conditions and the Vocalizr <a href="{{ path('website_privacy') }}">Privacy Policy</a>. If you have any questions, please contact us at hello@vocalizr.com or via the <a href="{{ path('website_contact') }}">Contact Us</a> page. We may, from time to time and in our sole discretion, amend these terms and conditions. Such amendments will take effect from the time that they are posted on the Site and remain in effect during your use of the Site and/or membership of Vocalizr. You are responsible for ensuring that you regularly review the Vocalizr terms and conditions as your continued use of the Site will be deemed to constitute your acceptance of any alterations. If you object to any alteration(s) or become dissatisfied with your membership, you must stop using the Site and/or terminate your membership in accordance with these terms and conditions.</p>
+
+              <p>Some of the Site may be subject to additional terms and conditions specified by Vocalizr from time to time; your use of the Site is subject to those additional terms and conditions, which are incorporated into these terms and conditions by this reference.</p>
+
+              <p><strong>Vocalizr membership</strong><br>You must be at least 18 years old to become a member of Vocalizr. When registering as a member of Vocalizr, you must provide accurate, complete and up-to-date information as requested. It is your responsibility to alter your profile if any information changes during your membership. Vocalizr requires that you create only one profile for yourself on the Site. If you create multiple profiles, Vocalizr will, without consultation with you and at its absolute discretion, delete any or all of such profiles. All personal information you provide or is collected from you will be treated in accordance with the Vocalizr <a href="{{ path('website_privacy') }}">Privacy Policy</a>.</p>
+
+              <p>Vocalizr may at any time: suspend your membership; permanently or temporarily hide all or part of your member profile; modify your member profile; terminate your membership for any reason by providing notice to you by email; terminate your membership immediately without notice to you if you have committed a breach of these terms and conditions; and or permanently or temporarily block your access to all or part of the Site if your use of the Site is in contravention of these terms and conditions. You can also terminate your membership by contacting us at hello@vocalizr.com. If you do this, we will seek confirmation of your termination request to be sent from the email that you use to create your membership.</p>
+
+              <p>In the event that we suspect any unusual activity in connection to your membership, we reserve the right, but are not obligated, to temporarily or permanently suspend payment via your credit card and contact you, your bank or any other relevant third party to report such unusual activity.</p>
+
+              <p>We will make reasonable endeavours to ensure that the Site remains available 24 hours a day but we do not guarantee that your access will be uninterrupted or error free. Site access may be suspended for a short period without notice if there is a system failure, scheduled maintenance, required maintenance or any reason that is out of Vocalizr’s control.</p>
+
+              <p>We reserve the right to change or discontinue any service or feature on the Site in whole or in part at any time, without notice to you.</p>
+
+              <p>In the event that we terminate or suspend your account in accordance with the terms and conditions of Service, you acknowledge, and agree, that we shall be under no obligation to refund any amounts which you have already paid, to the fullest extent permissible by law.</p>
+
+              <p>You are not permitted to transfer any services or features purchased by you to any other person or entity.</p>
+
+              <p><strong>Copyright and trademarks</strong><br>You acknowledge and agree that Vocalizr (or Vocalizr’s licensors) own all legal right, title and interest in and to the Site, including any intellectual property rights which subsist in the Site (whether those rights happen to be registered or not, and wherever in the world those rights may exist) and nothing in these terms and conditions gives you a right in or to such intellectual property. </p>
+
+              <p>In using the Site you agree that you shall not (and will not permit anyone else) to adapt, reproduce, store, distribute, transmit, print, display, publish or create derivative works from any intellectual property on the Site. You agree that you will not use any intellectual property in a way that is likely or intended to cause confusion about the owner or authorised user of the intellectual property.</p>
+
+              <p>For the purpose of these terms and conditions, intellectual property includes, but is not limited to, designs, patterns, artistic works, photography, literary works, musical works, sound recordings, cinematograph films, software, trademarks, service marks, trade names and logos.</p>
+
+              <p><strong>Content</strong><br>
+                  You must not add/remove any content to/from the Site:
+                  <ol type="a" class="prefixed-li">
+                      <li>unless you hold all necessary rights, licences and consents to do so;
+                      <li>that would cause you or Vocalizr to breach any law, regulation, rule, code or other legal obligation;
+                      <li>that would be in breach of these terms and conditions;
+                      <li>which:
+                          <ol type="i">
+                              <li>infringes the intellectual property or other rights of any third party;
+                              <li>brings or could bring Vocalizr or any user into disrepute;
+                              <li>is or could reasonably be considered to be deceptive, misleading, false, fraudulent, obscene, defamatory, disparaging, indecent, seditious, offensive, scandalous, sexually explicit, threatening, abusive, harassing, hateful, degrading, intimidating, graphically violent, liable to incite racial hatred, discriminatory, blasphemous or otherwise inappropriate;
+                              <li>unlawfully impersonates any person or states or misrepresents any affiliation with any person where such affiliation does not exist;
+                              <li>depicts, encourages, promotes or induces conduct that could violate any law or give rise to criminal or civil liability;
+                              <li>contains any personally identifying or other personal information about you or any other person;
+                              <li>is in breach of confidence or in breach of privacy, or contains any confidential information, material, or non-public information about any individual, person, or company; or
+                              <li>contains any information or instruction that might be injurious to any person’s physical well being.</li>
+                          </ol>
+                      </li>
+                  </ol>
+              </p>
+
+              <p>You shall bear sole and complete responsibility for any content that you submit to the Site or any user of the Site including any and all liability that may result from such content.</p>
+
+              <p>Vocalizr may remove any content, in whole or in part, if Vocalizr suspects that such content infringes or may infringe any person’s intellectual property rights or any other rights, including personal rights. In addition Vocalizr reserves the right to remove any content upon receiving notice that such content is or may be infringing the notifying person's intellectual property and/or personal rights.</p>
+
+              <p>You acknowledge, warrant and represent that:
+                  <ol type="a">
+                      <li>ideas, concepts and content submitted or created by other users may be competitive with, and/or similar or identical in part or whole to your content. You acknowledge and agree that you will not be entitled to any payment, fee, or other consideration as a result of any use of any such similar or identical material, and hereby release Vocalizr from any and all claims relating thereto;</li>
+                      <li>you are the creator and exclusive copyright owner of the content and entitled to submit the content on your own behalf and on behalf of each other owner of the content;</li>
+                      <li>you are solely responsible for the content that you submit and the consequences of posting or publishing such content on the Site including any copyright infringement;</li>
+                      <li>you have obtained any and all fully executed releases, licences, rights and consents necessary (each of which are world-wide, royalty free, irrevocable, perpetual, and transferable/assignable/licensable, in all media now known or hereafter devised) in order to grant rights provided herein, including releases relating to performances, compositions and sound recordings, intellectual property;</li>
+                      <li>you are entitled to be the sole recipient of any payment due hereunder or of any other payment connected to the Site; </li>
+                      <li>your content may be subject to criticism and/or review by the public and as such may receive positive or negative comments and reactions. Vocalizr is not responsible for any such review or comment or any consequences relating thereto;</li>
+                      <li>any part or whole of your Content is factually accurate to the extent that it purports to represent facts;</li>
+                      <li>you are responsible for any and all taxes, third party costs, charges and expenses in relation to the your participation in the Site (including receipt of any payment) and obligations under these terms and conditions.</li>
+                  </ol>
+              </p>
+
+              <p>You acknowledge that Vocalizr is not responsible for lost, damaged, misdirected, unusable or unreadable content, or technical issues with the Site.</p>
+
+              <p>You hereby grant Vocalizr an irrevocable, royalty-free, perpetual, worldwide, non-exclusive licence to publish, transmit, communicate, edit, copy, reproduce and otherwise use any part or whole of content you submit to the Site, for the purpose of promoting the Site.</p>
+
+              <p>
+                  <strong>No guarantees in relation to vocalist(s)</strong><br>
+                  Vocalizr does not guarantee that:
+                  <ol type="a">
+                      <li>contractors listed on the Vocalizr Site will be available for gigs; </li>
+                      <li>contractors will adhere to the terms of the agreement between you and the contractor;</li>
+                      <li>artists will adhere to the terms of the agreement between you and an artist;</li>
+                      <li>contractors will be of the quality, experience or talent that they have held themselves out to be;</li>
+                      <li>being a member of the Site will ensure that you secure gigs.</li>
+                  </ol>
+              </p>
+
+              <p>Vocalizr does not endorse or recommend any member. Prior to entering into any agreement with another member, Vocalizr advises that you obtain your own independent accounting, financial, legal and/or taxation advice.</p>
+
+              <p><strong>Security</strong><br>
+                  Vocalizr will take all due care in ensuring the privacy and integrity of the information you provide, however Vocalizr will not be responsible for maintaining the confidentiality and security of your login and password. You are wholly responsible for all activities that occur under your login and password. Any unauthorised use of your login or password must immediately be followed by notification to us. </p>
+
+              <p>You must not include any telephone numbers, street addresses, last names, URLs or email addresses in your member profile. Vocalizr will delete such information and consider any other action which may include termination of your membership. Any Content that you place on the Site, or otherwise transmit to any other member of the Site by any other means, will be considered non-confidential.</p>
+
+              <p><strong>Linked sites</strong><br>
+                  Vocalizr may from time to time provide links and pointers to sites other than this Site. Vocalizr is not responsible for the copyright compliance of any linked site and will not be liable for any damages or loss arising in any way out of or in connection with or incidental to any information or third party service provided by any third party.</p>
+
+              <p><strong>Billing</strong><br>
+                  Vocalizr bills you through an online account (your “Wallet”). You agree to pay Vocalizr all charges at the prices you agreed to for any use of the service by you or other persons (including your agents) using your Wallet, and you authorize Vocalizr to charge your chosen payment provider (your “Payment Method”) for the service. You agree to make payment using that selected Payment Method. Vocalizr may correct any billing errors or mistakes that it makes even if it has already requested or received payment. The terms of your payment will be based on your Payment Method and may be determined by agreements between you and the financial institution, credit card issuer or other provider of your chosen Payment Method.</p>
+
+              <p>You must provide current, complete and accurate information for <a href="{{ path('user_edit') }}">Your Account</a>. You must promptly update all information to keep your account current. If you fail to provide Vocalizr any necessary billing information, you agree that you are responsible for any fees accrued by you. </p>
+
+              <p><strong>You agree to record every agreement that you enter into with a Contractor in relation to a gig and that all payments will be made to the Contractor via our payment protection account. You warrant that you will not circumvent Vocalizr’s Payment Service in any way including but not limited to: soliciting work with Vocalizr members outside the Site, accepting work with Vocalizr members outside the Site, receiving payment outside the Payment Service, manipulating the contest bidding process to impact the contest payment amounts.</strong></p>
+
+              <p>There is no entitlement to any refund of payments for chargeable services or features. Refund requests must be put in writing and emailed to accounts@vocalizr.com; however, we will review requests at our sole discretion. There will be no refund for the cancellation of a subscription service. </p>
+
+              <p>All fees associated with work completed through the site are in United States Dollars and are tax inclusive unless stated otherwise.</p>
+
+              <p><strong>Complaints/disputes</strong><br>
+                  If you are experiencing problems with any other member of Vocalizr and would like to make a complaint, please send us an email via the <a href="{{ path('website_contact') }}">Contact Us</a> page or hello@vocalizr.com outlining the issue and what you believe a fair and reasonable outcome would be. We will review all complaints and investigate issues as deemed required. We may record and store any information relating to any complaint lodged by you or made against you.</p>
+
+              <p>If you have a complaint about Vocalizr or any of its representatives, please contact us via the <a href="{{ path('website_contact') }}">Contact Us</a> page outlining the issue and what you believe a fair and reasonable outcome would be. We will endeavour to resolve all complaints expeditiously and in a fair and reasonable manner.</p>
+
+              <p><strong>Copyright Infringement</strong><br>
+All notices alleging any copyright infringement should be sent to our appointed copyright agent at the following address: C/Oress:g s alLygon St Carlton, Victoria, Australia 3053 or via hello@vocalizr.com</p>
+
+              <p>In order to help us help you, please provide us with the following details:
+                  <ol>
+                      <li>The owner (whether this is yourself, or a third party who you are authorized to act on behalf of) of the allegedly infringed copyright material;</li>
+                      <li>A detailed description of the infringed copyright material including any identifying song and recording title, performing artists, songwriters, ISRC codes, and any other identifying information;</li>
+                      <li>Links to and/or identification of copyright material which you believe infringes your copyright rights (please be as detailed as possible and include any URLs of the allegedly infringing copyright material);</li>
+                      <li>Your contact information including:
+                          <ol type="a">
+                              <li>Your complete name;</li>
+                              <li>Address;</li>
+                              <li>Telephone Number; and</li>
+                              <li>Email Address.</li>
+                          </ol>
+                      </li>
+                  </ol>
+              </p>
+
+              <p>In addition to the above, please also include a statement relating to the alleged infringement to the following effect:</p>
+
+              <p><em>"I, [insert name], the exclusive copyright owner/authorized agent, of the work/recording entitled [insert title] have a good faith belief that the use of the work/recording by the alleged infringing third party as set out in the URLs above has not been authorized by me/the copyright owner and such use has infringed my/the copyright owner’s rights.</em></p>
+              <p><em>The information contained in this notice is accurate and I hereby swear that I am the exclusive copyright owner of the right that is allegedly being infringed / or the authorized agent of the owner of the right that is allegedly being infringed."</em></p>
+
+              <p>We reserve the right to temporarily or permanently remove any material which infringes any copyright rights and under appropriate circumstances; we may also terminate the accounts of any users who continue to infringe such rights.</p>
+
+              <p>We will use reasonable endeavours to undertake a full investigation of any alleged infringements expeditiously upon receipt of your notice.</p>
+
+              <p><strong>Limitation of liability and indemnity </strong><br>
+                  You acknowledge that:
+                  <ul>
+                    <li>your use of the Site is at your own risk;</li>
+                    <li>we are not responsible for, and accept no liability in relation to, your use of and conduct in connection with the Site, or any other members' use of or conduct in connection with the Site, in any circumstance;</li>
+                    <li>you will indemnify us for any loss, damage, cost or expense that we may suffer or incur as a result of or in connection with your use of or conduct in connection with the Site, including any breach by you of these terms and conditions;</li>
+                    <li>to the extent that our liability cannot be excluded by law, our maximum liability to you will be limited to the total amount paid by you (if any) for any chargeable service or feature on the Site purchased by you during the term of your membership;</li>
+                    <li>we will not be liable for any indirect, punitive or consequential loss or damages; loss of income, profits, goodwill, data, contracts, use of money; or loss or damages arising from or in any way connected to business interruption of any type, whether in tort, contract or otherwise.</li>
+                  </ul>
+              </p>
+
+              <p><strong>Warranty disclaimer</strong><br>
+                  The Vocalizr services are provided "as is", without any warranty of any kind. Vocalizr expressly disclaims all implied warranties to the maximum extent allowed by law, whether express, implied, or statutory regarding or relating to the product, documentation, or any materials furnished or provided to you under these terms. To the maximum extent allowed by law, Vocalizr specifically disclaims all implied warranties of merchantability, fitness for a particular purpose and non-infringement with respect to the foregoing.</p>
+
+              <p>Limitation of liability; sole and exclusive remedy. To the maximum extent permitted by law, Vocalizr, affiliates, parent companies, subsidiaries, officers, directors, employees, agents, network service providers, business partners, licensees and licensors (collectively, the "Related Parties") disclaim all liability, whether based in contract, tort (including negligence), strict liability or otherwise, and further disclaims all losses, including without limitation direct, indirect, incidental, consequential, or special damages arising out of or in any way connected with access to or use of the site, the software and/or service, even if Vocalizr and/or <strong>related parties</strong> have been advised of the possibility of such damages. Without limiting the foregoing, in no case shall the liability of Vocalizr or any of the related parties exceed the greater of $50 or the total Vocalizr Fees paid by you to Vocalizr in the six (6) months prior to the time the cause of action giving rise to liability arose. </p>
+
+              <p>Because some states or jurisdictions do not allow the exclusion or the limitation of liability for consequential or incidental damages, in such states or jurisdictions, the liability of Vocalizr and its affiliates shall be limited to the fullest extent permitted by law.</p>
+
+              <p><strong>Indemnification </strong><br>
+                  You agree to indemnify, hold harmless and defend Vocalizr and the Related Parties at your expense, against any and all claims, actions, proceedings and suits and all related liabilities, damages, settlements, penalties, fines, costs and expenses (including, without limitation, reasonable solicitors' fees and other dispute resolution expenses) incurred by Vocalizr arising out of or relating to:
+                  <ul>
+                    <li>your violation or breach of any term of these terms and conditions or any policy or guidelines referenced herein; </li>
+                    <li>your use or misuse of or participation in the Site;</li>
+                    <li>any purchase related to any part of the Site;</li>
+                    <li>submission of any and all content; </li>
+                    <li>any content submitted by user which is incorrect or in any way misleading; and</li>
+                    <li>any aspect of the Site that does not function as intended for any reason beyond the reasonable control of Vocalizr and particularly in connection with: service interruptions caused by an internet service provider; an internet connection; any fault or deficiency in computer hardware or software; any fault or deficiency in audio/visual hardware; any fault or deficiency in website code.</li>
+                  </ul>
+              </p>
+
+              <p>Vocalizr expressly disclaims any responsibility for the content displayed on the Website or made available as part of the Site, and by using the Site, users agree that Vocalizr and/or the Related Parties shall have no responsibility for any Content that infringes the copyright or other intellectual property rights of any third party or for any content that is deemed to be offensive, discriminatory or misleading to Users in any way whatsoever.</p>
+
+              <p>You hereby irrevocably waive any right to seek or obtain an injunction, rescission or termination of these terms and conditions, or any rights hereunder.</p>
+
+              <p>Should Vocalizr in its sole discretion, determine that a user has breached these terms and conditions, then nothing herein shall prevent or in any way restrict its right to pursue any of its legal and/or other remedies, including, without limitation, court action.</p>
+
+              <p><strong>Change to Services</strong><br>
+                  Vocalizr reserve the right to discontinue or remove any part, content, or functionality of the Site at any time and without notice.</p>
+
+              <p>Vocalizr reserves the right to alter, modify, add to or change in any way, any provision of these terms and conditions and may, in its absolute discretion, limit or expand the Site without giving prior notice to User.</p>
+
+              <p><strong>General</strong><br>
+                  If any part of these terms and conditions are held invalid that part shall be severed and the remainder of the terms and conditions will continue to be valid and enforceable. Termination of the terms and conditions will not end those provisions that are capable of surviving the ending of the terms and conditions. These terms and conditions, including the <a href="{{ path('website_privacy') }}">Privacy Policy</a> represent the entire agreement between you and us regarding your use of the Site.</p>
+
+              <p><strong>Governing Law and Jurisdiction</strong><br>
+                  These terms and conditions and use of the Site are governed by the laws of Victoria, Australia. By accessing or using the Site, the user submits to the exclusive jurisdiction of the Victorian Courts in Australia for any dispute that relates to the Site or these terms and conditions. Users are solely responsible for compliance with any applicable laws of the country from which they access the Site.</p>
+
+            </div>
+        </div>
+    </div>
+</div>
+<nav class="footer" role="navigation">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12">
+                © Copyright Vocalizr {{ "now"|date('Y') }}
+
+                <ul id="footer-nav">
+                    <li class="share"><a href="https://www.facebook.com/Vocalizr"><i class="fab fa-facebook-square"></i></a></li>
+                    <li class="share"><a href="https://twitter.com/vocalizr"><i class="fab fa-twitter-square"></i></a></li>
+                    <li><a href="http://support.vocalizr.com/" target="_blank">Help</a></li>
+                    <li><a href="{{ path('membership') }}">Membership</a></li>
+                    <li><a href="http://blog.vocalizr.com/" target="_blank">Blog</a></li>
+                    <li><a href="{{ path('website_fees') }}">Fees & Charges</a></li>
+                    <li><a href="{{ path('website_terms') }}">Terms</a></li>
+                    <li><a href="{{ path('website_privacy') }}">Privacy</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</nav>
+{% endblock %}

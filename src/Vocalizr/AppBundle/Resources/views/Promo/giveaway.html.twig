@@ -1,0 +1,101 @@
+{% extends '::anonymous.html.twig' %}
+
+{% block title_html_tag %}
+    Vocalizr - Win a Moog One!
+{% endblock %}
+
+{% block meta_tags %}
+    <meta property="og:url" content="https://gleam.io/Wb6nW/vocalizrcom-moog-one-novation-peak-giveaway"/>
+    <meta property="og:title" content="Win a Moog One or a Novation Peak with Vocalizr.com">
+    <meta property="twitter:card" content="summary"/>
+    <meta property="fb:app_id" content="152351391599356"/>
+    <meta property="og:description" content="To celebrate the launch of our new Advanced Profile page, we're giving away a Moog One, and a Novation Peak!">
+{% endblock %}
+
+{% block javascript %}
+    <script type="text/javascript" src="https://widget.gleamjs.io/e.js" async="true"></script>
+{% endblock %}
+{% block stylesheet %}
+    {{ parent() }}
+    {% stylesheets
+        '@VocalizrAppBundle/Resources/public/css/form-elements.css'
+        '@VocalizrAppBundle/Resources/public/css/register.css'
+        '@VocalizrAppBundle/Resources/public/css/promo/giveaway.css'
+    %}
+        <link rel="stylesheet" href="{{ asset_url }}" />
+    {% endstylesheets %}
+{% endblock %}
+
+{% block wrap %}
+    <div class="header-image moog-one">
+        <h1>WIN A MOOG ONE!</h1>
+    </div>
+    <div class="page-wrap giveaway">
+        <div class="logo-header">
+            <img src="{{ asset('images/logo_black.png') }}" alt="Vocalizr" width="190px" height="56px">
+        </div>
+        <div class="page-content-wrap">
+            <div class="horizontal-container main-block" style="--horizontal-gap: 34px;">
+                <div class="main-text-container">
+                    <h1 class="page-title">
+                        <span>WIN A MOOG ONE or a </span><br>
+                        <span>NOVATION PEAK!</span>
+                    </h1>
+                    <div class="main-text">
+                        <p>
+                            We are proud to announce our biggest giveaway
+                            yet to celebrate the release of our all new <b>PRO
+                                profile page</b> (coming soon) which we designed
+                            to be your new homepage on the net!
+                        </p>
+                        <p>
+                            How does a <b>Moog One</b> or a <b>Novation Peak</b>
+                            sound? They’re both up for grabs in our like,
+                            share, refer your friends giveaway competition!
+                        </p>
+                        <p>
+                            First Prize - <b>Moog One</b><br>
+                            Second Prize - <b>Novation Peak</b><br>
+                            Third Prize (x 10 winners) - 1 Year <b>Vocalizr Pro</b> Membership
+                        </p>
+                        <p>
+                            <u><b>Here’s how to win:</b></u>
+                        </p>
+                        <ol>
+                            <li>Like us on Facebook (10 entries)</li>
+                            <li>Follow us on Twitter (10 entries)</li>
+                            <li>Follow us on Instagram (10 entries)</li>
+                            <li>Signup to Vocalizr (10 entries)</li>
+                            <li>Upgrade to PRO via Stay at home (20 entries)</li>
+                            <li>or, Upgrade to PRO standard (40 entries)</li>
+                            <li>Refer your friends (50 entries)</li>
+                            <li>Share on Facebook (20 entries)</li>
+                        </ol>
+                        <p class="how-it-works">
+                            <strong>How it works:</strong> Winners are picked at random - the more entries you have, the more chances you have of winning.
+                            Gain more entries by completing more tasks, or even more entries by referring friends to the competition by
+                            sharing your unique link.
+                        </p>
+                    </div>
+                </div>
+                <div class="gleam-widget-container">
+                    <a class="e-widget no-button generic-loader" href="https://gleam.io/Wb6nW/vocalizrcom-moog-one-novation-peak-giveaway" rel="nofollow">Vocalizr.com Moog One & Novation Peak Giveaway</a>
+                </div>
+            </div>
+            <div class="instrument">
+                <h2>Moog One <a href="https://www.moogmusic.com/products/moog-one">LEARN MORE</a></h2>
+                <div class="horizontal-container videos">
+                    <iframe width="427" height="240" src="https://www.youtube.com/embed/wdhzVFZlKsM" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                    <iframe width="427" height="240" src="https://www.youtube.com/embed/8HvV1jQxQsU" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                </div>
+            </div>
+            <div class="instrument">
+                <h2>Novation Peak <a href="https://novationmusic.com/en/synths/peak">LEARN MORE</a></h2>
+                <div class="horizontal-container videos">
+                    <iframe width="427" height="240" src="https://www.youtube.com/embed/ZfKzF_9KdCQ" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                    <iframe width="427" height="240" src="https://www.youtube.com/embed/8-TgyVnmdHU" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

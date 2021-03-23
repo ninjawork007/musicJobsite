@@ -1,0 +1,59 @@
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal">×</button>
+    <h3>Award Gig</h3>
+</div>
+<div class="modal-body">
+    <p>You are going to award this gig to: </p>
+    
+    <div class="clearfix">
+        <div class="pull-left" style="margin-right:15px;">
+        {% if bid.UserInfo.path is empty %}
+                <img src="{{ asset('images/default_avatar.svg') }}" width="100" height="100" class="img-polaroid" />
+        {% else %}
+                <img src="{{ asset('uploads/avatar/small/' ~ bid.UserInfo.path ) }}" width="50" height="50" class="img-polaroid" />
+        {% endif %}
+            </div>
+
+            <div class="pull-left" style="margin-top:20px;">
+                <a class="bid-username" href="{{ path('user_view', {username: bid.UserInfo.username}) }}">{{ bid.UserInfo.displayName }}</a>
+                who bidded <strong>${{ bid.amountDollars }}</strong>
+            </div>
+        </div>
+    <div style="height:20px"></div>
+    <p><strong>${{ (bid.amount|addPricePercent(subscriptionPlan.project_percent_added) / 100)|number_format(2) }}</strong> will be deducted from your wallet.<br />
+   
+    </p>
+    
+    {% if app.user.wallet < bid.amount|addPricePercent(subscriptionPlan.project_percent_added) %}
+        {% set depositAmount =  (bid.amount|addPricePercent(subscriptionPlan.project_percent_added) / 100) - app.user.wallet %}
+        {% set transactionFee = ((depositAmount) * 0.031)|number_format(2) %}
+        {% set depositAmount = (depositAmount + transactionFee) %}
+        <p>You need to deposit <strong>${{ depositAmount|number_format(2) }}</strong> into your vocalizr wallet before the gig can be awarded.<br />
+        <small>This includes vocalizr fee of <strong>${{ bid.amount|getPricePercent(subscriptionPlan.project_percent_added, false) / 100 }}</strong> also will be added.</small><br>
+        <small>and includes a transaction fee of ${{ transactionFee }}</small></p>
+        <form action="{{ paypal.url }}" method="post" target="_top" style="display:inline">
+        <input type="hidden" name="cmd" value="_xclick">
+        <input type="hidden" name="item_name" value="Deposit into Vocalizr Wallet" />
+        <input type="hidden" name="custom" value="DEPOSIT{{ app.user.uniqueStr }}" />
+        <input type="hidden" name="no_shipping" value="1" />
+        <input type="hidden" name="return" value="{{ url('project_view', {uuid: project.uuid}) }}?bid={{ bid.uuid }}" />
+        <input type="hidden" name="cancel_return" value="{{ path('project_view', {uuid: project.uuid}) }}?cancel" />
+        <input type="hidden" name="business" value="{{ paypal.primaryEmail }}">
+        <input type="hidden" name="lc" value="US">
+        <input type="hidden" name="currency_code" value="{{ paypal.currency }}">
+        <input type="hidden" name="no_note" value="0">
+        <input type="hidden" name="notify_url" value="{{ paypal.notifyUrl }}" />
+        $US<input type="text" name="amount" value="{{ depositAmount }}" /> <button type="submit" class="btn">Deposit Amount</button>
+        </form>
+    {% endif %}
+    
+</div>
+<div class="modal-footer">
+    <button class="btn" data-dismiss="modal">Close</button>
+    {% if app.user.wallet >= bid.amount|addPricePercent(subscriptionPlan.project_percent_added) %}
+    <form action="{{ path('project_award_action', {uuid: project.uuid} ) }}" method="post">
+        <input type="hidden" name="bid" value="{{ bid.uuid }}" />
+        <button type="submit" class="btn btn-success">Award Gig</button>
+    </form>
+    {% endif %}
+</div>

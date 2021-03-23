@@ -1,0 +1,132 @@
+                {% if hireUser %}
+                    <div class="side-col-section">
+                            <div class="sub-header blue">
+                                <div class="line"></div>
+                                <div class="sub-header-title">SPOTLIGHT ARTIST</div>
+                            </div>
+                            <div class="spotlight-user">
+                                <div class="row">
+                                    <div class="col-xs-12 col-md-5">
+                                        <a href="{{ path('user_view', {username: hireUser.username}) }}" class="stat-user-avatar">
+                                            {% if hireUser.path is empty %}
+                                                <img src="{{ asset('images/default_avatar.svg') }}" alt="{{ hireUser.username }}" />
+                                            {% else %}
+                                                <img src="{{ asset('uploads/avatar/large/' ~ hireUser.path ) }}" alt="{{ hireUser.username }}" class="img-responsive" />
+                                            {% endif %}
+                                        </a>
+                                    </div>
+                                    <div class="col-xs-12 col-md-7">
+                                        <div class="gig-hire-name">
+                                            <a href="{{ path('user_view', {username: hireUser.username}) }}">{{ hireUser.displayName }}</a>
+                                        </div>
+                                        <div class="spotlight-user-info">
+                                            {% if hireUser.isVocalist and hireUser.isProducer %}
+                                                Producer &amp; Vocalist
+                                            {% elseif hireUser.isVocalist %}
+                                                Vocalist
+                                            {% elseif hireUser.isProducer %}
+                                                Producer
+                                            {% endif %}
+                                        </div>
+                                        <div class="text-muted">from {{ hireUser.country|countryName }}</div>
+                                        <div class="hirenow-btns">
+                                            <a href="{{ path('user_view', {username: hireUser.username}) }}" class="btn btn-default btn-sm">VIEW PROFILE</a>
+                                            <a href="{{ path('project_hire', {username: hireUser.username}) }}" class="btn btn-default btn-sm">HIRE</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                </div>
+                {% endif %}
+
+                {% if not article %}
+                    <div class="side-col-section welcome-vmag">
+                        <h2>WELCOME TO VMAG</h2>
+
+                        <a href="http://www.vocalizr.com" target="_blank">Vocalizr</a> presents VMag - the place to get current and relevant content
+                        about the music production industry. From vocal and production tips to
+                        gear reviews, new, events and interviews this is the place to keep your finger on
+                        the pulse of what's happening with Vocalizr and the industry beyond.
+                    </div>
+                {% endif %}
+
+                <div class="side-col-section">
+                    <div class="side-advertise">
+                        <h2>ADVERTISE WITH VMAG</h2>
+                        <div class="box-advertise">
+                            <div class="text1">Your brand here.</div>
+                            <div class="text2">[and other locations]</div>
+                            <div class="text3">Never miss an eyeball.</div>
+                            <a href="mailto:advertise@vocalizr.com" class="btn btn-blue">ENQUIRE</a>
+                        </div>
+
+                    </div>
+                </div>
+
+
+
+                {% if recentArticles %}
+                    <div class="side-col-section">
+                        <div class="sub-header">
+                            <div class="line"></div>
+                            <div class="sub-header-title">RECENT ARTICLES</div>
+                        </div>
+
+                        {% for rarticle in recentArticles %}
+                            {% set day = rarticle.publishedAt|date('d')  %}
+                            {% set mth = rarticle.publishedAt|date('m')  %}
+                            {% set yr = rarticle.publishedAt|date('y')  %}
+
+                            <div class="varticle-block" data-href="{{ path('vmag_article', {mth: mth, day: day, yr: yr, slug: rarticle.slug}) }}">
+                                <div class="varticle-block-img">
+                                    <img src="{{ asset('/' ~ rarticle.webPathSmall) }}{% if rarticle.updatedAt %}&{{ rarticle.updatedAt|date('U') }}{% endif %}" width="100%">
+                                </div>
+                                <div class="varticle-info">
+                                    <div class="varticle-block-pad">
+                                        <strong>{{ rarticle.title }}</strong>
+                                        <div class="varticle-side-by">By {{ rarticle.author.name }}</div>
+                                        <div class="varticle-date">{{ rarticle.publishedAt|date('D, jS F Y') }}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+
+                <div class="side-col-section">
+                    <div class="side-advertise">
+                        <h2>SUBSCRIBE</h2>
+                        <form class="frm-subscribe" action="{{ path('vmag_subscribe') }}" method="post">
+                            <div class="subscribe-msg alert hide"></div>
+                            <input type="text" name="email" class="form-control input-subscribe-email" placeholder="Enter your email address">
+                            <button name="subscribe" class="btn btn-sm btn-dark">SUBMIT</button>
+                        </form>
+                    </div>
+                </div>
+
+
+                {% if false %}
+                <div class="discover-filter-panel panel panel-default">
+                    <div class="panel-heading">
+                        FIND VOCALISTS
+                    </div>
+                    <div class="panel-body padding">
+                        <p>Find vocalists for your gig simply by entering the name of an artist you want them to sound like.</p>
+                        <form id="search-form" action="{{ path('vocalists') }}" method="post" style="display:inline" novalidate>
+                            <div class="row form-group">
+                                <div class="col-sm-12">
+                                    <input type="text" name="search" class="form-control">
+                                </div>
+                            </div>
+
+                            <input type="hidden" name="page" value="1" id="page">
+                            <input type="hidden" name="search" value="Search">
+
+                            <div class="form-buttons">
+                                <button type="submit" name="search" value="search" class="btn btn-sm btn-default">SEARCH</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                {% endif %}

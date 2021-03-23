@@ -1,0 +1,199 @@
+{% extends '::app.html.twig' %}
+
+{% block title %}Admin{% endblock %}
+
+{% block javascript %}
+        {% javascripts
+            '@VocalizrAppBundle/Resources/public/js/admin.js'
+         %}
+            <script type="text/javascript" src="{{ asset_url }}"></script>
+        {% endjavascripts %}
+
+        <script type="text/javascript">
+            VocalizrDashboard.initDashboard();
+        </script>
+{% endblock %}
+
+
+{% block body %}
+    <div class="row">
+        <div class="col-sm-2">
+            <ul class="nav">
+                {% include '@VocalizrApp/Admin/include/menu.html.twig' %}
+            </ul>
+        </div>
+        <div class="col-sm-10 admin-page">
+            <h1>Marketplace : Reject Item</h1>
+            <div class="row">
+                <div class="col-sm-12 col-md-6">
+                    <h3>Item Details</h3>
+                    <div class="data-table">
+                        <div class="data-table-row">
+                            <div class="data-table-cell is-label">
+                                Submitted by:
+                            </div>
+                            <div class="data-table-cell">
+                                 <a href="{{ path('user_view', {username: item.UserInfo.username} ) }}" target="_blank">{{ item.UserInfo.displayName }}</a>
+                             </div>
+                        </div>
+                        <div class="data-table-row">
+
+                            <div class="data-table-cell is-label">
+                                Date Submitted:
+                            </div>
+                            <div class="data-table-cell">
+                                {{ item.publishedAt|timeAgoString }} ago
+                            </div>
+                        </div>
+                        <div class="data-table-row">
+                            <div class="data-table-cell is-label">
+                                Title:
+                            </div>
+                            <div class="data-table-cell">
+                                {{ item.title }}
+                            </div>
+                        </div>
+                        <div class="data-table-row">
+                            <div class="data-table-cell is-label">
+                                Item Type:
+                            </div>
+                            <div class="data-table-cell">
+                                {{ item.itemType|upper }}
+                            </div>
+                        </div>
+                        <div class="data-table-row">
+                            <div class="data-table-cell is-label">
+                                Auction:
+                            </div>
+                            <div class="data-table-cell">
+                                {% if item.isAuction %}YES{% else %}NO{% endif %}
+                            </div>
+                        </div>
+                        <div class="data-table-row">
+                            <div class="data-table-cell is-label">
+                                Price:
+                            </div>
+                            <div class="data-table-cell">
+                                ${{ item.buyoutPrice }}
+                            </div>
+                        </div>
+                        {% if item.isAuction %}
+                            <div class="data-table-row">
+                                <div class="data-table-cell is-label">
+                                    Reserve Price:
+                                </div>
+                                <div class="data-table-cell">
+                                    ${{ item.buyoutPrice }}
+                                </div>
+                            </div>
+                        {% endif %}
+                        <div class="data-table-row">
+                            <div class="data-table-cell is-label">
+                                Master Royalties:
+                            </div>
+                            <div class="data-table-cell">
+                                {{ item.royaltyMaster }}%
+                            </div>
+                        </div>
+                        <div class="data-table-row">
+                            <div class="data-table-cell is-label">
+                                Publishing Royalties:
+                            </div>
+                            <div class="data-table-cell">
+                                {{ item.royaltyPublishing }}%
+                            </div>
+                        </div>
+                        <div class="data-table-row">
+                            <div class="data-table-cell is-label">
+                                Performance Royalties:
+                            </div>
+                            <div class="data-table-cell">
+                                {{ item.royaltyPerformance }}%
+                            </div>
+                        </div>
+                        <div class="data-table-row">
+                            <div class="data-table-cell is-label">
+                                Mechanical Royalties:
+                            </div>
+                            <div class="data-table-cell">
+                                {{ item.royaltyMechanical }}%
+                            </div>
+                        </div>
+                        <div class="data-table-row">
+                            <div class="data-table-cell is-label">
+                                Genres:
+                            </div>
+                            <div class="data-table-cell">
+                                {% if item.genres|length > 0 %}
+                                    <ul class="comma-list">
+                                    {% for genre in item.genres %}
+                                        <li>{{ genre.title }}</li>
+                                    {% endfor %}
+                                    </ul>
+                                {% else %}
+                                    None specified
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="data-table-row">
+                            <div class="data-table-cell is-label">
+                                Gender:
+                            </div>
+                            <div class="data-table-cell">
+                                {% if item.gender %}
+                                    {{ item.gender }}
+                                {% else %}
+                                    None specified
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="data-table-row">
+                            <div class="data-table-cell is-label">
+                                BPM:
+                            </div>
+                            <div class="data-table-cell">
+                                {{ item.bpm }}
+                            </div>
+                        </div>
+                        <div class="data-table-row">
+                            <div class="data-table-cell is-label">
+                                Audio Key:
+                            </div>
+                            <div class="data-table-cell">
+                                {{ item.audioKey }}
+                            </div>
+                        </div>
+                        <div class="data-table-row">
+                            <div class="data-table-cell is-label">
+                                Additional Info:
+                            </div>
+                            <div class="data-table-cell">
+                                ${{ item.additionalInfo }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-12 col-md-6">
+                    <h3>Reason</h3>
+                    <p>Enter the reason for rejecting the marketplace item.</p>
+                    <p>This reason will be sent to the user.</p>
+                    <div>
+
+                        <form id="admin-reject-marketplace-item" class="admin-reject-marketplace-item" action="{{ path('admin_marketplace_reject', {uuid : item.uuid}) }}" method="POST">
+
+                            <div class="light-content">
+                                <div class="row form-group">
+                                    <div class="col-sm-12">
+                                        {{ form_row(form.status_reason) }}
+                                    </div>
+                                </div>
+                                {{ form_widget(form._token) }}
+
+                                <a href="{{ path('admin_marketplace_review', {uuid : item.uuid}) }}" class="btn">Cancel</a><button type="submit" class="btn btn-default pull-right" id="user-search-btn">Reject Item</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+        </div>
+    </div>
+{% endblock %}

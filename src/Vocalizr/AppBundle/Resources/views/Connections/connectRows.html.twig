@@ -1,0 +1,49 @@
+{% for connect in pagination %}
+    {% set connectUser = connect.from %}
+    <div class="connect-row">
+        <div class="user-connection user-list-item">
+            <div class="avatar">
+                <a href="{{ path('user_view', {username: connectUser.username}) }}" class="user-list-avatar">
+                    {% if connectUser.path is empty %}
+                        <img src="{{ asset('images/default_avatar.svg') }}" alt="{{ connectUser.username }}" class="img-circle" width="58" height="58" />
+                    {% else %}
+                        <img src="{{ asset('uploads/avatar/small/' ~ connectUser.path ) }}" alt="{{ connectUser.username }}" width="58" height="58" class="img-circle" />
+                    {% endif %}
+
+                    {% if connectUser.isSubscribed %}
+                        <img class="svg-stamp-pro" src="{{ asset('images/vocalizr_pro_stamp.svg') }}" alt="pro" data-text="<div class='tip-header'>This Vocalizr user is an <a href='{{ path('membership') }}' class=stamp-pro-hover>Access Pass</a> member</div>">
+                    {% endif %}
+                </a>
+            </div>
+            <div class="user-info">
+                <div class="user-list-name">
+                    {% spaceless %}
+                        <a href="{{ path('user_view', {username: connectUser.username}) }}">{{ connectUser.displayName }}</a>
+                        {% if connectUser.isCertified %}
+                            <img class="vocalizr-certified-stamp-clipped" src="{{ asset('images/certified_pro_stamp_clipped.svg') }}" alt="" data-text="<div class='tip-header'>Vocalizr Certified Professional</div>A 'Certified Professional’ is deemed a professional by the experts at Vocalizr. The stamp is based on ability, experience, and skill level.<br><a href='{{ path('get_certified') }}' class='get-certified-now' style='color: #01c2e5;'>Get Certified Now</a>">
+                        {% endif %}
+                    {% endspaceless %}
+                </div>
+                <div class="user-list-type">
+                    {% if connectUser.isVocalist and connectUser.isProducer %}
+                        Producer &amp; Vocalist
+                    {% elseif connectUser.isVocalist %}
+                        Vocalist
+                    {% elseif connectUser.isProducer %}
+                        Producer
+                    {% endif %}
+                </div>
+                Connected {{ connect.createdAt|timeAgoString }} ago
+                <div class="connect-actions">
+                <a href="{{ path('message_warning_private', {userId: connectUser.id}) }}" data-toggle='vmodal' class="btn btn-default btn-action btn-message btn-sm"><i class="fa fa-envelope"></i> MESSAGE</a>
+                <a href="{{ path('connect_remove', {username: connectUser.username}) }}" class="remove-connection">Remove</a>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endfor %}
+
+{% set pageData = pagination.paginationData()  %}
+{% if pageData.next is defined %}
+    <a href="{{ path('connect_list', pagination.query|merge({(pagination.paginatorOption('pageParameterName')): pageData.next})) }}" class="btn btn-block btn-default roll-alt btn-load-more">LOAD MORE</a>
+{% endif %}

@@ -1,0 +1,50 @@
+{% extends '::app.html.twig' %}
+
+{% block javascript %}
+    {% javascripts
+        '@VocalizrAppBundle/Resources/public/js/jquery.geocomplete.min.js'
+        '@VocalizrAppBundle/Resources/public/js/jquery.cycle2.js'
+        '@VocalizrAppBundle/Resources/public/js/waveforms.js'
+        '@VocalizrAppBundle/Resources/public/js/wavesurfer.min.js'
+    %}
+        <script type="text/javascript" src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+
+    <script>
+        $('#geo-location').geocomplete({
+            details: "#search-form",
+            types: ['(cities)'],
+            blur: true,
+            detailsAttribute: "data-geo"
+        });
+    </script>
+{% endblock %}
+
+{% block stylesheet %}
+    {% stylesheets
+        '@VocalizrAppBundle/Resources/public/css/projects.css'
+    %}
+        <link rel="stylesheet" href="{{ asset_url }}" />
+    {% endstylesheets %}
+{% endblock %}
+
+{% block body %}
+<div class="row">
+    <div class="col-sm-8 discover-items user-search">
+        <div id="activity-header">
+            {{ block('activity_header') }}
+        </div>
+        {{ block('search_results') }}
+    </div>
+    <div class="col-sm-4">
+        <div class="discover-filter-panel panel panel-default">
+            <div class="panel-heading">
+                REFINE YOUR SEARCH
+            </div>
+            <div class="panel-body padding">
+                {{ block('search_form') }}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

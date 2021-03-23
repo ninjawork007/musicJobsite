@@ -1,0 +1,3 @@
+{% for category in categories %}
+<li><a href="{{ path('vmag_category', {slug: category.slug}) }}"{% if route == "category" and category.slug == slug %} class="active"{% endif %}>{{ category.title }}</a></li>
+{% endfor %}

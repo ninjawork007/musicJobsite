@@ -1,0 +1,55 @@
+parameters:
+    database_driver:   pdo_mysql
+    database_host:     localhost
+    database_port:     
+    database_name:     vocalizr
+    database_user:     root
+    database_password: letmein
+
+    mailer_transport:  mail
+    mailer_host:       ~
+    mailer_user:       ~
+    mailer_password:   ~
+
+    locale:            en
+    secret:            v0cal1zR*DSJu8DH347s
+    
+    domain_base:       dev.vocalizr.com
+    
+    audio_recorder_key: 820f01581a603e68ad92c87c072d8a58
+
+    facebook_app_id: 270724609723149
+    facebook_app_secret: 4182c17474aabea8cd8b6d226478554f
+    facebook_app_scope: email,user_birthday,user_location
+    
+    soundcloud_client_id: 2a742087e2ef470eaf157bca383386d1
+    soundcloud_client_secret: 1a0a41aff336e48dbeb03448b6d486f2
+
+    admin_email: john@smytheweb.com
+
+    mail_from_email: john@smytheweb.com 
+    mail_from_name: Vocalizr
+    
+    mail_subject_activation: Activate your account
+    mail_subject_change_email: Email change request
+    mail_subject_reset_pass: Reset your password request
+    
+    paypal_primary_email: john@vocalizr.com
+    paypal_url: https://www.paypal.com/cgi-bin/webscr
+    paypal_ipn_simulator_url: http://www.smytheweb.com/vocalizr/ipn.php?request=1
+    paypal_test_mode: 1
+    paypal_test_url: https://www.sandbox.paypal.com/cgi-bin/webscr
+    paypal_currency: USD
+    paypal_notify_url: http://www.smytheweb.com/vocalizr/ipn.php
+    
+    default_currency: USD
+    
+    upload_audio_allowed: mp3
+    upload_audio_allowed_extended: mp3,aac,m4a
+    upload_assets_allowed: mp3, wav
+    
+    cdn_url: 
+    
+    
+    default_date_format: M d, Y
+

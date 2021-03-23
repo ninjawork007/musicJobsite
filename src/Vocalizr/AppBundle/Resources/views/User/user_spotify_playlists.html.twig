@@ -1,0 +1,33 @@
+<div class="row">
+
+    {% for playlist in userSpotifyPlaylists %}
+
+        {% if loop.index % 2 == 1 and loop.index != 1 %}
+            </div><div class="row">
+        {% endif %}
+
+        {% if edit %}
+            <div data-role="spotify-playlist-item" class="col-sm-6 col-xs-12  form-group">
+        {% else %}
+            <div data-role="spotify-playlist-item" class="col-sm-12 col-md-6  form-group">
+        {% endif %}
+
+            {% if playlist.type == 0 %}
+                <iframe src="https://open.spotify.com/embed?uri=spotify:track:{{ playlist.SpotifyId }}" width="100%" height="280" frameborder="0" allowtransparency="true"></iframe>
+            {% elseif playlist.type == 1 %}
+                <iframe src="https://open.spotify.com/embed?uri=spotify:album:{{ playlist.SpotifyId }}" width="100%" height="280" frameborder="0" allowtransparency="true"></iframe>
+            {% elseif playlist.type == 2 %}
+                <iframe src="https://open.spotify.com/embed?uri=spotify:user:{{ playlist.userId }}:playlist:{{ playlist.SpotifyId }}" width="100%" height="280" frameborder="0" allowtransparency="true"></iframe>
+            {% endif %}
+
+            {% if edit %}
+                <div class="form-group">
+                    <a href="{{ path('user_edit_remove_spotify_playlist', {id: playlist.id }) }}" class="btn btn-sm btn-default pull-left">REMOVE</a>
+                    <div class="clearfix"></div>
+                </div>
+            {% endif %}
+
+        </div>
+    {% endfor %}
+
+</div>

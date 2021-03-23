@@ -1,0 +1,56 @@
+{% extends '::app.html.twig' %}
+
+{% block title %}Withdraws{% endblock %}
+
+{% block javascript %}
+
+
+{% endblock %}
+
+
+{% block body %}
+    <div class="row">
+        <div class="col-sm-12">
+            <h1>Withdraws</h1>
+            
+            {% if app.session.hasFlash('notice') %}
+                <div class="alert alert-success">
+                    {{ app.session.flash('notice') }}
+                </div>
+                {{ app.session.removeFlash('notice') }}
+            {% endif %}
+
+            <table cellspacing="0" cellpadding="0" border="0" class="table table-dark" width="100%">
+                <thead>
+                    <tr>
+                        <th>User</th>
+                        <th width="200">Amount</th>
+                        <th with="120">Status</th>
+                        <th with="150">Paypal Status</th>
+                        <th with="150">Paypal Fee</th>
+                        <th with="120">IP</th>
+                        <th width="120">Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for result in pagination %}
+                    <tr>
+                        <td><a href="{{ path('user_view', {username: result.UserInfo.username}) }}">{{ result.UserInfo.username }}</a></td>
+                        <td>${{ (result.amount / 100)|number_format(2) }}</td>
+                        <td> 
+                            {{ result.status }}
+                        </td>
+                        <td>{{ result.paypalStatus }}</td>
+                        <td>${{ (result.fee / 100)|number_format(2)  }}</td>
+                        <td>{{ result.userIp  }}</td>
+                        <td>{{ result.createdAt|date(default_date_format) }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+                
+            {{ knp_pagination_render(pagination) }}
+        </div>
+    </div>
+    
+{% endblock %}

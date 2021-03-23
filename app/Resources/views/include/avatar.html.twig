@@ -1,0 +1,10 @@
+{% if size is not defined %}
+    {% set size = 36 %}
+{% endif %}
+{% if app.user.path is empty %}
+    {% set avatar_src = asset('images/default_avatar.svg') %}
+{% else %}
+    {% set avatar_src = (asset('uploads/avatar/small/' ~ app.user.path)) %}
+{% endif %}
+
+<img src="{{ avatar_src }}" width="{{ size }}" height="{{ size }}" class="user-avatar img-circle  avatar-sm-{{ app.user.username }}"{% if attributes is defined %} {{ attributes }}{% endif %}/>

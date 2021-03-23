@@ -1,0 +1,45 @@
+
+<div class="modal-dialog">
+    <div class="modal-content message-compose">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <h4 class="modal-title">Article Images (Last 12)</h4>
+        </div>
+        <div class="modal-body">
+            <div class="modal-row" style="font-size: 14px; color:#fff">
+                {% for image in images %}
+                    <div class="col-xs-4 img-{{ image.id }}" style="margin-bottom: 20px;">
+                        <div class="img-article" data-img="/uploads/article/{{ image.path }}" style="width:100px;height:100px;overflow:hidden;margin-bottom: 10px; border:2px solid #fff; cursor: pointer;">
+                            <img src="/uploads/article/{{ image.path }}" class="img-responsive" /> 
+                        </div>
+                        <a href="{{ path('admin_vmag_delete_image', {id: image.id}) }}" data-id="{{image.id}}" class="btn btn-sm btn-default roll-alt img-delete">DELETE</a>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div><!-- /.modal-content -->
+</div><!-- /.modal-dialog -->
+
+
+<script>
+    $('.img-article').on('click', function (e) {
+        tinymce.activeEditor.execCommand('mceInsertContent', false, '<img src="' + $(this).data('img') + '" />');
+        $('#vocalizrModal').modal('hide');
+    });
+    
+    $('.img-delete').on('click', function (e) {
+        e.preventDefault();
+        $el = $(this);
+        if (confirm('Are you sure?')) {
+            App.showLoading();
+            $.get($(this).attr('href'), function (data) {
+                $('#loading').hide();
+                $('.img-' + $el.data('id')).remove();
+            });
+        }
+        else {
+            return false;
+        }
+    });
+    
+</script>

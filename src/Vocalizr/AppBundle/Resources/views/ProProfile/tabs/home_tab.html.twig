@@ -1,0 +1,153 @@
+<div class="row content-sections">
+    <!-- Top Tracks -->
+    <section class="top-tracks">
+        <div class="container">
+            <div class="row">
+                <div class="col-xga-9 col-xl-8 col-md-7">
+                    {% if topTracks is not empty %}
+                        <div class="top-tracks__titles">
+                            <h3 class="standards__title top-tracks__title">Top Tracks</h3>
+                            <a href="#" class="top-tracks__link-view">View All Tracks</a>
+                        </div>
+                        <!-- Title -->
+                        <span class="lists__title">
+                            <span></span>
+                            <span>#</span>
+                            <span>Title</span>
+                            <span>Time</span>
+                            <span>Likes</span>
+                            <span>Plays</span>
+                            <span></span>
+                        </span>
+                        <!-- END Title -->
+
+                        {% for audio in topTracks %}
+                            {% set isAudioLiked = (audio.id in audioLikes) %}
+                            {% include '@VocalizrApp/ProProfile/home/track.html.twig' %}
+                        {% endfor %}
+                    {% endif %}
+                </div>
+                <div class="col-xga-3 col-xl-4 col-md-7"></div>
+            </div>
+        </div>
+    </section>
+    <!-- END Top Tracks -->
+
+    <!-- About Me -->
+    <section class="about-me">
+        <div class="container">
+            <div class="row">
+                <div class="col-6">
+                    <div class="about-me__slider">
+                        {% for imagePath in user.proProfile.aboutMeImageWebPaths %}
+                            <div class="about-me__img-container">
+                                <img class="about-me__slide-img"
+                                     src="{{ asset(imagePath) }}"
+                                     alt="About Me Image">
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="col-6">
+                    <ul class="about-me__ul">
+                        <li><img src="{{ asset('/bundles/vocalizrapp/bootstrap4/img/icon_persone.svg') }}"
+                                 alt="persone">
+                            <p class="about-me__ul-name">Gender: <span class="gray">{{  user.gender == 'm' ? 'Male' : 'Female' }}</span></p></li>
+                        <li><img src="{{ asset('/bundles/vocalizrapp/bootstrap4/img/icon_world.svg') }}"
+                                 alt="world">
+                            <p class="about-me__ul-name">Country: <span class="gray">{{ user.country|countryName }}</span></p>
+                        </li>
+                        <li><img src="{{ asset('/bundles/vocalizrapp/bootstrap4/img/icon_message.svg') }}"
+                                 alt="message">
+                            <p class="about-me__ul-name">Languages: <span class="gray">{{ user.userLanguages|join(', ') }}</span></p>
+                        </li>
+                    </ul>
+                    <div class="about-me__card">
+                        <h2 class="about-me__card-title">About Me</h2>
+                        {% if user.isVocalist %}
+                            {% include '@VocalizrApp/ProProfile/home/about_me.html.twig' %}
+                        {% endif %}
+                        <p class="about-me__card-text">{{ user.profile|nl2br }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- END About Me -->
+
+    {% if topVideos is not empty %}
+    <!-- Videos -->
+    <section class="videos">
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+                    <h3 class="standards__title videos__title">Videos</h3>
+                    <a href="#" class="videos__link-view">View All Videos</a>
+                </div>
+                <div class="col-12 col-12_slider">
+                    <!-- Slider -->
+                    <div class="videos__slider">
+                        <!-- Slide -->
+                        {% for video in topVideos %}
+                            {% include '@VocalizrApp/ProProfile/home/video.html.twig' %}
+                        {% endfor %}
+                    </div>
+                    <!--END Slider -->
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- END Videos -->
+    {% endif %}
+
+    {% if userReviews is not empty %}
+    <!-- Reviews -->
+    <section class="reviews">
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+                    <h3 class="standards__title reviews__title">Reviews</h3>
+                    <a href="#" class="reviews__link-view">View All Reviews</a>
+                </div>
+                <div class="col-12 col-12_slider">
+                    <!-- Slider -->
+                    <div class="reviews__slider">
+
+                        {% for review in userReviews %}
+                            {% include '@VocalizrApp/ProProfile/home/review.html.twig' %}
+                        {% endfor %}
+                    </div>
+                    <!--END Slider -->
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- END Reviews -->
+    {% endif %}
+
+    {% if topConnections is not empty %}
+    <!-- Connections -->
+    <section class="connections">
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+                    <h3 class="standards__title connections__title">Connections</h3>
+                    <a href="#" class="connections__link-view">View All Connections</a>
+                </div>
+                <div class="col-12 col-12_slider">
+                    <!-- Slider -->
+                    <div class="connections__slider">
+                        {% for connection in topConnections %}
+                            {% include '@VocalizrApp/ProProfile/home/connection.html.twig' %}
+                        {% endfor %}
+                    </div>
+                    <!--END Slider -->
+
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- END Connections -->
+    {% endif %}
+
+</div>

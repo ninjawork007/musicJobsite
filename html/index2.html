@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="description" content="">
+        <link rel="shortcut icon" href="favicon.png">
+
+        <title>Vocalizr</title>
+
+        <!-- Bootstrap core CSS -->
+        <link href="css/bootstrap.min.css" rel="stylesheet">
+        <link href="css/bootstrap-theme.css" rel="stylesheet">
+        <link href="css/tipped.css" rel="stylesheet">
+        <link href="css/screen.css" rel="stylesheet">
+
+        <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+        <!--[if lt IE 9]>
+          <script src="js/html5shiv.js"></script>
+          <script src="js/respond.min.js"></script>
+        <![endif]-->
+    </head>
+
+    <body>
+
+        <!-- Wrap all page content here -->
+        <div id="wrap">
+            <!-- Fixed navbar -->
+            <div id="header" class="navbar navbar-default navbar-static-top">
+                <div class="container">
+                    <div class="navbar-header">
+                        <a class="navbar-brand" href="/"><img src="images/logo.png" alt="Vocalizr"></a>
+                    </div>
+                    <ul class="nav navbar-nav">
+                        <li class="active"><a href="#">Dashboard</a></li>
+                        <li><a href="#about">Gig Center <span class="label label-primary">32</span></a></li>
+                        <li><a href="#contact">Discover Talent</a></li>
+                        <li><a href="#contact">Gig Hunter</a></li>
+                        <li class="last"><a href="#contact">Favorites</a></li>
+                        
+                    </ul>
+                </div>
+            </div>
+            <div id="profile-pane">
+                <div class="container">
+                    <div class="avatar">
+                        <img src="images/avatars/eminem.jpg" alt="Eminem" class="img-circle">
+                    </div>
+                    <div class="profile">
+                        <div class="intro">Hey, <a href="">Eminem</a></div>
+                        <i id="profile-dropdown-toggle" class="vocalizr-icon icon-profile-dropdown"></i>
+                        <div id="profile-dropdown" class="hide">
+                            <ul id="profile-nav">
+                                <li><a href=""><i class="vocalizr-icon icon-settings"></i> Manage account</a></li>
+                                <li><a href=""><i class="vocalizr-icon icon-finances"></i> Finances</a></li>
+                                <li><a href=""><i class="vocalizr-icon icon-favorites"></i> Favorites</a></li>
+                                <li><a href=""><i class="vocalizr-icon icon-logout"></i> Logout</a></li>
+                            </ul>
+                        </div>
+                        
+                        <div class="seperator"></div>
+                        <div class="wallet">
+                            <div class="wallet-inner">
+                                You have <a id="wallet-amount" href="#wallet">$3,085</a> in you wallet
+                            </div>
+                        </div>
+                    </div>
+                    <a id="create-new-gig" href="" class="btn btn-primary">Create a new gig</a>
+                </div>
+            </div>
+            
+            <!-- Begin page content -->
+            <div class="container">
+                <div class="row">
+                    <div class="col-sm-8">
+                        <h1>Vocalizr Activity</h1>
+                        
+                        <div id="vocalizr-activity">
+                            
+                            <div class="activity-list-item clearfix">
+                                <div class="avatar">
+                                    <img src="images/avatars/mariah.jpg" alt="mariah" class="img-circle">
+                                </div>
+                                <div class="activity-item">
+                                    <div class="activity-status">
+                                        <span class="badge badge-yellow">NEW GIG</span> <span class="activity-created">1 hour ago</span>
+                                    </div>
+                                    <div class="activity-info">
+                                        <a href="">Mariah Carey</a> has just created a new gig called <a href="">Without you i am lost</a>.<br>
+                                        She is looking for a female vocalist.<br>
+                                        Her budget is <span class="highlight">$350 - $1,000</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="activity-list-item clearfix">
+                                <div class="avatar">
+                                    <img src="images/avatars/snoop.jpg" alt="Snoop" class="img-circle">
+                                </div>
+                                <div class="activity-item">
+                                    <div class="activity-status">
+                                        <span class="badge badge-dark-grey">TAGS</span> <span class="activity-created">2 hours ago</span>
+                                    </div>
+                                    <div class="activity-info">
+                                        <a href="">Snoop Dog</a> agrees with your tags:
+                                        <div class="tags">
+                                            <a href="#">Dopefiend</a>
+                                            <a href="#">Reggae</a>
+                                            <a href="#">Rap</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div> 
+                            
+                            <div class="activity-list-item clearfix">
+                                <div class="avatar">
+                                    <img src="images/avatars/mariah.jpg" alt="mariah" class="img-circle">
+                                    <img src="images/avatars/snoop.jpg" alt="snoop" class="img-circle">
+                                </div>
+                                <div class="activity-item">
+                                    <div class="activity-status">
+                                        <span class="badge badge-green">GIG COMPLETED</span> <span class="activity-created">2 hours ago</span>
+                                    </div>
+                                    <div class="activity-info">
+                                        <a href="">Mariah Carey</a> and <a href="">Snoop Dog</a> have completed a gig
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="activity-list-item clearfix">
+                                <div class="avatar">
+                                    <img src="images/avatars/mariah.jpg" alt="mariah" class="img-circle">
+                                </div>
+                                <div class="activity-item">
+                                    <div class="activity-status">
+                                        <span class="badge badge-blue">NEW USER</span> <span class="activity-created">3 hours ago</span>
+                                    </div>
+                                    <div class="activity-info">
+                                        <a href="">Mariah Carey</a> has just joined Vocalizr.<br>
+                                        Check out our latest <a href="">vocalist</a> by viewing her profile
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="activity-list-item clearfix">
+                                <div class="avatar">
+                                    <img src="images/avatars/sandy.jpg" alt="sandy" class="img-circle">
+                                </div>
+                                <div class="activity-item">
+                                    <div class="activity-status">
+                                        <span class="badge badge-green">NEW GIG</span> <span class="activity-created">4 hours ago</span>
+                                    </div>
+                                    <div class="activity-info">
+                                        <a href="">Sandy Rivera</a> has just created a new gig called <a href="">Summer Ennd Mix 2013</a><br>
+                                        He is looking for a male vocalist.
+                                        His budget is <span class="highlight">$350 - $1,000</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                        </div>
+                        
+                        <div class="activity-paging">
+                            <a class="btn btn-default btn-sm" data-toggle="modal" href="#myModal">VIEW 5 MORE</a>
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="gig-center-panel panel panel-default">
+                            <div class="panel-heading">
+                                GIG CENTER <a href="" class="btn btn-default btn-sm">SEE ALL</a>
+                            </div>
+                            <div class="panel-body no-padding">
+                                
+                                <div class="panel-row">
+                                    <div class="avatar">
+                                        <img src="images/avatars/westbam.jpg" alt="westbam" class="img-circle">
+                                    </div>
+                                    <div class="gig-item">
+                                        <a href="">Sasha</a> submitted a bid for
+                                        <a href="">Ganster Beat</a>.<br>
+                                        She has bid: <span class="highlight">$3,500</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="panel-row">
+                                    <div class="avatar">
+                                        <img src="images/avatars/randy.jpg" alt="randy" class="img-circle">
+                                    </div>
+                                    <div class="gig-item">
+                                        <a href="">WestBam</a> awarded you the gig <a href="">Ganster Beat</a>.
+                                        <div class="gig-item-actions">
+                                            <a href="" class="btn btn-default btn-sm">ACCEPT</a><a href="" class="btn btn-default btn-sm">DECLINE</a>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="panel-row">
+                                    <div class="avatar">
+                                        <img src="images/avatars/westbam.jpg" alt="westbam" class="img-circle">
+                                    </div>
+                                    <div class="gig-item">
+                                        <a href="">Sasha</a> submitted a bid for
+                                        <a href="">Ganster Beat</a>.<br>
+                                        She has bid: <span class="highlight">$3,500</span>
+                                    </div>
+                                </div>
+                                
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <div id="footer">
+            <div class="container">
+                <div class="copyright">
+                    &copy; Copyright Vocalizr 2014
+                </div>
+            </div>
+        </div>
+        
+        
+        <!-- Modal -->
+        <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                        <h4 class="modal-title">Place your bid</h4>
+                    </div>
+                    <div class="modal-sub-header">
+                        TITLE: <span>That's the way i feel about 'cha</span>
+                    </div>
+                    <div class="modal-body">
+                        Test
+                    </div>
+                </div><!-- /.modal-content -->
+            </div><!-- /.modal-dialog -->
+        </div><!-- /.modal -->
+
+        <script type="text/javascript" src="js/jquery.js"></script>
+        <script type="text/javascript" src="js/bootstrap.min.js"></script>
+        <script type="text/javascript" src="js/tipped.js"></script>
+        <script type="text/javascript" src="js/app.js"></script>
+        
+        <script>
+            jQuery.extend(Tipped.Skins, {
+              'profile-nav' : {
+                border: { size: 4, color: '#14b9d6' },
+                background: '#14b9d6',
+                radius: { size: 4, position: 'border' },
+                shadow: true
+              }
+            });
+            $(function () {
+                Tipped.create("#profile-dropdown-toggle", $('#profile-dropdown').html(), {
+                  skin: 'profile-nav',
+                  hook: 'bottommiddle'
+                }); 
+            });
+        </script>
+    </body>
+</html>

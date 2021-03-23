@@ -1,0 +1,54 @@
+{% if connections is not empty %}
+<div class="row">
+    {% for connect in connections %}
+        {% set connectUser = connect.getConnectedUser(userInfo) %}
+
+        <div class="col-xs-12 col-sm-6">
+            <div data-role="connection-item" class="user-connection user-list-item">
+                <div class="avatar">
+                    <a href="{{ path('user_view', {username: connectUser.username}) }}" class="user-list-avatar">
+                        {% if connectUser.path is empty %}
+                            <img src="{{ asset('images/default_avatar.svg') }}" alt="{{ connectUser.username }}" width="58" height="58" class="img-circle" />
+                        {% else %}
+                            <img src="{{ asset('uploads/avatar/medium/' ~ connectUser.path ) }}" alt="{{ connectUser.username }}" width="58" height="58" class="img-circle" />
+                        {% endif %}
+                    </a>
+                    {% if connectUser.isSubscribed %}
+                        <img class="svg-stamp-pro" src="{{ asset('images/vocalizr_pro_stamp.svg') }}" alt="pro" data-text="<div class='tip-header'>This Vocalizr user is an <a href='{{ path('membership') }}' class=stamp-pro-hover>Access Pass</a> member</div>">
+                    {% endif %}
+                </div>
+                    <div class="user-info">
+                        <div class="user-list-name">
+                            <a href="{{ path('user_view', {username: connectUser.username}) }}">{{ connectUser.displayName }}</a>
+                            {% if connectUser.isCertified %}
+                                <img class="vocalizr-certified-stamp-clipped" src="{{ asset('images/certified_pro_stamp_clipped.svg') }}" alt="" data-text="<div class='tip-header'>Vocalizr Certified Professional</div>A 'Certified Professional’ is deemed a professional by the experts at Vocalizr. The stamp is based on ability, experience, and skill level.<br><a href='{{ path('get_certified') }}' class='get-certified-now' style='color: #01c2e5;'>Get Certified Now</a>">
+                            {% endif %}
+                        </div>
+                        <div class="user-list-type">
+                            {% if connectUser.isVocalist and connectUser.isProducer %}
+                                Producer &amp; Vocalist
+                            {% elseif connectUser.isVocalist %}
+                                Vocalist
+                            {% elseif connectUser.isProducer %}
+                                Producer
+                            {% endif %}
+                        </div>
+                        {% if app.user %}
+                            {% if app.user.id != connectUser.id and not viewerConnections[connectUser.id] is defined %}
+                                <a href="{{ path('user_connect_request', {username: connectUser.username} ) }}" data-connect="{{ connectUser.username }}" data-toggle='vmodal' class="btn btn-default btn-sm btn-connect">CONNECT</a>
+                            {% else %}
+                                <a href="{{ path('user_view', {username: connectUser.username} ) }}" class="btn btn-default btn-sm">VIEW PROFILE</a>
+                            {% endif %}
+                        {% else %}
+                            <a href="{{ path('login') }}" class="btn btn-default btn-sm btn-connect">CONNECT</a>
+                        {% endif %}
+                    </div>
+            </div>
+        </div>
+
+        {% if loop.index % 2 == 0 %}
+            </div><div class="row">
+        {% endif %}
+    {% endfor %}
+</div>
+{% endif %}

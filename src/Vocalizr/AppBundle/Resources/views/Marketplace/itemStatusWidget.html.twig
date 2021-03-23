@@ -1,0 +1,102 @@
+{% if marketplaceItem.status == 'draft' %}
+    <div class="gig-view-panel panel panel-grey">
+        <div class="panel-heading lg">
+            SAVED
+        </div>
+        <div class="panel-body">
+
+            {% if marketplaceItem.hasAssets %}
+                <div class="panel-row">
+                    <h4>You're all set! You can now publish your item to Marketplace</h4>
+                    <br>
+                    <a href="{{ path('marketplace_item_publish', {uuid: marketplaceItem.uuid}) }}" class="btn btn-primary">Publish your item</a><br><br>
+                    or, if you're not ready and want to make some changes you can continue editing.<br><br>
+                    <a href="{{ path('marketplace_item_edit', {uuid: marketplaceItem.uuid}) }}" class="btn btn-sm btn-default">EDIT</a>
+                </div>
+                <div class="panel-row">
+                    PLEASE NOTE:
+                    <div><em>Once published, your item is submitted for review by our Vocalizr gurus for approval prior to being listed to sale.</em></div>
+                </div>
+            {% else %}
+                <div class="panel-row">
+                    <br>
+                    <p>You now need to upload your item's assets (aka stems) in order to publish.</p>
+                    <p>Please check our Marketplace guide <a href="">here</a> to find out exactly what you will need.</p>
+                </div>
+            {% endif %}
+
+        </div>
+    </div>
+{% elseif marketplaceItem.status == 'review' %}
+    <div class="gig-view-panel panel panel-orange">
+        <div class="panel-heading lg">
+            UNDER REVIEW
+        </div>
+        <div class="panel-body">
+            <div class="panel-row">
+                <br>
+                You item is currently being reviewed by our Vocalizr gurus.<br><br>
+                When we've completed reviewing your item, you will be notified.<br><br>
+                Your item will not appear in Marketplace for sale until it has been approved.
+                <br><br>
+            </div>
+        </div>
+    </div>
+{% elseif marketplaceItem.status == 'rejected' %}
+    <div class="gig-view-panel panel panel-red">
+        <div class="panel-heading lg">
+            REJECTED
+        </div>
+        <div class="panel-body">
+            <div class="panel-row">
+                <h4>Your item has been rejected</h4>
+                <strong>REASON: </strong><br>
+                {{ marketplaceItem.statusReason|nl2br }}<br><br>
+                <a href="{{ path('marketplace_item_edit', {uuid: marketplaceItem.uuid}) }}" class="btn btn-sm btn-default">EDIT</a>
+            </div>
+        </div>
+    </div>
+{% elseif marketplaceItem.status == 'sold' %}
+    <div class="gig-view-panel panel panel-jade">
+        <div class="panel-heading lg">
+            SOLD
+        </div>
+        <div class="panel-body">
+            <div class="panel-row">
+
+            </div>
+        </div>
+    </div>
+{% else %}
+    <div class="gig-view-panel panel panel-green">
+        <div class="panel-heading lg">
+            APPROVED
+        </div>
+        <div class="panel-body">
+            <div class="panel-row">
+                <br>
+                Your item has been approved and will be published when the Vocalizr Marketplace is launched!<br><br>
+                {% if not app.user.isSubscribed %}
+                <h4>Hot Tip!</h4>
+
+                <p>Earn more with your item by upgrading to PRO for $10.99 per month, and save up to $300 in commission fees.</p>
+                {% endif %}
+                <a href="{{ path('marketplace_item_edit', {uuid: marketplaceItem.uuid}) }}" class="btn btn-sm btn-default">EDIT</a>
+            </div>
+            {#
+            <div class="panel-row">
+                Share:
+                <div class="gig-share">
+                    {% if app.user and marketplaceItem.userInfo.id == app.user.id %}
+                    {% set message = "Check out my item for sale on the vocalizr marketplace! #vocalizr #marketplace"|url_encode() %}
+                    {% else %}
+                    {% set message = "Check out this item on the vocalizr marketplace! #vocalizr #marketplace"|url_encode() %}
+                    {% endif %}
+                    <a target="_blank" href="http://www.facebook.com/sharer/sharer.php?s=100&p[url]={{ url('project_view', {uuid: project.uuid}) }}&p[images][0]={{ url('home') }}/images/logo_share.png&p[title]={{ project.title }} on vocalizr&p[summary]={{ message|url_encode() }}"><i class="fab fa-facebook-square"></i></a>
+                    <a target="_blank" href="http://twitter.com/intent/tweet?text={{ message }} {{ url('project_view', {uuid: project.uuid}) }}"><i class="fab fa-twitter-square"></i></a>
+                </div>
+            </div>
+            #}
+        </div>
+    </div>
+{% endif %}

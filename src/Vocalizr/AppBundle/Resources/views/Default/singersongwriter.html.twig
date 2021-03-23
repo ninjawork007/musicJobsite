@@ -1,0 +1,160 @@
+{% extends '::app.html.twig' %}
+
+{% block title %}Singer Songwriter's from around the world for hire{% endblock %}
+
+{% block description %}Vocalizr has singer and songwriters of all types from all over the world for hire{% endblock %}
+
+{% block javascript %}
+
+    {% javascripts
+        '@VocalizrAppBundle/Resources/public/js/jquery.geocomplete.min.js'
+     %}
+        <script type="text/javascript" src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+
+    <script>
+        $('#geo-location').geocomplete({
+            details: "#search-form",
+            types: ['(cities)'],
+            blur: true,
+            detailsAttribute: "data-geo"
+        });
+    </script>
+
+{% endblock %}
+
+{% block body %}
+<div class="row">
+    <div class="col-sm-8 page-content">
+        <h1>Singer Songwriter's</h1>
+
+        <p>Vocalizr is your one stop shop for vocalists of all types. Whether you're after <a href="{{ path('sessionSingersHire') }}">session singers</a>, professionals with years of experience or beginners with raw talent, we've got you covered.
+            And if you need more than just vocals, we have many talented singer songwriters too.</p>
+
+        <p>Sometimes you put together a killer track but you know it's missing something – compelling lyrics to bring the project home. That's when you need to work with someone who can write lyrics and sing them for you. Vocalizr
+            makes it easy to find that perfect singer to craft the perfect words for your music.</p>
+
+        <p>Our community is resplendent with talented singer songwriters who can write on any topic – from love, loss and pain to revenge, breakups and desperation to aspiration, inspiration and the art of partying. Whatever your theme,
+            the right words to express it musically are out there.</p>
+
+        <p>Imagination has no limits. And once you know what your track needs, you can find someone to collaborate with you to come up with the perfect lyrics, or let them take care of it all for you. Working with
+            these double talented singers allows you to find the perfect voice and the perfect words for any project.</p>
+
+        <p>Vocalizr's user-friendly, common-sense features make it simple to find what you're looking for in an artist. You can filter by gender, ensuring you can find the best male or female vocals for the job. You can also check out vocal styles
+            – a net feature which allows you to find singers who can perform in the classical or the death metal style. Maybe you would prefer someone who can do country or reggae, or maybe you just need a clean pop diva sound.</p>
+
+        <p>Whatever your track needs, features like these and many more make it simple and easy to find the ideal person to collaborate with!</p>
+
+
+        <p><a href="{{ path('vocalists') }}" class="btn btn-primary">Browse</a></p>
+</div>
+
+    <div class="col-sm-4">
+        <div class="discover-filter-panel panel panel-default">
+            <div class="panel-heading">
+                FIND SINGERS
+            </div>
+            <div class="panel-body padding">
+
+                <form id="search-form" action="{{ path('vocalists_filter', {filter: 'rated'} ) }}" method="get" style="display:inline" novalidate>
+                    <div class="row form-group">
+                        <div class="col-sm-12">
+                            <input type="checkbox" name="{{ form.audio.vars.full_name }}" value="1"{% if form.vars.value.audio %} checked{% endif %}> Must have audio
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row form-group">
+                        <div class="col-sm-12">
+                            <input type="checkbox" name="{{ form.certified.vars.full_name }}" value="1"{% if form.vars.value.certified %} checked{% endif %}> Must be a 'Certified Pro'
+                                                            <span class="vocalizr-certified" data-text="A 'Certified Professional’ is deemed a professional by the experts at Vocalizr. The stamp is based on ability, experience, and skill level.<br><a href='{{ path('get_certified') }}' class='get-certified-now' style='color: #01c2e5;'>Get Certified Now</a>"></span>
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <div class="row form-group">
+                        <div class="col-sm-12">
+                            {{ form_row(form.sounds_like) }}
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <div class="row form-group">
+                        <div class="col-sm-12">
+                            {{ form_row(form.gender) }}
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <div class="row form-group">
+                        <div class="col-sm-12">
+                            <label>VOCALIST FEE</label>
+                            {{ form_widget(form.fees) }}
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <div class="row form-group">
+                        <div class="col-sm-12">
+                            <input type="checkbox" name="{{ form.studio_access.vars.full_name }}" value="1"{% if form.vars.value.studio_access %} checked{% endif %}> Must have studio access
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <div class="row form-group">
+                        <div class="col-sm-12">
+                            <label>LOCATION</label>
+                            <input id="geo-location" type="text" name="location" class="form-control" placeholder="Start typing the city..." value="{{ form.vars.value.city }}">
+                            {{ form_widget(form.city) }}
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <div class="row form-group">
+                        <div class="col-sm-12">
+                        {{ form_row(form.genre) }}
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <div class="row form-group">
+                        <div class="col-sm-12">
+                            {{ form_row(form.vocal_style) }}
+                        </div>
+                    </div>
+
+                    <div class="row form-group">
+                        <div class="col-sm-12">
+                            {{ form_row(form.vocal_characteristic) }}
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <div class="row form-group">
+                        <div class="col-sm-12">
+                            {{ form_row(form.username) }}
+                        </div>
+                    </div>
+
+                    <hr>
+                    {{ form_row(form._token) }}
+                    <input type="hidden" name="page" value="1" id="page">
+                    <input type="hidden" name="search" value="Search">
+
+                    <div class="form-buttons">
+                        <button type="submit" name="search" value="search" class="btn btn-sm btn-default">SEARCH</button>
+                        <a href="{{ path('vocalists') }}" class="btn btn-sm btn-default roll-alt">RESET</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+                    {% endblock %}

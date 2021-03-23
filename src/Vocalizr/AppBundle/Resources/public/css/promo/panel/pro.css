@@ -1,0 +1,130 @@
+/* CSS for embedding PRO panel */
+.stayhome {
+    color: #fff;
+}
+.stayhome.modal .voc-panel.pro .main {
+    padding-bottom: 20px;
+}
+.stayhome.modal .voc-panel > .content .content-footer {
+    padding-left: 4px;
+    padding-right: 4px;
+    padding-bottom: 8px;
+}
+.stayhome p {
+    margin-bottom: 0;
+}
+.stayhome .voc-panel.pro {
+    width: 332px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.25);
+}
+.stayhome .voc-panel.plan > .content {
+    padding: 11px 17px 17px 19px;
+}
+.stayhome .voc-panel.pro > .heading {
+    justify-content: space-between;
+    font-size: 24px;
+    background: #17242B;
+    padding-top: 13px;
+    padding-bottom: 11px;
+    padding-left: 18px !important;
+    padding-right: 19px;
+    font-weight: 900;
+}
+.stayhome .voc-panel.plan .title {
+    padding-top: 12px;
+    padding-bottom: 11px;
+}
+.stayhome .plan .plan-cost {
+    padding-bottom: 27px;
+    font-size: 24px;
+    font-weight: 300;
+}
+.stayhome .plan .plan-cost .small {
+    padding-top: 4px;
+    line-height: 17px;
+    font-size: 14px;
+}
+.stayhome .voc-panel.pro li:nth-child(5), .stayhome .voc-panel.pro li:nth-child(6) {
+    line-height: 15px;
+}
+.stayhome .voc-panel.pro .main {
+    padding-bottom: 8px;
+}
+
+.stayhome .voc-panel.pro .badge-recommend {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #57B35B;
+    border-radius: 2px;
+    height: 18px;
+    font-size: 10px;
+
+    text-transform: uppercase;
+    padding-left: 12px;
+    padding-right: 10px;
+    font-weight: 700;
+    width: auto;
+}
+.stayhome .voc-panel.pro ul {
+    list-style: none;
+    padding-left: 28px;
+}
+.stayhome .voc-panel.pro li {
+    font-weight: 500;
+    position: relative;
+    display: flex;
+    align-items: center;
+    font-size: 13px;
+    line-height: 16px;
+    margin-bottom: 10px;
+}
+.stayhome .voc-panel.pro li::before {
+    width: 14px;
+    height: 15px;
+    content: "";
+    display: block;
+    position: absolute;
+    left: -25px;
+    top: 1px;
+    background-image: url("/images/icon/pro-plan-check-mark.svg");
+    background-size: contain;
+    background-repeat: no-repeat;
+}
+.stayhome .voc-panel.plan li b {
+    font-weight: 900;
+    color: #fff;
+}
+.stayhome .voc-panel.plan .title {
+    font-family: Museo Sans;
+    font-style: normal;
+    font-weight: 300;
+    font-size: 16px;
+    line-height: 19px;
+    color: #fff;
+}
+
+.stayhome .badge-new {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #4FACFE;
+    box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
+    border-radius: 2px;
+    font-size: 10px;
+    padding-left: 4px;
+    padding-right: 4px;
+    height: 16px;
+    margin-right: 5px;
+    font-weight: 900;
+    margin-top: -3px;
+}
+
+@media screen and (max-width: 330px) {
+    .stayhome .voc-panel.pro {
+        width: 100%;
+    }
+    .stayhome .popup-panel {
+        width: 100%;
+    }
+}

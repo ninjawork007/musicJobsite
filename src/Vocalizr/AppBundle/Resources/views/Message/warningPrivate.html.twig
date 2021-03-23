@@ -1,0 +1,44 @@
+{% if redirect is defined %}
+<div class="modal-dialog">
+    <div class="modal-content">
+        <div class="modal-body">
+            <div class="modal-row" style="font-size: 14px; color:#fff">
+                Redirecting to message thread...
+            </div>
+        </div>
+    </div><!-- /.modal-content -->
+</div><!-- /.modal-dialog -->
+
+<script>
+    location.href = '{{ redirect }}';
+</script>
+{% else %}
+<div id="warningModal" class="modal-dialog">
+    <div class="modal-content message-compose">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <h4 class="modal-title">Warning!</h4>
+        </div>
+        <div class="modal-body">
+            <div class="modal-row" style="font-size: 14px; color:#fff">
+                <p>Vocalizr has built in safety and security measures to ensure that:</p>
+                <ul>
+                    <li>you receive the work you paid for;</li>
+                    <li>protects the copyright of your work;</li>
+                    <li>protects your royalties; </li>
+                    <li>allows you to get refunded if things don't work out; and</li>
+                    <li>gets you reviews to give you site and industry credibility.</li>
+                </ul>
+                
+                <p><strong>If you take things offline you are not protected.</strong></p>
+
+                <a id="discuss-gig" data-toggle="vmodal" href="{{ path('message_compose_private', {userId: app.request.get('userId') }) }}" class="btn btn-med btn-primary">Continue</a>
+            </div>
+        </div>
+    </div><!-- /.modal-content -->
+</div><!-- /.modal-dialog -->
+
+<script>
+    
+</script>
+{% endif %}

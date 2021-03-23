@@ -1,0 +1,11 @@
+{% extends '::email.txt.twig' %}
+
+{% block body %}
+Hello {{ userInfo.getFirstName }}!
+
+Today you requested to have your password reset. Please follow the link below to change your password.
+
+{{ url('reset_pass_confirm', {'key': key }) }}
+
+
+{% endblock %}

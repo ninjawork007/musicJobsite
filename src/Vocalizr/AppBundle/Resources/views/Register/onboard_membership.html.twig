@@ -1,0 +1,126 @@
+{% extends '@VocalizrApp/Register/base/layout.html.twig' %}
+
+{% block title %}Onboarding Membership{% endblock %}
+
+{% block description %}Register on Vocalizr and you will be moments away from connecting with other great artists from around the globe!{% endblock %}
+
+{% block wrap %}
+    <div class="centered-content background">
+        <div class="left-offset"></div>
+        <div class="split-container space-between main-w-side-layout membership-page">
+        <div class="left-block max-space align-left">
+            <div class="vertical-container" style="--vertical-gap: 0">
+                <div class="logo-header">
+                    <img src="{{ asset('images/logo_clean.png') }}" alt="vocalizr logo" width="122px" height="36px">
+                </div>
+                <div class="section-header">
+                    <h1>Hey {{ app.user.firstName }}, pick the right plan for you</h1>
+                </div>
+                <div class="horizontal-container reverse plan-scrollable owl-carousel owl-theme">
+                    {% block pro_plan %}
+                        {% embed "@VocalizrApp/User/include/pro-plan-panel.html.twig" %}
+                            {% block panel_footer %}
+                                <a href="{{ path('onboarding-payment', {
+                                    source: 'onboard'
+                                }) }}" class="btn btn-primary">
+                                    Continue with <b class="bold900">Access Pass</b>
+                                </a>
+                            {% endblock %}
+                        {% endembed %}
+                    {% endblock %}
+                    <div class="voc-panel free plan item">
+                        <div class="heading">
+                            Free
+                        </div>
+                        <div class="content">
+                            <div class="main">
+                                <p class="title">Just getting started</p>
+                                <div class="plan-cost">
+                                    <b>0</b> / month
+                                    <div class="small"></div>
+                                </div>
+                                <ul class="unstyled">
+                                    <li>Vocalizr profile page</li>
+                                    <li>View jobs</li>
+                                    <li>Post Gigs & Contests</li>
+                                    <li>Standard statistics</li>
+                                    <li>Payouts in 5 days</li>
+                                </ul>
+                            </div>
+                            <div class="content-footer">
+                                {% block free_footer %}
+                                    <a href="{{ path('onboarding-finish') }}" class="btn btn-default gleam-btn" data-name="UserLogin" data-value="Email: {{ app.user.email|e('html_attr') }}, Source: new signup">
+                                        Start with Free
+                                    </a>
+                                {% endblock %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="right-block min-space">
+            <div class="vertical-container text-description" style="max-width: 320px; margin-top: 238px; --vertical-gap: 44px">
+                <div class="hint font-grades">
+                    <div class="hint-title">Did you know?</div>
+                </div>
+                <p class="font-grades">
+                    You get 24hr 0% fee payouts to PayPal with <b>Access Pass</b>, instead of 5 day processing.
+                </p>
+                <p class="font-grades">
+                    <b>Access Pass</b> helps you expand your music industry network with 60 connections per month and unlimited messaging.
+                </p>
+                <p class="font-grades">
+                    You can earn up to $600 more just by upgrading to <b>Access Pass</b>!
+                </p>
+            </div>
+        </div>
+    </div>
+        <div class="right-offset"></div>
+    </div>
+{% endblock %}
+{% block stylesheet %}
+    {{ parent() }}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.carousel.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.theme.default.css">
+{% endblock %}
+{% block javascript %}
+    {{ parent() }}
+    {% javascripts '@VocalizrAppBundle/Resources/public/js/gleam.js' %}
+        <script type="text/javascript" src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js"></script>
+    <script>
+        var carouselMaxWidth = 500;
+
+        function choosePlansDisplayMode($carousel, lastWasMobile) {
+            var width = $(window).width();
+
+            if (width > carouselMaxWidth && lastWasMobile) {
+                lastWasMobile = false;
+                $carousel.trigger('destroy.owl.carousel');
+                $carousel.removeClass('owl-carousel').removeClass('owl-theme');
+            } else if (width < carouselMaxWidth && !lastWasMobile) {
+                lastWasMobile = true;
+                $carousel.addClass('owl-carousel').addClass('owl-theme');
+                $carousel.owlCarousel({
+                    margin: 22,
+                    autoWidth:true,
+                    loop: false,
+                    items: 1,
+                    dots: false
+                });
+            }
+            return lastWasMobile;
+        }
+
+        $(function () {
+            var $carousel = $('.plan-scrollable');
+            var lastWasMobile = $(window).width() > carouselMaxWidth;
+            choosePlansDisplayMode($carousel, lastWasMobile);
+            $(window).resize(function () {
+                lastWasMobile = choosePlansDisplayMode($carousel, lastWasMobile);
+            });
+        })
+    </script>
+{% endblock %}

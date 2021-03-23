@@ -1,0 +1,114 @@
+{% for bid in bids %}
+    {% set user_review_count = bid.userInfo.ratedCount %}
+    {% set bidDisplayName = bid.userInfo.username %}
+    {% if bid.userInfo.displayName %}
+        {% set bidDisplayName = bid.userInfo.displayName %}
+    {% endif %}
+
+{% if project.sfs %}
+
+    <div class="discover-item bid-{{ bid.uuid }}{% if bid.userInfo.subscriptionPlan %} pro{% endif %}">
+        <div class="media">
+            <div class="avatar">
+                <a href="{{ path('user_view', {username: bid.userInfo.username} ) }}">
+                    {% if bid.userInfo.path is empty %}
+                        <img src="{{ asset('images/default_avatar.svg') }}" width="40" height="40" class="img-circle">
+                    {% else %}
+                        <img src="{{ asset('uploads/avatar/small/' ~ bid.userInfo.path ) }}" width="40" height="40" class="img-circle">
+                    {% endif %}
+                </a>
+            </div>
+        </div>
+
+        <div class="info">
+            <div class="name">
+                <a href="{{ path('user_view', {username: bid.userInfo.username} ) }}" class="username">{{ bidDisplayName }}</a>
+                {% if bid.userInfo.subscriptionPlan %}
+                    <span class="badge badge-pro">PRO</span>
+                {% endif %}
+                {% if bid.userInfo.isCertified %}
+                    <span class="vocalizr-certified" data-text="<div class='tip-header'>Vocalizr Certified Professional</div>A 'Certified Professional’ is deemed a professional by the experts at Vocalizr. The stamp is based on ability, experience, and skill level.<br><a href='{{ path('get_certified') }}' class='get-certified-now' style='color: #01c2e5;'>Get Certified Now</a>"></span>
+                {% endif %}
+            </div>
+            <div class="location">
+                {% if not bid.userInfo.city is empty %}
+                    {{ bid.userInfo.city }},
+                {% endif %}
+                {% if bid.userInfo.userCountry is not null %}
+                    {{ bid.userInfo.userCountry.title }}
+                {% endif %}
+            </div>
+            {% if project.publicVoting %}
+            <div class="vote-count tip" data-text="Vote for your favorite entry to boost it's chances of winning"><i class="fa fa-arrow-up"></i> <span class="vote-count-num">{{ bid.voteCount }} vote{% if bid.voteCount != 1 %}s{% endif %}</span></div>
+            {% endif %}
+            {% if project.publicVoting and project.isVotingAllowed %}
+                <div class="votes-wrap">
+                    <div class="share-voted-bid{% if not bidVotes[bid.uuid] is defined %} hide{% endif %}">
+                        {% set message = "Vote for " ~ bidDisplayName ~ "'s entry #vocalizr #vocalizrFTW"|url_encode() %}
+                        {% set shareUrl = (url('contest_view', {uuid: project.uuid}) ~ "?entry=" ~ bid.uuid)|url_encode() %}
+                        <a target="_blank" class="btn btn-sm btn-default tip" data-text="Share entry on Facebook" href="http://www.facebook.com/sharer/sharer.php?u={{ shareUrl }}"><i class="fab fa-facebook-f"></i></a>
+                        <a target="_blank" class="btn btn-sm btn-default tip" data-text="Share entry on Twitter" href="http://twitter.com/intent/tweet?text={{ message }} {{ shareUrl }}"><i class="fab fa-twitter"></i></a>
+                    </div>
+                    {% if not bidVotes[bid.uuid] is defined %}
+                        <a href="{{ path('contest_upvote_bid', {uuid: project.uuid, bidUuid: bid.uuid}) }}" data-uuid="{{ bid.uuid }}" class="btn btn-sm btn-default btn-upvote"><i class="fa fa-arrow-up"></i> UPVOTE</a>
+                    {% else %}
+                        <a href="" class="btn btn-sm btn-default" disabled>UPVOTED</a>
+                    {% endif %}
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="user-audio-wrap">
+
+            <div class="user-list-track">
+                <div class="playlist track-waveform small clearfix">
+                    <a href="{{ cdn_url }}{{ path('bid_audio_stream', {filename: bid.path}) }}" type="audio/mp3" class="track" data-user="{{ bid.uuid }}">PLAY</a>
+                    <div class="waveform-wrap">
+                        {% if bid.waveGenerated %}
+                            <img src="/waveform/{{ bid.uuid }}.png" class="waveform-main">
+                            <img src="/waveform/{{ bid.uuid }}-roll.png" class="roll hide">
+                        {% else %}
+                            <img src="/images/default-waveform.png" class="waveform-main">
+                            <img src="/images/default-waveform-roll.png" class="roll hide">
+                        {% endif %}
+                    </div>
+                    <div class="clearfix"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% else %}
+
+
+    <div class="entry-item-wrap">
+        <div class="entry-item{% if project.userInfo == app.user and bid.readAt is null %} unread{% endif %}">
+            <div class="avatar-pro-container">
+                <a href="{{ path('user_view', {username: bid.userInfo.username}) }}">
+                    {% if bid.userInfo.path is empty %}
+                    <img src="{{ asset('images/default_avatar.svg') }}" alt="{{ bid.userInfo.username }}" class="img-circle" width="58" height="58" />
+                    {% else %}
+                    <img src="{{ asset('uploads/avatar/small/' ~ bid.userInfo.path ) }}" alt="{{ bid.userInfo.username }}" width="58" height="58" class="img-circle" />
+                    {% endif %}
+                    {% if bid.userInfo.isSubscribed %}
+                        <img alt="pro" src="{{ asset('images/vocalizr_pro_stamp.svg') }}" class="svg-stamp-pro" data-text="<div class='tip-header'>This Vocalizr user is an <a href='{{ path('membership') }}' class=stamp-pro-hover>Access Pass</a> member</div>">
+                    {% endif %}
+                </a>
+            </div>
+            <div class="entry-user">
+                <a href="{{ path('user_view', {username: bid.userInfo.username}) }}">{{ bidDisplayName }}</a>
+                {% if bid.userInfo.isCertified %}
+                    <img class="vocalizr-certified-stamp-clipped" src="{{ asset('images/certified_pro_stamp_clipped.svg') }}" alt="" data-text="<div class='tip-header'>Vocalizr Certified Professional</div>A 'Certified Professional’ is deemed a professional by the experts at Vocalizr. The stamp is based on ability, experience, and skill level.<br><a href='{{ path('get_certified') }}' class='get-certified-now' style='color: #01c2e5;'>Get Certified Now</a>">
+                {% endif %}
+            </div>
+            <span class="label label-blue-grey sealed-audio"><i class="fa fa-lock"></i> SEALED ENTRY</span>
+        </div>
+    </div>
+
+
+    {% endif %}
+{% endfor %}
+
+{% if page != maxPage %}
+    <div class="clearfix"></div>
+    <a href="{{ path('contest_view_bids', {uuid: project.uuid, page: page + 1, filter: filter, dir: dir} ) }}" class="btn btn-block btn-default btn-more-bids">LOAD MORE ENTRIES</a>
+{% endif %}

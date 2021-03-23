@@ -1,0 +1,78 @@
+<div id="likesModal" class="modal-dialog">
+    <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <h4 class="modal-title">Audio Likes</h4>
+        </div>
+        <div class="modal-body">
+            <div class="like-user-list">
+            {% if likeUsers|length > 0 %}
+                {% for likeUser in likeUsers %}
+                <div class="modal-row">
+                    <div class="like-user clearfix">
+                        <div class="photo">
+                            <a href="{{ path('user_view', {username: likeUser.username}) }}">
+                                {% if likeUser.path is null %}
+                                    <img src="{{ asset('images/default_avatar.svg') }}" width="42" height="42" class="img-circle avatar-sm-{{ likeUser.username }}">
+                                {% else %}
+                                    <img src="{{ asset('uploads/avatar/small/' ~ likeUser.path ) }}" width="40" height="40" class="img-circle avatar-sm-{{ likeUser.username }}" />
+                                {% endif %}
+                            </a>
+                        </div>
+                        <div class="userinfo">
+                            <div class="name"><a href="{{ path('user_view', {username: likeUser.username}) }}">{{ likeUser.displayName }}</a></div>
+                            <div class="title">(<ul class="comma-list">
+                        {% if likeUser.isVocalist %}
+                            <li>Vocalist</li>
+                        {% endif %}
+                        {% if likeUser.isProducer %}
+                            <li>Producer</li>
+                        {% endif %}
+                    </ul>)</div>
+                            <div class="country">{% if likeUser.city %}{{ likeUser.city }}, {% endif %}{{ likeUser.userCountry }}</div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+                <div class="modal-row">No likes for this track</div>
+            {% endif %}
+        </div>
+    </div><!-- /.modal-content -->
+</div><!-- /.modal-dialog -->
+
+
+<style>
+    .like-user .photo,
+    .like-user .userinfo {
+        float: left;
+    }
+    .like-user .userinfo {
+        padding-left: 15px;
+        font-size: 14px;
+        line-height: 18px;
+        width: 216px;
+        padding-top: 3px;
+    }
+    .like-user .userinfo .name {
+        color: #fff;
+        font-size: 14px;
+        display: inline-block;
+    }
+    .like-user .userinfo .title {
+        display: inline-block;
+    }
+    .like-user .userinfo .country {
+        color: #fff;
+    }
+    .like-user-list {
+        max-height: 400px;
+    }
+</style>
+
+<script>
+    $(".like-user-list").mCustomScrollbar({
+        theme: "dark",            
+    });
+</script>

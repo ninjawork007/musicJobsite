@@ -1,0 +1,28 @@
+{% extends 'include/user_audio_card.html.twig' %}
+{% set userInfo = bid.userInfo %}
+{% set no_controls = true %}
+{% block item_classes %}bid-{{ bid.uuid }} contest-bid{% endblock %}
+{% block info_rows %}
+    {% if not project.awardedAt %}
+        <a href="{{ path('contest_award', {uuid: project.uuid, bidUuid: bid.uuid}) }}" class="btn btn-sm btn-primary award-bid">AWARD</a>
+        {% if activeThreads[bid.userInfo.id] is defined %}
+            <a href="{{ path('message_home', {tid: activeThreads[bid.userInfo.id]}) }}" class="btn btn-sm btn-default roll-alt btn-discuss"><i class="fa fa-comment" aria-hidden="true"></i></a>
+        {% else %}
+            <a id="compose-message" href="{{ path('message_warning', {projectUuid: project.uuid, userId: bid.userInfo.id}) }}" data-toggle='vmodal' class="btn btn-sm btn-default roll-alt btn-discuss"><i class="fa fa-comment" aria-hidden="true"></i></a>
+        {% endif %}
+    {% endif %}
+{% endblock %}
+{% block admin_actions %}{% endblock %}
+{% block audio %}
+    {% include "@VocalizrApp/Project/view/include/waveformed_player.html.twig" with {
+        audio: bid,
+    } %}
+{% endblock %}
+{% block actions_right %}
+    {% if bid.shortlist %}
+        <a href="{{ path('project_shortlist_bid', {uuid: project.uuid, bidUuid: bid.uuid}) }}" class="btn btn-sm btn-default btn-shortlist-unhide shortlist-{{ bid.uuid }}" data-uuid="{{ bid.uuid }}"><i class="fa fa-star" aria-hidden="true"></i></a>
+    {% else %}
+        <a href="{{ path('project_shortlist_bid', {uuid: project.uuid, bidUuid: bid.uuid}) }}" class="btn btn-sm btn-default btn-shortlist shortlist-{{ bid.uuid }}" data-uuid="{{ bid.uuid }}"><i class="far fa-star" aria-hidden="true"></i></a>
+    {% endif %}
+    <a href="{{ path('project_hide_bid', {uuid: project.uuid, bidUuid: bid.uuid}) }}" data-uuid="{{ bid.uuid }}" class="btn btn-sm btn-default roll-alt btn-hide-bid hide-{{ bid.uuid }}"><i class="fa fa-times" aria-hidden="true"></i></a>
+{% endblock %}

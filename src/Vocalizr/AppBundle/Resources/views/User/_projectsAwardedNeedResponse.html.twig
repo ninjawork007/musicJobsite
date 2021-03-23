@@ -1,0 +1,21 @@
+{% if projectsAwarded|length > 0 %}
+<div id="awarded-projects">
+    <h4>Awarded Projects</h4>
+    <ul>
+    {% for projectBid in projectsAwarded %}
+    <li>
+        <p><a href="{{ path('project_view', {uuid: projectBid.project.uuid} ) }}">{{ projectBid.project.title }}</a><br />
+        Your bid was <strong>${{ projectBid.amount|number_format(2) }}</strong>.</p>
+        <hr>
+        <form action="{{ path('project_bid_response') }}" method="post">
+            <input type="hidden" name="bid" value="{{ projectBid.uuid }}" />
+        <p>
+            <textarea name="comment" placeholder="Comment to the gig owner..."></textarea><br />
+            <button class="btn btn-success" name="accept" value="Accept">Accept</button> <button class="btn btn-danger" name="decline" value="decline">Decline</button>
+        </p>
+        </form>
+    </li>
+    {% endfor %}
+    </ul>
+</div>
+{% endif %}

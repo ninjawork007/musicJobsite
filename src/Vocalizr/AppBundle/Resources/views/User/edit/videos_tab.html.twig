@@ -1,0 +1,14 @@
+<!-- Video TAB -->
+<div class="tab-pane fade in" id="video">
+    {% if app.user.isSubscribed %}
+        {% include '@VocalizrApp/User/edit/videoForm.html.twig' with {return_tab: '#video'} %}
+    {% else %}
+        <div class="row">
+            <div class="col-xs-12">
+                <p>To add videos to your profile you must upgrade to Vocalizr <b>Access Pass</b>.</p>
+                <p><a href="{{ path('membership') }}" class="btn btn-sm btn-primary">Upgrade to <b>Access Pass</b></a></p>
+            </div>
+        </div>
+    {% endif %}
+</div>
+<!-- END Video TAB -->

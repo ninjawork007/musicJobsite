@@ -1,0 +1,51 @@
+version: '3.4'
+
+services:
+    php:
+        build:
+            context: ./docker/php
+            target: vocalizr_php
+        depends_on:
+            - mysql
+            - mongodb
+        environment:
+            PHP_DATE_TIMEZONE: UTC
+        volumes:
+            - .:/srv/vocalizr
+            - ./docker/php/config:/srv/vocalizr/app/config
+            - php-sessions:/srv/vocalizr/app/sessions
+        command: [dev]
+
+    mysql:
+        image: percona:5.7
+        command: --sql_mode=''
+        environment:
+            - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD:-nopassword}
+            - MYSQL_DATABASE=vocalizr
+            - MYSQL_USER=vocalizr
+            - MYSQL_PASSWORD=${MYSQL_PASSWORD:-nopassword}
+        volumes:
+            - mysql-data:/var/lib/mysql
+        ports:
+            - "127.0.0.1:3308:3306"
+
+    mongodb:
+        image: mvertes/alpine-mongo:latest
+        volumes:
+            - ./docker/mongo/data:/data/db
+    nginx:
+        build:
+            context: ./docker/nginx
+            target: vocalizr_nginx
+            args:
+                CFG_FILE: conf.d/dev.conf
+        depends_on:
+            - php
+        ports:
+            - "127.0.0.1:11011:80"
+        volumes:
+            - .:/srv/vocalizr
+
+volumes:
+    mysql-data:
+    php-sessions:

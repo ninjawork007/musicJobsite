@@ -1,0 +1,19 @@
+<div id="cancelModal" class="modal-dialog">
+    <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <h4 class="modal-title">Access Pass Membership</h4>
+        </div>
+        <div class="modal-body">
+            <div class="modal-row">
+                {% if membership.status != "trialing" %}
+                  <p>Click the "Resume Free Trial" button below to remove your cancellation request.</p>
+                {% else %}
+                  <p>Click the "Resume my membership" button below to remove your cancellation request.</p>
+                {% endif %}
+
+                <p><button type="button" class="btn btn-default btn-sm roll-alt" data-dismiss="modal" aria-hidden="true">BACK</button> <a href="{{ path('user_membership_resume') }}" class="btn btn-primary btn-sm">RESUME MY MEMBERSHIP</a></p>
+            </div>
+        </div>
+    </div>
+</div>

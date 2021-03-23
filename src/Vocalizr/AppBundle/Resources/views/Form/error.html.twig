@@ -1,0 +1,23 @@
+{% if app.request.query.has('success') %}
+    <div class="form-success">
+        {{ app.request.query.get('success') }}
+    </div>
+{% endif %}
+{% if app.session.hasFlash('success') %}
+    <div class="form-success">
+        {{ app.session.flash('success') }}
+    </div>
+    {{ app.session.removeFlash('success') }}
+{% endif %}
+
+{% if app.session.hasFlash('error') %}
+    <div class="form-error">
+        {{ app.session.flash('error') }}
+    </div>
+    {{ app.session.removeFlash('error') }}
+{% endif %}
+{% if app.request.query.has('error') %}
+    <div class="form-error">
+        {{ app.request.query.get('error') }}
+    </div>
+{% endif %}

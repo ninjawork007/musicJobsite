@@ -1,0 +1,38 @@
+<p>Hey <strong style="color:#000;">{{ userInfo.usernameOrFirstName }}</strong>,</p>
+
+<p><a href="{{ url('user_view', {username: app.user.username }) }}"  style="color:#14b9d6;">{{ app.user.displayName }}</a> gave you a review for working with you on <a href="{{ url('project_studio', {uuid: project.uuid}) }}"  style="color:#14b9d6;">{{ project.title }}</a>.</p>
+
+<div style="border-top: 1px solid #dddddd;margin: 15px 0;"></div>
+
+<p><strong style="color:#000;">{{ app.user.displayName }} says...</strong><br>
+{{ userReview.content|nl2br }}
+</p>
+
+<table cellspacing="0" cellpadding="0" border="0">
+    <tr>
+        <td style="width: 150px;font-weight:bold;font-family: Helvetica Neue, Arial; font-size: 12px;">Quality of work</td>
+        <td style="font-family: Helvetica Neue, Arial; font-size: 12px;">{{ userReview.qualityOfWork }} / 5</td>
+    </tr> 
+    <tr>
+        <td style="width: 150px;font-weight:bold;font-family: Helvetica Neue, Arial; font-size: 12px;">Communication</td>
+        <td style="font-family: Helvetica Neue, Arial; font-size: 12px;">{{ userReview.communication }} / 5</td>
+    </tr>
+    <tr>
+        <td style="width: 150px;font-weight:bold;font-family: Helvetica Neue, Arial; font-size: 12px;">Professionalism</td>
+        <td style="font-family: Helvetica Neue, Arial; font-size: 12px;">{{ userReview.professionalism }} / 5</td>
+    </tr>
+    <tr>
+        <td style="width: 150px;font-weight:bold;font-family: Helvetica Neue, Arial; font-size: 12px;">Work with again</td>
+        <td style="font-family: Helvetica Neue, Arial; font-size: 12px;">{{ userReview.workWithAgain }} / 5</td>
+    </tr>
+</table>
+  
+{% if not otherUserReview %}
+<div style="border-top: 1px solid #dddddd;margin: 15px 0 25px 0;"></div>
+
+<p><a href="{{ url('project_studio', {uuid: project.uuid} ) }}#rating" style="color: #fff; font-size: 14px; background-color: #14b9d6; text-decoration: none; border-radius: 3px; padding: 8px 16px; border-width: 1px; border-style: solid; border-color: #1aadc7;">Give {{ app.user.displayName }} a review</a></p>
+    
+<div style="height:10px;"></div>
+
+{% endif %}
+<p>Cheers,<br>vocalizr</p>

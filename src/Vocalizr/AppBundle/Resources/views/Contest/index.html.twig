@@ -1,0 +1,165 @@
+{% extends '::app.html.twig' %}
+
+
+{% if app.request.get('filter') == "budget" %}
+    {% set pageTitle = "Paid singing contests, find the highest prices" %}
+    {% set pageDesc = "Find the highest paid singing contests and get paid. Use our search for contests based on your vocal talents." %}
+{% elseif app.request.get('filter') == 'ending_soon' %}
+    {% set pageTitle = "Singing contests, entry ending soon" %}
+    {% set pageDesc = "Looking for urgent singers. Make music with producers using our vocalizr studio." %}
+{% elseif app.request.get('filter') == 'lowest_entries' %}
+    {% set pageTitle = "Lowest entries on singing contests" %}
+    {% set pageDesc = "Lowest bidders on singing contests. Enter now to work with producers and vocalists." %}
+{% else %}
+    {% set pageTitle = "Singing contest, for female & male singers" %}
+    {% set pageDesc = "Looking for singing contests? Producers from around the world are paying cash for your voice" %}
+{% endif %}
+
+{% block title %}{{ pageTitle }}{% endblock %}
+{% block description %}{{ pageDesc }}{% endblock %}
+
+{% block javascript %}
+
+{% endblock %}
+
+{% block body %}
+<div class="row">
+    <div class="col-sm-8">
+        <div id="gig-filter-header">
+            <div id="activity-header">
+                <h1>Contests</h1>
+                <div class="gig-filter">
+                    <ul>
+                        <li>Sort:</li>
+                        <li {% if filter == 'latest' %}class="active"{% endif %}><a href="{{ path('contests', {filter : 'latest'})}}">Latest</a></li>
+                        <li {% if filter == 'ending_soon' %}class="active"{% endif %}><a href="{{ path('contests', {filter : 'ending_soon'})}}">Ending Soon</a></li>
+                        <li {% if filter == 'lowest_bids' %}class="active"{% endif %}><a href="{{ path('contests', {filter : 'lowest_entries'})}}">Lowest Entries</a></li>
+                        <li {% if filter == 'budget' %}class="active"{% endif %}><a href="{{ path('contests', {filter : 'price'})}}">Highest Price</a></li>
+                    </ul>
+                </div>
+            </div>
+
+        </div>
+                    
+        <div id="gig-results">
+            {% for project in pagination %}
+                <div class="gig-list-item">
+                    <div class="project-info">
+                        <a href="{{ path('contest_view', {uuid: project.uuid } ) }}" class="gig-title">{{ project.title }}</a>
+                        {% if project.bidsDue|timeLeftSingle %}
+                        <div class="deadline">ENTRY ENDS IN {{ project.bidsDue|timeLeftSingle.num }} {{ project.bidsDue|timeLeftSingle.text|upper }}</div><br>
+                        {% else %}
+                        <div class="deadline soon">CONTEST HAS ENDED</div><br>
+                        {% endif %}
+                        <div class="audio">
+                            {% if project.projectAudio|length > 0 %}
+                                {% set projectAudio = project.projectAudio[0] %}
+                                <div class="ui360 track-play"><a href="{{ cdn_url }}{{ path('project_audio', {uuid: project.uuid, slug: projectAudio.slug}) }}" type="audio/mp3" data-project="{{ projectAudio.slug }}"><span>PLAY</span></a></div>
+                            {% endif %}
+                        </div>
+                        <div class="info">Created by: <a href="{{ path('user_view', {username: project.UserInfo.username} ) }}">{{ project.UserInfo.displayName }}</a></div>
+                        <div class="info looking-for">Looking for: <span class="highlight">{% if project.lookingFor == 'vocalist' %}{% if project.gender is null %}MALE OR FEMALE{% else %}{% if project.gender == 'male' %}MALE{% else %}FEMALE{% endif %}{% endif %}{% endif %}
+                            {% if project.lookingFor == "vocalist" %}SINGER{% else %}PRODUCER{% endif %}
+                            </span></div>
+                        <div class="bidding-info">
+                                <div class="info budget">Price: <span class="highlight">${{ project.budgetTo }}</span></div>
+                            {% if project.royalty %}
+                                <div class="info royalty">
+                                    Royalty: <span class="highlight">{{ project.royalty }}%</span>
+                                    {% if project.royaltyMechanical %}
+                                        <span class="icon-royalty-mechanical" data-text="Mechanical royalties offered">M</span>
+                                    {% endif %}
+                                    {% if project.royaltyPerformance %}
+                                        <span class="icon-royalty-performance" data-text="Performance royalties offered">P</span>
+                                    {% endif %}
+                                </div>
+                            {% endif %}
+                            <div class="info">Entries: <span class="highlight">{{ project.numBids }}</span></div>
+                        </div>
+                        <div class="bidding-info">
+                        {% if app.user and project.userInfo != app.user and project.projectBids|length > 0  %}
+                            {% set userBid = project.projectBids[0] %}
+                            <div class="badge badge-green" style="font-size: 12px;height:20px;line-height:20px;">You have entered</div>
+                        {% endif %}
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+            
+            {{ knp_pagination_render(pagination) }}
+        </div>
+        
+    </div>
+    <div class="col-sm-4">
+        <div class="search-panel panel panel-default">
+            <div class="panel-heading">
+                REFINE YOUR SEARCH
+            </div>
+            <div class="panel-body padding">
+                <form action="{{ path('gig_hunter', {filter: app.request.get('filter')} ) }}" method="get" novalidate>
+                <div class="row form-group">
+                    <div class="col-sm-12">
+                        {{ form_row(form.keywords) }}
+                    </div>
+                </div>
+                
+                <hr>
+                
+                <div class="row form-group">
+                    <div class="col-sm-12">
+                        {{ form_row(form.budget) }}
+                    </div>
+                </div>
+                    
+                <hr>
+                
+                <div class="row form-group">
+                    <div class="col-sm-12">
+                        {{ form_row(form.gender) }}
+                    </div>
+                </div>
+                
+                <hr>
+                
+                <div class="row form-group">
+                    <div class="col-sm-12">
+                        <input type="checkbox" name="{{ form.studio_access.vars.full_name }}" value="1"{% if form.vars.value.studio_access %} checked{% endif %}> Must have studio access
+                    </div>
+                </div>
+                
+                <hr>
+                
+                <div class="row form-group">
+                    <div class="col-sm-12">
+                        {{ form_row(form.genre) }}
+                    </div>
+                </div>
+                
+                <hr>
+                
+                <div class="row form-group">
+                    <div class="col-sm-12">
+                        {{ form_row(form.vocal_characteristic) }}
+                    </div>
+                </div>
+                
+                <div class="row form-group">
+                    <div class="col-sm-12">
+                        {{ form_row(form.vocal_style) }}
+                    </div>
+                </div>
+                
+                <hr>
+                
+                <div class="form-buttons">
+                    <button type="submit" name="search" value="SEARCH" class="btn btn-sm btn-default">SEARCH</button>
+                    <a href="{{ path('gig_hunter') }}" class="btn btn-sm btn-default reset">RESET</a>
+                </div>
+                {{ form_row(form._token) }}
+                </form>
+            </div>
+        </div>
+    </div>
+    
+</div>
+{% endblock %}

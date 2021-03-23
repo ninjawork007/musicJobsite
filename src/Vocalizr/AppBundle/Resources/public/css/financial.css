@@ -1,0 +1,80 @@
+.btn-deposit-funds {
+    text-transform: uppercase;
+    margin-right: 10px;
+}
+
+.financial-caption {
+    position: relative;
+}
+
+@media (min-width: 769px) {
+    .btn-withdraw-funds {
+        position: absolute;
+        top: 53px;
+        right: 0;
+    }
+}
+@media (max-width: 768px) {
+    .funds-buttons {
+        display: flex;
+        margin-top: 20px;
+    }
+    .btn-withdraw-funds {
+        float: none !important;
+        text-transform: uppercase;
+    }
+    .btn-withdraw-funds, .btn-withdraw-funds:hover, .btn-withdraw-funds:active, .btn-withdraw-funds:focus {
+        height: 22px;
+        line-height: 20px;
+        padding: 0 10px 0 11px;
+        font-size: 10px;
+    }
+
+    .btn-deposit-funds {
+        display: block;
+        width: min-content;
+    }
+
+    .tab-content {
+        padding-left: 0;
+        padding-right: 0;
+    }
+
+    #transactions th:nth-child(2), #transactions th:nth-child(5), #transactions td:nth-child(2), #transactions td:nth-child(5) {
+        display: none;
+    }
+
+    th, td {
+        padding: 5px 5px !important;
+    }
+    th {
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+}
+
+@media only screen and (max-width: 480px) and (orientation: portrait), only screen and (max-height: 480px) and (orientation: landscape) {
+    #escrow th:nth-child(3), #escrow td:nth-child(3) {
+        display: none;
+    }
+
+    #transactions th:nth-child(3), #transactions td:nth-child(3) {
+        max-width: calc(100vw / 3);
+    }
+
+    td {
+        max-height: 60px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .tab-content {
+        padding: 0;
+        margin-left: -20px;
+        margin-right: -20px;
+    }
+
+    table {
+        overflow: auto;
+    }
+}

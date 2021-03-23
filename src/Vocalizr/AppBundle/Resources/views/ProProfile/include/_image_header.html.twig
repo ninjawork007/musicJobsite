@@ -1,0 +1,27 @@
+<div class="header__content">
+    <div class="header__title">
+        <h1 class="header__title-text">{{ user.displayName }}</h1>
+    </div>
+    <div class="header__city">
+        <p class="header__city-text">{{ [user.city, user.country|countryName]|array_filter|join(', ') }}</p>
+    </div>
+    {% if app.user and app.user != user %}
+        <div class="header__links">
+            {% set connectionStatus = user|user_connection_status %}
+            {% include '@VocalizrApp/ProProfile/include/_connect_btn.html.twig' %}
+
+            <a class="header__link member-favourite roll-alt" href="{{ path('user_favorite', {username: user.username}) }}" data-role="ajax-trigger" data-after="refresh">
+                <span class="img-wrp">
+                    <img class="img-svg" src="{{ asset('/bundles/vocalizrapp/bootstrap4/img/logged/icon_favourites.svg') }}" alt="+">
+                </span>{% if isUserFavorite %}Remove Favourite{% else %}Add To Favourites{% endif %}
+            </a>
+
+            <a class="header__link member-block roll-alt" href="{{ path('user_block', {username: user.username}) }}" data-role="ajax-trigger" data-after="refresh">
+                <span class="img-wrp">
+                    <img class="img-svg" src="{{ asset('/bundles/vocalizrapp/bootstrap4/img/logged/icon_block.svg') }}" alt="-">
+                </span>{% if isUserBlocked %}Unblock{% else %}Block{% endif %}
+            </a>
+
+        </div>
+    {% endif %}
+</div>

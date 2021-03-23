@@ -1,0 +1,86 @@
+{% extends '::app.html.twig' %}
+
+{% block title %}Admin{% endblock %}
+
+{% block stylesheet %}
+    <style>
+        .form-inline {
+            display: flex;
+        }
+    </style>
+{% endblock %}
+
+{% block javascript %}
+        {% javascripts
+            '@VocalizrAppBundle/Resources/public/js/admin.js'
+         %}
+            <script type="text/javascript" src="{{ asset_url }}"></script>
+        {% endjavascripts %}
+
+        <script type="text/javascript">
+            VocalizrAdmin.initUserAdminSearch();
+        </script>
+{% endblock %}
+
+
+{% block body %}
+    <div class="row">
+        <div class="col-sm-2">
+            <ul class="nav">
+                {% include '@VocalizrApp/Admin/include/menu.html.twig' %}
+            </ul>
+        </div>
+        <div class="col-sm-10 admin-users">
+            <h1>Users</h1>
+            <div class="light-content">
+                <form id="admin-user-search-form" class="admin-search-form" action="{{ path('admin_users_search') }}">
+                    <div class="form-group">
+                        <label for="searchTerm">Search term: </label>
+                        <input type="text" id="search-term" name="s" class="form-control">
+                    </div>
+                    <button type="submit" class="btn btn-default" id="user-search-btn">Search</button>
+                    <div class="form-group">
+                        <input type="checkbox" id="search_in_email" name="search_in_email" checked>
+                        <label for="search_in_email">Search email</label>
+                        <input type="checkbox" id="search_in_username" name="search_in_username" checked>
+                        <label for="search_in_username">Search username</label>
+                        <input type="checkbox" id="search_in_display_name" name="search_in_display_name" checked>
+                        <label for="search_in_display_name">Search display name</label>
+                    </div>
+                    <br>
+                    <div class="form-group">
+                        <input type="checkbox" id="search_pp_subscription_id" name="search_pp_subscription_id">
+                        <label for="search_pp_subscription_id">Search Paypal subscription id</label>
+                        <input type="checkbox" id="search_pp_email" name="search_pp_email">
+                        <label for="search_pp_email">Search Paypal deposit/withdraw email</label>
+                        <input type="checkbox" id="search_pp_transaction_id" name="search_pp_transaction_id">
+                        <label for="search_pp_transaction_id">Search Paypal transaction id</label>
+                    </div>
+                    <br>
+                    <div class="form-group">
+                        <input type="checkbox" id="exact_search" name="exact_search">
+                        <label for="exact_search">Exact search</label>
+                    </div>
+                </form>
+            </div>
+            <div class="results-container">
+            </div>
+        </div>
+    </div>
+    <div id="upgrade_modal" class="modal fade upgrade" tabindex="-1" role="dialog" aria-labelledby="vocalizr-modal" aria-hidden="true">
+        <div class="modal-dialog popup-panel">
+            {% embed 'include/panel/popup_panel.html.twig' %}
+                {% block header_left %}New subscription{% endblock %}
+                {% block note %}If you provide paypal or stripe data, it'll be possible to prolongate the subscription automatically using IPN{% endblock %}
+                {% block body %}
+                    {% form_theme subscription_form 'form_theme/bootstrap_3_layout.html.twig' %}
+                    <form id="user-subscription-form" method="post">
+                        {{ form_widget(subscription_form) }}
+                        <button class="btn btn-block btn-success" type="submit" role="button">Upgrade user</button>
+                        <button type="reset" style="display: none"></button>
+                    </form>
+                {% endblock %}
+            {% endembed %}
+        </div>
+    </div>
+{% endblock %}

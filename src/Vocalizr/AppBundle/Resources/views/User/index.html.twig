@@ -1,0 +1,30 @@
+{% extends '::base.html.twig' %}
+
+{% block body %}
+User home
+
+<form action="https://www.sandbox.paypal.com/cgi-bin/webscr" method="post" target="_top">
+<input type="hidden" name="cmd" value="_xclick-subscriptions">
+<input type="hidden" name="item_number" value="e4ac03f6c9f00665644e868dd1fb9f1e" />
+<input type="hidden" name="return" value="http://vocalizr.dev/app_dev.php/user?success" />
+<input type="hidden" name="cancel_return" value="http://vocalizr.dev/app_dev.php/user?cancel" />
+<!--<input type="hidden" name="image_url" value="http://www.davesgarage.com/logo.gif"> -->
+<input type="hidden" name="item_name" value="Basic Membership" />
+<input type="hidden" name="no_shipping" value="1" />
+<input type="hidden" name="business" value="john@vocalizr.com" />
+<input type="hidden" name="currency_code" value="USD" />
+<input type="hidden" name="a3" value="12.95" />
+<input type="hidden" name="p3" value="1" />
+<input type="hidden" name="t3" value="M" />
+<input type="hidden" name="src" value="1" />
+<input type="hidden" name="sra" value="0" />
+<input type="hidden" name="custom" value="{{ app.user.uniqueStr }}" />
+
+
+
+<input type="hidden" name="notify_url" value="http://www.smytheweb.com/vocalizr/ipn.php" />
+<input type="image" src="https://www.sandbox.paypal.com/en_AU/i/btn/btn_subscribe_LG.gif" border="0" name="submit" alt="PayPal — The safer, easier way to pay online.">
+<img alt="" border="0" src="https://www.sandbox.paypal.com/en_AU/i/scr/pixel.gif" width="1" height="1">
+</form>
+
+{% endblock %}

@@ -1,0 +1,13 @@
+{% if app.user %}
+    <li{% if app.request.attributes.get('_route') == 'home' or app.request.attributes.get('_route') == 'dashboard' %} class="active"{% endif %}><a href="{{ path('dashboard') }}">Activity</a></li>
+    <li{% if app.request.attributes.get('_route') in ['project_center', 'project_center_projects', 'project_center_bids', 'project_center_invites', 'project_invites_delete'] %} class="active"{% endif %}><a href="{{ path('project_center') }}">Gig Center {{ render(controller('VocalizrAppBundle:ProjectCenter:unreadActivity')) }}</a></li>
+    <li{% if app.request.attributes.get('_route') == 'vocalists' %} class="active"{% endif %}><a href="{{ path('vocalists') }}">Vocalists</a></li>
+    <li{% if app.request.attributes.get('_route') == 'producers' %} class="active"{% endif %}><a href="{{ path('producers') }}">Producers</a></li>
+    <li{% if app.request.attributes.get('_route') == 'gig_hunter' and app.request.get('filter') != "collaborations" %} class="active"{% endif %}><a href="{{ path('gig_hunter') }}">Jobs</a></li>
+
+{% else %}
+    <li{% if app.request.attributes.get('_route') == 'home' %} class="active"{% endif %}><a href="{{ path('home') }}">Home</a></li>
+    <li{% if app.request.attributes.get('_route') == 'vocalists' %} class="active"{% endif %}><a href="{{ path('vocalists') }}">Vocalists</a></li>
+    <li{% if app.request.attributes.get('_route') == 'producers' %} class="active"{% endif %}><a href="{{ path('producers') }}">Producers</a></li>
+    <li{% if app.request.attributes.get('_route') == 'gig_hunter' and app.request.get('filter') != "collaborations" %} class="active"{% endif %}><a href="{{ path('gig_hunter') }}">Jobs</a></li>
+{% endif %}

@@ -1,0 +1,26 @@
+<ul class="nav nav-tabs" role="tablist">
+    <li class="active"><a href="#all" role="tab" data-toggle="tab">All</a></li>
+    <li><a href="#shortlist" aria-controls="home" role="tab" data-toggle="tab">Shortlist</a></li>
+    <li><a href="#hidden" aria-controls="home" role="tab" data-toggle="tab">Hidden</a></li>
+</ul>
+<div class="tab-content">
+    <div role="tabpanel" class="tab-pane active" id="all">
+        {% for bid in bids %}
+            {% include '@VocalizrApp/Project/view/bid.html.twig' %}
+        {% endfor %}
+    </div>
+    <div role="tabpanel" class="tab-pane" id="shortlist">
+        {% if shortlistBids %}
+            {% for bid in shortlistBids %}
+                {% include '@VocalizrApp/Project/view/bid.html.twig' %}
+            {% endfor %}
+        {% endif %}
+    </div>
+    <div role="tabpanel" class="tab-pane" id="hidden">
+        {% if hiddenBids %}
+            {% for bid in hiddenBids %}
+                {% include '@VocalizrApp/Project/view/bid.html.twig' %}
+            {% endfor %}
+        {% endif %}
+    </div>
+</div>

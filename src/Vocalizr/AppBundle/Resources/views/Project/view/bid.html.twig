@@ -1,0 +1,14 @@
+{% set proBid = bid.userInfo.isSubscribed %}
+{% if app.user %}
+    {% set userIsBidder = bid.userInfo.id == app.user.id %}
+    {% set userIsOwner = project.isOwner(app.user) %}
+{% else %}
+    {% set userIsBidder = false %}
+    {% set userIsOwner = false %}
+{% endif %}
+
+{#{% if bid.userInfo.isSubscribed %}#}
+    {{ include('@VocalizrApp/Project/view/pro_bid.html.twig') }}
+{#{% else %}#}
+{#    {{ include('@VocalizrApp/Project/view/simple_bid.html.twig') }}#}
+{#{% endif %}#}

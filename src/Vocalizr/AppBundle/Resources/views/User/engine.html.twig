@@ -1,0 +1,64 @@
+{% extends '::app.html.twig' %}
+
+{% block title %}Your engine orders{% endblock %}
+
+{% block javascript %}
+
+
+{% endblock %}
+
+{% block body %}
+
+<div class="row">
+    <div class="col-sm-12">
+        {% if orders %}
+            <a href="{{ path('engine') }}" class="btn btn-sm btn-default pull-right">PLACE ANOTHER ORDER</a>
+        {% endif %}
+        <h1>My Engine Room Orders</h1>
+        
+        {% include 'VocalizrAppBundle::messages.html.twig' %}
+        
+        {% if orders %}
+        <table class="table table-dark">
+            <thead>
+                <tr>
+                    <th width="400">Title</th>
+                    <th width="200">Service</th>
+                    <th width="100">Status</th>
+                    <th width="100">Date</th>
+                    <th width="80"></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for order in orders %}
+                <tr valign="top">
+                    <td>{{ order.title }}</td>
+                    <td>{{ order.EngineProduct.title }}</td>
+                    <td>
+                        {% if order.status == "DRAFT" %}
+                            <span class="label label-orange">{{ order.status }}</span>
+                        {% elseif order.status == "PAID" or order.status == "IN PROCESS" %}
+                            <span class="label label-success">{{ order.status }}</span>
+                        {% elseif order.status == "COMPLETED" %}
+                            <span class="label label-jade">{{ order.status }}</span>
+                        {% else %}
+                            <span class="label label-default">{{ order.status }}</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ order.createdAt|date(default_date_format) }}</td>
+                    <td><a href="{{ path('engine_order', {uid: order.uid}) }}" class="btn btn-default btn-sm">EDIT</a></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        
+        {% else %}
+            <p>Get all your tracks profressional mixed & mastered by Vocalizr's in-house expert audio engineers, or give your vocals the perfect polish.</p>
+            <a href="{{ path('engine') }}" class="btn btn-sm btn-primary">GO TO ENGINE ROOM</a>
+        {% endif %}
+
+      
+    </div>
+</div>
+
+{% endblock %}

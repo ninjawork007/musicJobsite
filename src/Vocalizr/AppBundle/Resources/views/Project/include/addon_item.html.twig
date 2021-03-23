@@ -1,0 +1,24 @@
+<div
+        class="addon-item {% block item_classes %}{% endblock %} {% if isChecked %}selected{% endif %}"
+        data-pro-price="{{ proPrice ? proPrice / 100 : '' }}"
+        data-free-price="{{ freePrice ? freePrice / 100 : '' }}">
+
+    <div class="addon-main">
+        <div class="addon-option">
+            <input
+                    {% block input_options %}
+                    {% endblock %}
+                     type="checkbox" name="{{ inputName }}" value="{{ inputValue }}" {% if isChecked %}checked{% endif %} />
+        </div>
+        <div class="addon-icon-container">
+                {% block icon %}
+                {% endblock %}
+        </div>
+        <div class="addon-info">
+            {% block info %}
+            {% endblock %}
+        </div>
+    </div>
+    <div class="addon-price free">{{ freePrice ? '$' ~ freePrice / 100 : 'Free' }}</div>
+    <div class="addon-price pro">{{ proPrice ? '$' ~ proPrice / 100 : 'Free' }}</div>
+</div>

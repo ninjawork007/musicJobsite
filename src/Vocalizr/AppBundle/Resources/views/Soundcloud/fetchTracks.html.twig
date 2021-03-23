@@ -1,0 +1,6 @@
+{% for scTrack in scTracks %}
+{{ include(
+            'VocalizrAppBundle:Soundcloud:displayTrackItem.html.twig',
+            { 'scTrack': scTrack }
+        ) }}
+{% endfor %}

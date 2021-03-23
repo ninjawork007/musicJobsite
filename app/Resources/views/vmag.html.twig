@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="icon" type="image/png" href="vmagfav.png">
+        <link href="https://fonts.googleapis.com/css?family=Crimson+Text:400,400i,600,600i,700" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css?family=Lato:300,400,400i,700,700i,900,900i" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css?family=Amiri" rel="stylesheet">
+        {% block shareImage %}
+        <meta property="og:image" content="http://{{ domain_base }}/images/vmag_logo_share.png?v1"/>
+        <meta property="og:image:secure_url" content="https://{{ domain_base }}/images/vmag_logo_share.png?v1" />
+        {% endblock %}
+        <title>
+            {% set _titleBlock = block('title') %}
+            {% if not _titleBlock is empty %}
+                {{ _titleBlock }} | VMag
+            {% else %}
+                VMag - Everything Music & Music Industry
+            {% endif %}
+        </title>
+        {% set _descBlock = block('description') %}
+        {% if not _descBlock is empty %}
+            <meta name="description" content="{{ _descBlock }}">
+        {% else %}
+            <meta name="description" content="The place to get current and relevant content about the music production industry. From vocal and production tips to gear reviews, new, events and interviews this is the place to keep your finger on the pulse of what's happening with Vocalizr and the industry beyond.">
+        {% endif %}
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+        {% stylesheets
+            '@VocalizrAppBundle/Resources/public/css/bootstrap.min.css'
+            '@VocalizrAppBundle/Resources/public/css/vmag.css'
+        %}
+        <link rel="stylesheet" href="{{ asset_url }}" />
+        {% endstylesheets %}
+        {% block stylesheet %}{% endblock %}
+        <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+        <script>
+          (adsbygoogle = window.adsbygoogle || []).push({
+            google_ad_client: "ca-pub-1524050109382084",
+            enable_page_level_ads: true
+          });
+        </script>
+
+
+        <script async='async' src='https://www.googletagservices.com/tag/js/gpt.js'></script>
+        <script>
+          var googletag = googletag || {};
+          googletag.cmd = googletag.cmd || [];
+        </script>
+
+        <script>
+          googletag.cmd.push(function() {
+            var Leaderboard_MAPPING = googletag.sizeMapping().
+                addSize([909,1], [728, 90]).
+                addSize([550,1], [320, 50]).
+                addSize([0, 0], [320, 50]).
+                build();
+
+            googletag.defineSlot('/353537636/VMag_Leaderboard_Footer', [[728, 90], [320, 50]], 'div-gpt-ad-1494936661372-0')
+                .defineSizeMapping(Leaderboard_MAPPING)
+                .addService(googletag.pubads());
+            googletag.defineSlot('/353537636/VMag_Leaderboard_Header', [[728, 90], [320, 50]], 'div-gpt-ad-1494936661372-1')
+                .defineSizeMapping(Leaderboard_MAPPING)
+                .addService(googletag.pubads());
+            googletag.defineSlot('/353537636/VMag_HalfPage_300x600', [300, 600], 'div-gpt-ad-1495588781098-0').addService(googletag.pubads());
+            googletag.defineSlot('/353537636/VMag_MREC1_300x250', [300, 250], 'div-gpt-ad-1495588781098-1').addService(googletag.pubads());
+            googletag.pubads().enableSingleRequest();
+            googletag.enableServices();
+          });
+        </script>
+        
+         <meta property="fb:pages" content="274085686025694">
+
+    </head>
+
+    <body>
+
+        <div class="header">
+            <nav class="navbar">
+                <div class="container">
+                    <div class="navbar-header">
+                        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target=".navigation" aria-expanded="false" aria-controls="navbar">
+                            <span class="sr-only">Toggle navigation</span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                        </button>
+                        <a href="{{ path('vmag_index') }}" class="navbar-brand"><img src="{{ asset('/images/vmag_logo_light.png') }}" class="img-vmag-logo"> <img src="{{ asset('/images/vmag-slogan.jpg') }}" class="img-slogan"></a>
+                    </div>
+                    <div id="navbar" class="collapse navigation navbar-collapse navbar-right">
+                        <ul class="nav navbar-nav">
+                            <li class="vlogo"><a href="{{ path('dashboard') }}" target="_blank"><img src="{{ asset('/images/logo_white.png') }}" class="vocalizr-logo"></a></li>
+                            <li><a href="{{ path('producers') }}" target="_blank">Producers</a></li>
+                            <li><a href="{{ path('vocalists') }}" target="_blank">Vocalists</a></li>
+                            <li><a href="{{ path('gig_hunter') }}" target="_blank">Work</a></li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </nav>
+        </div>
+        <div class="subnav">
+            <div class="container">
+                <div class="collapse navbar-collapse navigation">
+                <ul class="nav navbar-nav">
+                    <li><a href="{{ path('vmag_index') }}"{% if app.request.attributes.get('_template').get('name') == "index" %} class="active"{% endif %}>News</a></li>
+                    {{ render(controller('VocalizrAppBundle:Vmag:_categoryNav', {route:  app.request.attributes.get('_template').get('name'), slug: app.request.get('slug') } )) }}
+                </ul>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="container">
+
+            <div class="banner-wrapper is-top-leaderboard">
+                <!-- /353537636/VMag_Leaderboard_Header -->
+                <div id='div-gpt-ad-1494936661372-1'>
+                    <script>
+                        googletag.cmd.push(function() { googletag.display('div-gpt-ad-1494936661372-1'); });
+                    </script>
+                </div>
+            </div>
+        </div>
+
+        <!-- Begin page content -->
+        <div class="container">
+
+            {% block body %}{% endblock %}
+        </div>
+
+        <div class="container">
+            <div class="banner-wrapper">
+                <!-- /353537636/VMag_Leaderboard_Footer -->
+                <div id='div-gpt-ad-1494936661372-0'>
+                    <script>
+                        googletag.cmd.push(function() { googletag.display('div-gpt-ad-1494936661372-0'); });
+                    </script>
+                </div>
+            </div>
+        </div>
+        <div id="footer">
+            <div class="container">
+                <div class="copyright">
+                    &copy; Copyright Vocalizr {{ "now"|date("Y") }}
+                </div>
+                <ul id="footer-nav">
+                    <li class="share"><a href="https://www.facebook.com/Vocalizr"><i class="fab fa-facebook-square"></i></a></li>
+                    <li class="share"><a href="https://twitter.com/vocalizr"><i class="fab fa-twitter-square"></i></a></li>
+                    <li><a href="http://support.vocalizr.com/" target="_blank">Help</a></li>
+                    <li><a href="{{ path('membership') }}">Membership</a></li>
+                    <li><a href="{{ path('website_fees') }}">Fees & Charges</a></li>
+                    <li><a href="{{ path('website_terms') }}">Terms</a></li>
+                    <li><a href="{{ path('website_privacy') }}">Privacy</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- special IE-only canvas fix -->
+        <!--[if IE]><script type="text/javascript" src="js/excanvas.js"></script><![endif]-->
+
+        <script>
+          (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+          (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+          m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+          })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+          ga('create', 'UA-35668621-3', 'auto');
+          ga('send', 'pageview');
+
+        </script>
+        {% javascripts
+            '@VocalizrAppBundle/Resources/public/js/jquery.js'
+            '@VocalizrAppBundle/Resources/public/js/bootstrap.min.js'
+         %}
+            <script type="text/javascript" src="{{ asset_url }}"></script>
+        {% endjavascripts %}
+
+        {% javascripts
+            '@VocalizrAppBundle/Resources/public/js/berniecode-animator.js'
+         %}
+            <script type="text/javascript" src="{{ asset_url }}"></script>
+        {% endjavascripts %}
+
+        {% javascripts
+            '@VocalizrAppBundle/Resources/public/js/soundmanager2-nodebug-jsmin.js'
+            '@VocalizrAppBundle/Resources/public/js/page-player.js'
+            '@VocalizrAppBundle/Resources/public/js/360player.js'
+         %}
+            <script type="text/javascript" src="{{ asset_url }}"></script>
+        {% endjavascripts %}
+
+        {% javascripts
+            '@VocalizrAppBundle/Resources/public/js/vmag.js'
+         %}
+            <script type="text/javascript" src="{{ asset_url }}"></script>
+        {% endjavascripts %}
+
+
+        {% block javascript %}{% endblock %}
+
+        <script type="text/javascript" src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-58cb6b7d4d2274c2"></script>
+
+    </body>
+</html>

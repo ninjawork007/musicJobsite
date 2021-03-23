@@ -1,0 +1,82 @@
+{% for review in reviews %}
+    <div data-role="review-item" class="profile-review">
+        {% if review.Project.publishType == "private" %}
+            <div class="gig-title"><a href="#private">Private Gig</a>
+        {% else %}
+            <div class="gig-title"><a href="{{ path('project_view', {uuid: review.Project.uuid} ) }}">{{ review.Project.title }}</a>
+        {% endif %}
+        <span class="time-ago">{{ review.createdAt|timeAgoString }} ago</span>
+            </div>
+        <div class="review-content">
+            <div class="avatar">
+                <a href="{{ path('user_view', {username: review.ReviewedBy.username }) }}">
+                {% if review.ReviewedBy.path is empty %}
+                    <img src="{{ asset('images/default_avatar.svg') }}" width="58" height="58" class="img-circle">
+                {% else %}
+                    <img src="{{ asset('uploads/avatar/medium/' ~ review.ReviewedBy.path ) }}" width="58" height="58" class="img-circle">
+                {% endif %}
+                </a>
+            </div>
+            <div class="review-message">
+                <a href="{{ path('user_view', {username: review.ReviewedBy.username }) }}">{{ review.ReviewedBy.displayName }}</a> said...<br>
+                "{{ review.content|nl2br }}"
+            </div>
+        </div>
+        <div class="review-rating" data-id="{{ review.id }}">
+            <div class="star-rating star-disabled" data-score="{{ review.rating }}"></div>
+            <div class="rating-text">{{ review.rating }} star{% if review.rating > 1 %}s{% endif %}</div>
+        </div>
+        <div id="review-rating-{{ review.id }}" class="hide">
+            <table class="review-rating-table">
+                <tr>
+                    <td class="type">Average Rating</td>
+                    <td class="stars">
+                        <div class="star-rating star-disabled" data-score="{{ review.rating }}"></div>
+                    </td>
+                    <td class="rating">{{ review.rating }}</td>
+                </tr>
+                <tr>
+                    <td colspan="3"><div class="break"></div></td>
+                </tr>
+                <tr>
+                    <td class="type">Quality of Work</td>
+                    <td class="stars">
+                        <div class="star-rating star-disabled" data-score="{{ review.qualityOfWork }}"></div>
+                    </td>
+                    <td class="rating">{{ review.qualityOfWork }}</td>
+                </tr>
+                <tr>
+                    <td class="type">Communication</td>
+                    <td class="stars">
+                        <div class="star-rating star-disabled" data-score="{{ review.communication }}"></div>
+                    </td>
+                    <td class="rating">{{ review.communication }}</td>
+                </tr>
+                <tr>
+                    <td class="type">Professionalism</td>
+                    <td class="stars">
+                        <div class="star-rating star-disabled" data-score="{{ review.professionalism }}"></div>
+                    </td>
+                    <td class="rating">{{ review.professionalism }}</td>
+                </tr>
+                <tr>
+                    <td class="type">Work with again</td>
+                    <td class="stars">
+                        <div class="star-rating star-disabled" data-score="{{ review.workWithAgain }}"></div>
+                    </td>
+                    <td class="rating">{{ review.workWithAgain }}</td>
+                </tr>
+                {% if not review.onTime is null %}
+                <tr>
+                    <td colspan="3"><div class="break"></div></td>
+                </tr>
+                <tr>
+                    <td class="type">On Time</td>
+                    <td colspan="2">{% if review.onTime %}YES{% else %}NO{% endif %}</td>
+                </tr>
+                {% endif %}
+            </table>
+        </div>
+    </div>
+    <hr>
+{% endfor %}

@@ -1,0 +1,220 @@
+{% extends '::app.html.twig' %}
+
+{% block title %}Marketplace{% endblock %}
+
+{% block javascript %}
+
+        {% javascripts
+            '@VocalizrAppBundle/Resources/public/js/uploader/plupload.full.min.js'
+            '@VocalizrAppBundle/Resources/public/js/audio-uploader.js'
+            '@VocalizrAppBundle/Resources/public/js/asset-uploader.js'
+         %}
+            <script type="text/javascript" src="{{ asset_url }}"></script>
+        {% endjavascripts %}
+
+        <script>
+            AudioUploader.init('marketplace-upload-audio-container', 'upload-audio-btn');
+            AssetUploader.init('upload-asset-container', 'upload-asset-btn');
+        </script>
+
+        <script type="text/javascript" src="https://www.dropbox.com/static/api/2/dropins.js" id="dropboxjs" data-app-key="lwlg3v5wizqu8f2"></script>
+{% endblock %}
+
+{% block body %}
+<div class="row">
+    <div class="col-sm-8">
+        <h1>Create a Marketplace Item</h1>
+
+        {% include 'VocalizrAppBundle::messages.html.twig' %}
+
+        <div class="light-content">
+            <form id="create-marketplace-item-form" action="{{ path('marketplace_create') }}" method="post" novalidate>
+                {{ form_row(form._token) }}
+
+                    {{ form_errors(form) }}
+                <div class="row form-group">
+                    <div class="col-sm-12">
+                        {{ form_row(form.title) }}
+                    </div>
+                </div>
+
+                <hr>
+
+                <div class="row form-group">
+                    <div class="col-sm-6">
+                        {{ form_row(form.item_type) }}
+                    </div>
+                    <div class="col-sm-6">
+                        <label class="field-label required" for="buyout_price">Price {{ form_errors(form.buyout_price) }}</label><br>
+                        <div class="input-group">
+                            <span class="input-group-addon" id="basic-addon1">USD $</span>
+                            {{ form_widget(form.buyout_price) }}
+                        </div>
+                    </div>
+                </div>
+
+                <hr>
+
+                <div class="royalty-fields row form-group">
+                    <div class="col-sm-12">
+                        <label class="field-label" for="royalty_master">Master Royalties</label><br>
+                        <div class="input-group">
+                            {{ form_widget(form.royalty_master)}}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="royalty-fields row form-group">
+                    <div class="col-sm-4">
+                        <label class="field-label" for="royalty_publishing">Publishing Royalties</label><br>
+                        <div class="input-group">
+                            {{ form_widget(form.royalty_publishing)}}
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <label class="field-label" for="royalty_mechanical">Mechanical Royalties</label><br>
+                        <div class="input-group">
+                            {{ form_widget(form.royalty_mechanical)}}
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <label class="field-label" for="royalty_performance">Performance Royalties</label><br>
+                        <div class="input-group">
+                            {{ form_widget(form.royalty_performance)}}
+                        </div>
+                    </div>
+                </div>
+
+                <hr>
+
+                {% if defaultItemAudio %}
+                <div class="row form-group">
+                    <div class="col-sm-12">
+                        <label>DEMO AUDIO</label>
+                        <div class="track-list-item">
+                            <div class="ui360 track-play inline"><a href="{{ path('project_audio', {uuid: marketplaceItem.uuid, slug: defaultItemAudio.slug}) }}?1" type="audio/mp3"><span>PLAY</span></a></div>
+                            <span class="track-title">{{ defaultItemAudio.title }}</span>
+                            <span class="track-length">({{ defaultItemAudio.durationString }})</span>
+                            <span class="badge badge-featured">FEATURED</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="height: 10px;"></div>
+                {% else %}
+                <div class="row form-group">
+                    <div class="col-sm-12">
+                        <label for="marketplace-upload-audio-container">UPLOAD YOUR DEMO AUDIO *:</label> <span class="help-note">MP3 FILES ONLY</span>
+
+                        <div>
+                            <em style="font-size: 12px;">Note: Your Demo Audio will be what users listen to in deciding whether to purchase your item.</em>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+
+                <div class="row form-group">
+                    <div class="col-sm-12">
+                        <div id="marketplace-upload-audio-container" data-url="{{ path('upload_audio') }}" data-extensions="{{ upload_audio_allowed }}" data-form="create-marketplace-item-form">
+                            <div class="upload-mobile-msg">Open site on desktop to upload audio</div>
+                            <div class="upload-audio-actions">
+                                {% if defaultItemAudio %}
+                                    <a id="upload-audio-btn" href="" class="btn btn-sm btn-default">CHANGE AUDIO</a><br>
+                                {% else %}
+                                <a id="upload-audio-btn" href="" class="btn btn-sm btn-default">SELECT FILE</a><br>
+                                {% endif %}
+                            </div>
+                            <div class="upload-audio-error hide"></div>
+                            <div class="upload-audio-bar-container">
+                                Uploading...
+                                <div class="progress"><div class="upload-audio-bar progress-bar" style="width: 0;"></div></div>
+                            </div>
+                            {% if app.request.get('audio_file') %}
+                            <input class="hidden-audio" type="hidden" name="audio_file" value="{{ app.request.get('audio_file') }}" />
+                            <input class="hidden-audio" type="hidden" name="audio_title" value="{{ app.request.get('audio_title') }}" />
+                            <div class="audio-upload-preview" style="display:block">
+                                <hr>
+                                <div class="track-list-item">
+                                    <div class="ui360 track-play inline"><a href="/upload/audio/tmp?f={{ app.request.get('audio_file') }}"><span>PLAY</span></a></div>
+                                    <span class="track-title">{{ app.request.get('audio_title') }}</span>
+                                    <span class="track-length"></span>
+                                    <span class="badge badge-featured">PREVIEW</span>
+                                    <a href="" class="btn btn-sm btn-default remove">CANCEL</a>
+                                </div>
+                            </div>
+                            {% else %}
+                            <div class="audio-upload-preview">
+                                <hr>
+                                <div class="track-list-item">
+                                    <div class="track-play inline"><a href=""><span>PLAY</span></a></div>
+                                    <span class="track-title"></span>
+                                    <span class="track-length"></span>
+                                    <span class="badge badge-featured">PREVIEW</span>
+                                    <a href="" class="btn btn-sm btn-default remove">CANCEL</a>
+                                </div>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <hr>
+
+                <div class="row form-group">
+                    <div class="col-sm-6">
+                        {{ form_row(form.gender) }}
+                    </div>
+                    <div class="col-sm-3">
+                        {{ form_row(form.bpm) }}
+                    </div>
+                    <div class="col-sm-3">
+                        {{ form_row(form.audio_key) }}
+                    </div>
+                </div>
+
+                <div class="row form-group">
+                    <div class="col-sm-12">
+                        {{ form_row(form.genres) }}
+                    </div>
+                </div>
+
+                <hr>
+
+                <div class="row form-group">
+                    <div class="col-sm-12">
+                        {{ form_row(form.additional_info) }}
+                    </div>
+                </div>
+
+                <div class="form-group text-right">
+                    <input type="submit" class="btn btn-sm btn-default" value="SAVE">
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="col-sm-4">
+        <div class="panel panel-default welcome-panel">
+            <div class="panel-heading">
+                VOCALIZR MARKETPLACE!
+            </div>
+            <div class="panel-body">
+              <ol>
+                <li>You can only sell completed works on Vocalizr. This includes a finished vocal (acapella), full music backing track, or a song (lyrics & melody) with an acapella for auditioning.</li>
+                <li>Your audition audio will be what users hear and try over their track/song.</li>
+                <li>Before you sell on Marketplace, ensure you have all stems/assets properly recorded & prepared.</li>
+                <li>Always ensure your stems/assets are full length stems starting from bar 1.</li>
+                <li>If you are selling a vocal or song, make sure your recordings are in tune, in time, and locked to a bpm. If you need help preparing your vocals, use Vocalizr’s Engine Room ‘Vocal Engineering’</li>
+              </ol>
+            </div>
+        </div>
+        {#
+        <div class="protected-vocalizr">
+            <i class="fa fa-shield"></i>
+            Protected by the Vocalizr Agreement<br>
+            <a href="{{ path('project_agreement', {uuid: '1', type: 'contest'}) }}">Download Template</a>
+        </div>
+        #}
+    </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,102 @@
+<!-- AUDIO TAB -->
+<div class="tab-pane fade in" id="audio">
+    <form id="user-upload-audio-form" action="{{ path('user_edit') }}#audio" method="post">
+        <div class="row">
+            <div class="col-sm-7">
+                <label for="upload-audio-container">UPLOAD AUDIO:</label> <span class="help-note">MP3,AAC,M4A FILES ONLY</span>
+            </div>
+        </div>
+        <div id="upload-audio-container" data-url="{{ path('upload_audio') }}" data-extensions="{{ upload_audio_allowed_extended }}" data-form="user-upload-audio-form">
+            {% if userAudios|length >= subscriptionPlan.user_audio_limit %}
+                <div class="row">
+                    <div class="col-sm-7">
+                        <span class="white-highlight">You have reached your profile audio limit of {{ subscriptionPlan.user_audio_limit }}.</span>
+                    </div>
+                </div>
+            {% else %}
+                <div class="upload-mobile-msg">Open site on desktop to upload audio</div>
+                <div class="upload-audio-actions">
+                    <a id="upload-audio-btn" href="" class="btn btn-sm btn-default">SELECT FILE</a>
+                    {% if app.user.hasSoundCloud %}
+                        <br><br><br>
+                        <a href="{{ path('soundcloud_disconnect') }}" class="btn btn-sm btn-default">DISCONNECT FROM SOUNDCLOUD</a>
+                    {% endif %}
+                </div>
+                <div id="recorder-container"></div>
+                <div id="record-start">
+                    <hr>
+                    <a id="recorder-record" href="" class="btn-record record">RECORD NOW</a>
+                    <div id="record-start-msg" class="record-info">To start recording, click the RECORD NOW button. You have 1 minute.</div>
+                </div>
+                <div id="audio-recording">
+                    <div id="record-info">
+                        <a id="recorder-play" href="" class="btn-record play record-btn">PLAY</a>
+                        <a id="recorder-record-stop" href="" class="btn-record record record-btn hide">STOP</a>
+                        <a id="recorder-stop" href="" class="btn-record stop record-btn hide">STOP</a>
+                        <div id="recorder-time" class="pull-right"><span id="recorder-timer">0:00</span> / <span id="recorder-total-time">1:00</span></div>
+                    </div>
+                    <div id="record-actions" class="">
+                        <a id="record-start-over" href="">Start Over</a>
+                        <a id="save-recording" href="" class="btn btn-sm btn-default pull-right">USE THIS RECORDING</a>
+                    </div>
+                </div>
+                <div id="audio-recording-uploading">
+                    <img src="{{ asset('images/loading.gif') }}"> <span id="bid-audio-message">Uploading your recording</span>
+                </div>
+
+                <div class="upload-audio-error hide"></div>
+                <div class="upload-audio-bar-container">
+                    Uploading...
+                    <div class="progress"><div class="upload-audio-bar progress-bar" style="width: 0;"></div></div>
+                </div>
+                <div class="audio-upload-preview">
+                    <hr>
+                    <div class="row form-group">
+                        <div class="col-sm-7">
+                            <label for="title">TITLE / ENTER TRACK NAME: <span id="user-audio-title-error" class="error hide">Required</span></label>
+                            <input id="user-audio-title" type="text" name="title" value="" class="form-control">
+                        </div>
+                        <div class="col-sm-5">
+                        </div>
+                    </div>
+                    <div class="track-list-item">
+                        <div class="track-play inline"><a href="" type="audio/mp3"><span>PLAY</span></a></div>
+                        <span class="track-title"></span>
+                        <span class="track-length"></span>
+                        <span class="badge badge-featured">PREVIEW</span>
+                        <a href="" class="btn btn-sm btn-default remove">CANCEL</a>
+                    </div>
+                    <div id="save-audio-profile" class="upload-audio-actions">
+                        <button name="submit" value="audio" class="btn btn-primary">SAVE AUDIO TO PROFILE</button>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </form>
+
+    <hr>
+
+    <h2 class="tracks-header">Your profile tracks ({% if userAudios|length > subscriptionPlan.user_audio_limit %}{{ subscriptionPlan.user_audio_limit }}{% else %}{{ userAudios|length }}{% endif %}
+        /  {{ subscriptionPlan.user_audio_limit }})</h2>
+    <button class="btn btn-sm btn-default rearrange" name="rearrange">REARRANGE MODE</button>
+    <div id="account-tracks">
+        {% if userAudios|length > 0 %}
+            <form action="{{ path('user_edit') }}#audio" method="post">
+                <div id="tracks-container">
+                    {% for userAudio in app.user.userAudio %}
+                        {% set userInfo = app.user %}
+                        <div class="player-container has-controls profile-track" data-id="{{ userAudio.id }}">
+                            <div class="track-list-item">
+                                {% include 'include/user_audio_edit.html.twig' with {userAudio: userAudio} %}
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </form>
+        {% else %}
+            No audio tracks uploaded
+        {% endif %}
+
+    </div>
+</div>
+<!--/END AUDIO TAB -->

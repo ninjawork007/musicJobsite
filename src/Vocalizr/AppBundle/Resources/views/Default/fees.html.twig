@@ -1,0 +1,91 @@
+{% extends '::website.html.twig' %}
+
+{% block title %}Fees & Charges{% endblock %}
+
+{% block body %}
+<div class="nav-wrapper">
+    <nav id="nav" class="navbar navbar-default" role="navigation">
+      <div class="container">
+          <a href="{{ path('home') }}"><img src="/images/logo_dark.png" alt="vocalizr" title="vocalizr logo" width="108" height="32"></a>
+          {% if app.user %}
+              <a href="{{ path('dashboard') }}" class="btn btn-login pull-right">Dashboard</a>
+          {% else %}
+          <a href="{{ path('login') }}" class="btn btn-login pull-right">Login</a><a href="{{ path('register') }}" class="btn btn-signup pull-right">Sign up</a>
+          {% endif %}
+      </div>
+    </nav>
+</div>
+<div class="std-content sub-page">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12 content-wrapper">
+                <h1>Fees & Charges</h1>
+                <h2>Free Membership</h2>
+                <p>A standard subscription to Vocalizr is free.</p>
+                <p>You can sign up, create your profile, attach audio from your PC or SoundCloud, and specify your vocal characteristics, genres and other information relevant to what you're interested in for free.</p>
+                <p>There are fees and charges for Gig and Contest transactions which are detailed below.</p>
+
+                <h3>Contests & Gigs</h3>
+                <p><u>Creator/Poster Fees</u></p>
+                <p>5% project commission fee payable to Vocalizr (excluding contents)</p>
+                <p>Listing upgrades are charged at Contest/Gig creation and are non-refundable</p>
+
+                <p><u>Deposits into your Vocalizr wallet</u></p>
+                <p>Banking fees are 3.6% (+ USD $0.30 bank transaction fee) for deposits into your wallet (These are banking fees, Vocalizr does not profit from these)</p>
+
+
+            </div>
+        </div>
+        <hr>
+        <div class="row">
+            <div class="col-xs-12 content-wrapper">
+                <h2>Access Pass Subscription</h2>
+                <p>An Access Pass subscription to Vocalizr is USD $10.99 per month. You can sign up, create your profile, attach audio from your PC or SoundCloud and specify what you offer or what you are looking for. You also get:</p>
+                <br>
+                - 60 Connections Per Month<br>
+                - Unlimited messages per month<br>
+                - 100 profile audio tracks<br>
+                - 0% job creator/poster commission fee<br>
+                - 10% contractor commission fee<br>
+                - Priority bids<br>
+                - Exclusive Discounts<br>
+                - Exclusive Opportunities<br>
+                <br>
+
+                <h3>Contests & Gigs</h3>
+                <p><u>Creator/Poster Fees</u></p>
+                <p>0% project commission fee payable to Vocalizr</p>
+                <p>Listing upgrades are charged at Contest/Gig creation and are non-refundable</p>
+
+                <p><u>Contractor Fees</u></p>
+                <p>10% project commission fee paid to Vocalizr, withdrawn from Contest/Gig payment</p>
+
+                <p><u>Deposits into your Vocalizr wallet</u></p>
+                <p>Banking fees are 3.6% (+ USD $0.30 bank transaction fee) for deposits into your wallet (These are banking fees, Vocalizr does not profit from these)</p>
+
+
+            </div>
+        </div>
+    </div>
+</div>
+<nav class="footer" role="navigation">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12">
+                © Copyright Vocalizr {{ "now"|date('Y') }}
+
+                <ul id="footer-nav">
+                    <li class="share"><a href="https://www.facebook.com/Vocalizr"><i class="fab fa-facebook-square"></i></a></li>
+                    <li class="share"><a href="https://twitter.com/vocalizr"><i class="fab fa-twitter-square"></i></a></li>
+                    <li><a href="http://support.vocalizr.com/" target="_blank">Help</a></li>
+                    <li><a href="{{ path('membership') }}">Membership</a></li>
+                    <li><a href="http://blog.vocalizr.com/" target="_blank">Blog</a></li>
+                    <li><a href="{{ path('website_fees') }}">Fees & Charges</a></li>
+                    <li><a href="{{ path('website_terms') }}">Terms</a></li>
+                    <li><a href="{{ path('website_privacy') }}">Privacy</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</nav>
+{% endblock %}

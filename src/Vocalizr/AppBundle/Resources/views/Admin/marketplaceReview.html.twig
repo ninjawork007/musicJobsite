@@ -1,0 +1,226 @@
+{% extends '::app.html.twig' %}
+
+{% block title %}Admin{% endblock %}
+
+{% block javascript %}
+        {% javascripts
+            '@VocalizrAppBundle/Resources/public/js/admin.js'
+         %}
+            <script type="text/javascript" src="{{ asset_url }}"></script>
+        {% endjavascripts %}
+
+        <script type="text/javascript">
+            VocalizrDashboard.initDashboard();
+        </script>
+{% endblock %}
+
+
+{% block body %}
+    <div class="row">
+        <div class="col-sm-2">
+            <ul class="nav">
+                {% include '@VocalizrApp/Admin/include/menu.html.twig' %}
+            </ul>
+        </div>
+        <div class="col-sm-10 admin-page">
+            <h1>Marketplace : Review Item</h1>
+            <div class="row">
+                <div class="col-sm-12">
+                    <a href="{{ path('admin_marketplace_approve', {uuid: item.uuid } ) }}" class="btn btn-success">Approve Item</a>
+                    <a href="{{ path('admin_marketplace_reject', {uuid: item.uuid } ) }}" class="btn btn-danger pull-right">Reject Item</a>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-12 col-md-6">
+                    <h3>Item Details</h3>
+                    <a href="">Preview View Item</a>
+                    <div class="data-table">
+                        <div class="data-table-row">
+                            <div class="data-table-cell is-label">
+                                Submitted by:
+                            </div>
+                            <div class="data-table-cell">
+                                 <a href="{{ path('user_view', {username: item.UserInfo.username} ) }}" target="_blank">{{ item.UserInfo.displayName }}</a>
+                             </div>
+                        </div>
+                        <div class="data-table-row">
+
+                            <div class="data-table-cell is-label">
+                                Date Submitted:
+                            </div>
+                            <div class="data-table-cell">
+                                {{ item.publishedAt|timeAgoString }} ago
+                            </div>
+                        </div>
+                        <div class="data-table-row">
+                            <div class="data-table-cell is-label">
+                                Title:
+                            </div>
+                            <div class="data-table-cell">
+                                {{ item.title }}
+                            </div>
+                        </div>
+                        <div class="data-table-row">
+                            <div class="data-table-cell is-label">
+                                Item Type:
+                            </div>
+                            <div class="data-table-cell">
+                                {{ item.itemType|upper }}
+                            </div>
+                        </div>
+                        <div class="data-table-row">
+                            <div class="data-table-cell is-label">
+                                Auction:
+                            </div>
+                            <div class="data-table-cell">
+                                {% if item.isAuction %}YES{% else %}NO{% endif %}
+                            </div>
+                        </div>
+                        <div class="data-table-row">
+                            <div class="data-table-cell is-label">
+                                Price:
+                            </div>
+                            <div class="data-table-cell">
+                                ${{ item.buyoutPrice }}
+                            </div>
+                        </div>
+                        {% if item.isAuction %}
+                            <div class="data-table-row">
+                                <div class="data-table-cell is-label">
+                                    Reserve Price:
+                                </div>
+                                <div class="data-table-cell">
+                                    ${{ item.buyoutPrice }}
+                                </div>
+                            </div>
+                        {% endif %}
+                        <div class="data-table-row">
+                            <div class="data-table-cell is-label">
+                                Master Royalties:
+                            </div>
+                            <div class="data-table-cell">
+                                {{ item.royaltyMaster }}%
+                            </div>
+                        </div>
+                        <div class="data-table-row">
+                            <div class="data-table-cell is-label">
+                                Publishing Royalties:
+                            </div>
+                            <div class="data-table-cell">
+                                {{ item.royaltyPublishing }}%
+                            </div>
+                        </div>
+                        <div class="data-table-row">
+                            <div class="data-table-cell is-label">
+                                Performance Royalties:
+                            </div>
+                            <div class="data-table-cell">
+                                {{ item.royaltyPerformance }}%
+                            </div>
+                        </div>
+                        <div class="data-table-row">
+                            <div class="data-table-cell is-label">
+                                Mechanical Royalties:
+                            </div>
+                            <div class="data-table-cell">
+                                {{ item.royaltyMechanical }}%
+                            </div>
+                        </div>
+                        <div class="data-table-row">
+                            <div class="data-table-cell is-label">
+                                Genres:
+                            </div>
+                            <div class="data-table-cell">
+                                {% if item.genres|length > 0 %}
+                                    <ul class="comma-list">
+                                    {% for genre in item.genres %}
+                                        <li>{{ genre.title }}</li>
+                                    {% endfor %}
+                                    </ul>
+                                {% else %}
+                                    None specified
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="data-table-row">
+                            <div class="data-table-cell is-label">
+                                Gender:
+                            </div>
+                            <div class="data-table-cell">
+                                {% if item.gender %}
+                                    {{ item.gender }}
+                                {% else %}
+                                    None specified
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="data-table-row">
+                            <div class="data-table-cell is-label">
+                                BPM:
+                            </div>
+                            <div class="data-table-cell">
+                                {{ item.bpm }}
+                            </div>
+                        </div>
+                        <div class="data-table-row">
+                            <div class="data-table-cell is-label">
+                                Audio Key:
+                            </div>
+                            <div class="data-table-cell">
+                                {{ item.audioKey }}
+                            </div>
+                        </div>
+                        <div class="data-table-row">
+                            <div class="data-table-cell is-label">
+                                Additional Info:
+                            </div>
+                            <div class="data-table-cell">
+                                ${{ item.additionalInfo }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-12 col-md-6">
+                    <h3>Audio</h3>
+                    <div>
+                        {% if item.itemAudio|length > 0 %}
+                            {% set itemAudio = item.itemAudio[0] %}
+
+                            <div class="track-list-item">
+                                <div class="ui360 track-play"><a href="{{ cdn_url }}{{ path('marketplace_item_audio', {uuid: item.uuid, slug: itemAudio.slug}) }}" type="audio/mp3" data-project="{{ itemAudio.slug }}"><span>PLAY</span></a></div>
+                                <span class="track-title">{{ itemAudio.title }}</span>
+                                <span class="track-length">({{ itemAudio.durationString }})</span>
+                            </div>
+                        {% endif %}
+
+                    </div>
+                    <h3>Assets</h3>
+                    {% if item.hasAssets %}
+                        {% set assets = item.itemAssets %}
+                        {% for asset in assets %}
+                            <div class="track-list-item">
+                                {% if asset.dropboxLink %}
+                                    <i class="fa fa-dropbox" style="font-size: 16px;color: #00b9d7;"></i>
+                                    <span style="font-size: 10px;margin-right: 14px;vertical-align: 1px;color: #00b9d7;font-weight: 600;">DROPBOX</span>
+                                    <span class="track-title" style="width: 200px">{{ asset.title }}</span>
+                                    {% if asset.UserInfo.id == app.user.id %}
+                                    <a href="{{ path('marketplace_asset_delete', {uuid: item.uuid, slug: asset.slug} ) }}" class="btn btn-default btn-sm roll-alt">REMOVE</a>
+                                    {% endif %}
+                                {% else %}
+                                    {% if asset.previewPath and asset.previewPath|marketplaceItemAssetExists(item.id) %}
+                                    <div class="ui360 track-play inline"><a href="{{ path('marketplace_asset_stream', {uuid: item.uuid, slug: asset.slug}) }}" type="audio/mp3"><span>PLAY</span></a></div>
+                                    {% else %}
+                                    <div class="no-play">N/A</div>
+                                    {% endif %}
+                                    <span class="track-title">{{ asset.title }}</span>
+                                    <span class="track-length">({{ asset.durationString }})</span>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <div>No assets included with this item</div>
+                    {% endif %}
+                </div>
+        </div>
+    </div>
+{% endblock %}

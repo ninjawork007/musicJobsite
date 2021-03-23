@@ -1,0 +1,7 @@
+Gig Title,Gig Amount, Date Published, Date Completed,Employer,Employer Paid $,Employee,Employee Received $,Commission from Employer,Commission from Vocalist,Total Commission, Upgrade Fees
+{% for project in projects %}
+    {{ project.title }},${{ project.projectEscrow.amount/100|number_format(2)}},{{ project.publishedAt|date('Y-m-d') }},{{ project.completedAt|date('Y-m-d') }},{{ project.userInfo.fullName }},${{(project.projectEscrow.amount + project.projectEscrow.fee)/100|number_format(2)}},{{project.employeeUserInfo.fullName}},${{ (project.projectEscrow.amount * 0.9)/100|number_format(2) }},${{ project.projectEscrow.fee/100|number_format(2) }},${{ (project.projectEscrow.amount * 0.1)/100|number_format(2) }}, ${{(project.projectEscrow.fee + (project.projectEscrow.amount * 0.1))/100|number_format(2)}},
+{% endfor %}
+{% for project in projectUpgrades %}
+    {{ project.title }},${{ project.projectEscrow.amount/100|number_format(2)}},{{ project.publishedAt|date('Y-m-d') }},,{{ project.userInfo.fullName }},,,,,,,${{(project.fees)/100|number_format(2)}}
+{% endfor %}

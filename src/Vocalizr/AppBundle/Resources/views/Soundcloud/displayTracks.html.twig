@@ -1,0 +1,28 @@
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                        <h4 class="modal-title">SoundCloud Tracks</h4>
+                    </div>
+                    {% if app.user.hasSoundcloud %}
+                    <div class="modal-sub-header">
+                        <button type="button" class="sc-fetch-tracks btn btn-sm btn-default" data-url="{{ path('soundcloud_fetch_tracks') }}{% if app.request.get('task') %}?task=1{% endif %}"><i class="fa fa-cloud-download"></i> Fetch Tracks</a>
+                    </div>
+                    <div id="soundcloud-tracks" class="modal-body">
+                        <div class="modal-row">
+                            {% for scTrack in scTracks %}
+                            {{ include(
+                                        'VocalizrAppBundle:Soundcloud:displayTrackItem.html.twig',
+                                        { 'scTrack': scTrack }
+                                    ) }}
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+                </div><!-- /.modal-content -->
+            </div><!-- /.modal-dialog -->
+            
+            
+            <script>
+                App.bindScFunctions();
+            </script>

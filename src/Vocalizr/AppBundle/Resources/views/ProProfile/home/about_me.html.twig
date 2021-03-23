@@ -1,0 +1,48 @@
+{% if userTags.voiceTags is not empty %}
+    <p class="about-me__card-info">
+        Sounds like:
+        <span class="gray">
+            {% for soundsLike in userTags.voiceTags %}
+                {% include '@VocalizrApp/ProProfile/home/_vote-tag.html.twig' with {
+                    id: soundsLike.id,
+                    type: 'voiceTag',
+                    title: soundsLike.voiceTag.title,
+                    agree: soundsLike.agree,
+                    agreed: soundsLike.userVoiceTagVotes|length > 0,
+                } only %}{{ not loop.last ? ',' }}
+            {% endfor %}
+        </span>
+    </p>
+{% endif %}
+{% if userTags.vocalStyles is not empty %}
+    <p class="about-me__card-info">
+        Vocal Styles:
+        <span class="gray">
+            {% for vocalStyle in userTags.vocalStyles %}
+                {% include '@VocalizrApp/ProProfile/home/_vote-tag.html.twig' with {
+                    id: vocalStyle.id,
+                    type: 'vocalStyle',
+                    title: vocalStyle.vocalStyle.title,
+                    agree: vocalStyle.agree,
+                    agreed: vocalStyle.userVocalStyleVotes|length > 0,
+                } only %}{{ not loop.last ? ',' }}
+            {% endfor %}
+        </span>
+    </p>
+{% endif %}
+{% if userTags.vocalCharacteristics is not empty %}
+    <p class="about-me__card-info">
+        Vocal Characteristic:
+        <span class="gray">
+            {% for characteristic in userTags.vocalCharacteristics %}
+                {% include '@VocalizrApp/ProProfile/home/_vote-tag.html.twig' with {
+                    id: characteristic.id,
+                    type: 'vocalCharacteristic',
+                    title: characteristic.vocalCharacteristic.title,
+                    agree: characteristic.agree,
+                    agreed: characteristic.userVocalCharacteristicVotes|length > 0,
+                } only %}{{ not loop.last ? ',' }}
+            {% endfor %}
+        </span>
+    </p>
+{% endif %}

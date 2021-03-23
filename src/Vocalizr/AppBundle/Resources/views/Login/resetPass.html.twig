@@ -1,0 +1,40 @@
+{% extends '::anonymous.html.twig' %}
+
+{% block title %}Reset your password{% endblock %}
+
+{% block description %}Forgot your password? No worries you can reset it{% endblock %}
+
+{% block body %}
+
+    <div class="container">
+        <div class="forgot-password-wrap">
+            {% include 'VocalizrAppBundle::messages.html.twig' %}
+
+            <div class="form-message">You'll be sent a link to your email to reset your password.</div>
+
+            <div id="reset-form-container">
+                <div class="light-content">
+                    <form action="{{ path('_reset_pass') }}" method="post">
+
+                        <div class="row form-group">
+                            <div class="col-sm-12">
+                                <div>
+                                    <label for="email" class="field-label required">Email address:</label>
+                                    <input type="text" id="email" name="email" class="form-control" tabindex="1" required="required">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group centered">
+                            <div class="btn-wrap">
+                                <input type="submit" name="submit" class="btn btn-lg btn-default" value="Reset Password" tabindex="2">
+                            </div>
+                            <a href="{{ path('login') }}" tabindex="4">Remember your password?</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

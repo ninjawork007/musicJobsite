@@ -1,0 +1,51 @@
+{% extends 'layout/bootstrap4/layout.html.twig' %}
+
+{% set userType = null %}
+
+{% if user.isVocalist and user.isProducer %}
+    {% set userType = "Producer and Vocalist" %}
+{% else %}
+    {% if user.isVocalist %}
+        {% set userType = "Vocalist" %}
+    {% else %}
+        {% set userType = "Producer" %}
+    {% endif %}
+{% endif %}
+
+{% block title %}{{ user.displayName }} - {{ userType }} from {{ user.country|countryName }}{% endblock %}
+
+{% block description %}{{ user.username }} is a {{ userType }} from {{ user.country|countryName }} on vocalizr. Connecting vocalists and producers from around the world.{% endblock %}
+
+{% block body %}
+    <!-- Header -->
+    <header class="header {{ app.user and app.user != user  ? 'header_logged' }}" style="{{
+        user.proProfile.heroImage ? 'background-image: url(' ~ user.proProfile.heroImageWebPath ~ ')'
+    }}">
+        <div class="container">
+            <div class="row">
+                <div class="col-xl-8 col-md-7">
+                    <div class="header__content-wrp">
+                        {{ include('@VocalizrApp/ProProfile/include/_image_header.html.twig') }}
+                    </div>
+                </div>
+                <div class="col-xl-4 col-md-5">
+                    {{ include('@VocalizrApp/ProProfile/include/user_info_card_header.html.twig') }}
+                </div>
+            </div>
+        </div>
+    </header>
+    <!-- END Header -->
+
+    <!-- Tabs -->
+    <div class="mine-tabs mine-tabs_logged">
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+                    {% block tabbed_content %}
+                    {% endblock %}
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Tabs -->
+{% endblock %}

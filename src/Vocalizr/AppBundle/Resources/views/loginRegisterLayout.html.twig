@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html class="no-js">
+    <head>
+        <meta charset="utf-8">
+        <title>{% block title %}Welcome!{% endblock %}, Vocalizr</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width">
+
+        <link rel="stylesheet" href="{{ asset('css/normalize.min.css') }}">
+        <link rel="stylesheet" href="{{ asset('css/main.css') }}">
+        <link rel="stylesheet" href="{{ asset('css/vocalizr.main.css') }}">
+        <link type="text/css" rel="stylesheet" href="http://fast.fonts.com/cssapi/e6865fd5-ffd4-4fd7-b358-ca199e64419a.css">
+        {% block stylesheets %}{% endblock %}
+
+        <script src="{{ asset('js/vendor/modernizr-2.6.2.min.js') }}"></script>
+    </head>
+    <body>
+
+        <div class="main-container">
+            {% block body %}{% endblock %}
+        </div>
+        {% block javascripts %}{% endblock %}
+    </body>
+</html>

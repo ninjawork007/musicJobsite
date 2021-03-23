@@ -1,0 +1,60 @@
+{% extends '::app.html.twig' %}
+
+{% block title %}Admin{% endblock %}
+
+{% block javascript %}
+        {% javascripts
+            '@VocalizrAppBundle/Resources/public/js/admin.js'
+         %}
+            <script type="text/javascript" src="{{ asset_url }}"></script>
+        {% endjavascripts %}
+
+        <script type="text/javascript">
+            VocalizrDashboard.initDashboard();
+        </script>
+{% endblock %}
+
+
+{% block body %}
+    <div class="row">
+        <div class="col-sm-2">
+            <ul class="nav">
+                {% include '@VocalizrApp/Admin/include/menu.html.twig' %}
+            </ul>
+        </div>
+        <div class="col-sm-10 admin-dashboard">
+            <h1>Marketplace</h1>
+
+            {% if items|length > 0 %}
+                <h3>Review the items below.</h3>
+                <table width="100%">
+                    <tr>
+                        <th>
+                            User
+                        </th>
+                        <th>
+                            Title
+                        </th>
+                        <th>
+                            Type
+                        </th>
+                        <th>
+                            Submitted
+                        </th>
+                    </tr>
+                    {% for item in items %}
+                        <tr>
+                            <td><a href="{{ path('user_view', {username: item.UserInfo.username} ) }}" target="_blank">{{ item.UserInfo.displayName }}</a></td>
+                            <td>{{ item.title }}</td>
+                            <td>{{ item.itemType }}</td>
+                            <td>{{ item.publishedAt|timeAgoString }} ago</td>
+                            <td><a href="{{ path('admin_marketplace_review', {uuid: item.uuid } ) }}">Review</a></td>
+                        </tr>
+                    {% endfor %}
+                </table>
+            {% else %}
+                <h3>No items to review.</h3>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

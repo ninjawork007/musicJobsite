@@ -1,0 +1,489 @@
+{% extends '::app.html.twig' %}
+
+{% set userType = null %}
+
+{% if userInfo.isVocalist and userInfo.isProducer %}
+    {% set userType = "Producer and Vocalist" %}
+{% else %}
+    {% if userInfo.isVocalist %}
+    {% set userType = "Vocalist" %}
+    {% else %}
+    {% set userType = "Producer" %}
+    {% endif %}
+{% endif %}
+
+{% block title %}{{ userInfo.displayName }} - {{ userType }} from {{ userInfo.country|countryName }}{% endblock %}
+
+{% block description %}{{ userInfo.username }} is a {{ userType }} from {{ userInfo.country|countryName }} on vocalizr. Connecting vocalists and producers from around the world.{% endblock %}
+
+{% block stylesheet %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('/plugins/plyr/plyr.css') }}" />
+        {% stylesheets
+            '@VocalizrAppBundle/Resources/public/css/user.css'
+        %}
+        <link rel="stylesheet" href="{{ asset_url }}" />
+    {% endstylesheets %}
+{% endblock %}
+
+{% block javascript %}
+    <script type="text/javascript" src="{{ asset('/plugins/plyr/plyr.js') }}"></script>
+
+    {% javascripts
+        '@VocalizrAppBundle/Resources/public/js/wavesurfer.min.js'
+        '@VocalizrAppBundle/Resources/public/js/jquery.cycle2.js'
+        '@VocalizrAppBundle/Resources/public/js/user-profile-video-tab.js'
+        '@VocalizrAppBundle/Resources/public/js/view-more-connections.js'
+        '@VocalizrAppBundle/Resources/public/js/user-profile-spotify-tab.js'
+        '@VocalizrAppBundle/Resources/public/js/view-more-reviews.js'
+        '@VocalizrAppBundle/Resources/public/js/user-profile-reviews-tab.js'
+        '@VocalizrAppBundle/Resources/public/js/waveforms.js'
+    %}
+        <script type="text/javascript" src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+
+    <script>
+        jQuery(document).ready(function($) {
+            new VocalizrAppUserProfileVideoTab($).init();
+            new VocalizrAppViewMoreConnections($).init();
+            new VocalizrAppUserProfileSpotifyTab($).init();
+            new VocalizrAppUserMoreReview($).init();
+        });
+    </script>
+
+{% endblock %}
+
+{% set thisUser = (app.user and app.user.id == userInfo.id) %}
+
+{% block body %}
+<div class="row">
+    {% include 'VocalizrAppBundle::messages.html.twig' %}
+    <div class="col-sm-3 no-padding-left mobile-padding">
+        <div class="profile-aside">
+            <a href="{{ path('user_view', { username: userInfo.username }) }}">
+                <div class="avatar" style="position: relative">
+                    <img src="{{
+                        userInfo.path is empty ?
+                        asset('images/default_avatar.svg') :
+                        asset('uploads/avatar/large/' ~ userInfo.path)
+                    }}" class="img-circle" alt="{{ userInfo.username }}" />
+                    {% if userInfo.subscribed %}
+                        <img src="{{ asset('images/vocalizr_pro_stamp.svg') }}" class="svg-stamp-pro in-profile" alt="pro" data-text="<div class='tip-header'>This Vocalizr user is an <a href='{{ path('membership') }}' class=stamp-pro-hover>Access Pass</a> member</div>">
+                    {% endif %}
+                </div>
+            </a>
+            <div class="mobile-only pro-certified">
+                <div class="mobile-user-base-info">
+                    <div class="username">
+                        <h1>{{ userInfo.displayName }}</h1>
+                        {% if userInfo.isCertified %}
+                            <img class="vocalizr-certified-stamp-clipped" style="width: 40px; margin-left: 7px; margin-bottom: 1px" src="{{ asset('images/certified_pro_stamp_clipped.svg') }}" alt="" data-text="<div class='tip-header'>Vocalizr Certified Professional</div>A 'Certified Professional’ is deemed a professional by the experts at Vocalizr. The stamp is based on ability, experience, and skill level.<br><a href='{{ path('get_certified') }}' class='get-certified-now' style='color: #01c2e5;'>Get Certified Now</a>">
+                        {% endif %}
+                    </div>
+                    <div class="short-summary">
+                        <div class="occupation">
+                            {% if userInfo.isVocalistAndProducer %}
+                                (Vocalist, Producer)
+                            {% elseif userInfo.isVocalist %}
+                                (Vocalist)
+                            {% elseif userInfo.isProducer %}
+                                (Producer)
+                            {% endif %}
+                        </div>
+                        {% if userInfo.city %}
+                            {{ userInfo.city }}{{ userInfo.country ? ', ' : ' ' }}
+                        {% endif %}
+                        {% if userInfo.country %}
+                            {{ userInfo.country|countryName }}
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            {% if thisUser %}
+                <a href="{{ path('user_edit') }}" class="btn btn-default btn-lg edit-profile">EDIT PROFILE</a>
+            {% endif %}
+
+            {% if userInfo.connectCount > 0 %}
+            <a href="" class="white-highlight" onclick="$('#connection-tab').click(); return false;">{{ userInfo.connectCount }} connection{% if userInfo.connectCount != 1 %}s{% endif %}</a>
+            {% else %}
+                No Connections
+            {% endif %}
+
+            <div class="user-merits">
+                <div class="profile-rating clearfix">
+                    <hr class="desktop-only">
+                    <span class="star-rating star-disabled" data-score="{{ userInfo.rating }}"></span>
+                    <span class="count">{{ userInfo.rating }} Star{% if userInfo.rating > 1 %}s{% endif %}</span>
+                </div>
+
+                {% if totalReviewsCount > 0 %}
+                    <a id="reviews-tab-toggle" href="#" class="reviews">{{ totalReviewsCount }} Review{% if totalReviewsCount != 1 %}s{% endif %}</a>
+                {% else %}
+                    <a id="reviews-tab-toggle" href="#" class="reviews">No reviews yet</a>
+                {% endif %}
+            </div>
+
+            {# Make sure user is logged in, and isn't viewing their own profile #}
+            {% if app.user %}
+                {% if not thisUser %}
+                    <hr class="desktop-only">
+                    <div class="profile-actions">
+                        <a id="profile-hire-now" href="{{ path('project_hire', {username: userInfo.username}) }}" class="btn btn-sm btn-primary roll-alt">
+                            <i></i>
+                            <span>Hire Now</span>
+                            <div></div>
+                        </a>
+                        {{ render(controller('VocalizrAppBundle:User:connectButton', {userInfo: userInfo, userConnect: userConnect} )) }}
+                        {% if isUserFavorite %}
+                        <a href="{{ path('user_favorite', {username: userInfo.username}) }}" class="btn btn-sm btn-default member-favourite roll-alt">
+                            <i class="fa fa-star"></i>
+                            <span>Remove Favourite</span>
+                            <div></div>
+                        </a>
+                        {% else %}
+                        <a href="{{ path('user_favorite', {username: userInfo.username}) }}" class="btn btn-sm btn-default member-favourite roll-alt">
+                            <i class="fa fa-star"></i>
+                            <span>Add to Favourites</span>
+                            <div></div>
+                        </a>
+                        {% endif %}
+                        {% if isUserBlocked %}
+                        <a href="{{ path('user_block', {username: userInfo.username}) }}" class="btn btn-sm btn-default member-block roll-alt">
+                            <i class="fa fa-ban"></i>
+                            <span>Unblock</span>
+                            <div></div>
+                        </a>
+                        {% else %}
+                        <a href="{{ path('user_block', {username: userInfo.username}) }}" class="btn btn-sm btn-default member-block roll-alt">
+                            <i class="fa fa-ban"></i>
+                            <span>Block</span>
+                            <div></div>
+                        </a>
+                        {% endif %}
+                        {{ render(controller('VocalizrAppBundle:Project:inviteToGigButton', {userInfo: userInfo} )) }}
+                    </div>
+                {% endif %}
+            {% endif %}
+                <hr class="desktop-only">
+
+            {% if userInfo.userSpotifyId|length > 0 %}
+                <div class="iframe-block-follow">
+                    <iframe id="iframe-spotify-follow" src="https://embed.spotify.com/follow/1?uri=spotify:artist:{{  userInfo.userSpotifyId }}&size=basic&theme=dark" width="162" height="30" scrolling="no" frameborder="0" style="border:none; overflow:hidden;" allowtransparency="true"></iframe>
+                </div>
+            {% endif %}
+
+            <div class="profile-share share-btns">
+                Share:
+                <a target="_blank" href="http://www.facebook.com/sharer/sharer.php?u={{ url('user_view', {username: userInfo.username}) }}"><i class="fab fa-facebook-square"></i></a>
+                {% if thisUser %}
+                    {% set message = "Check out my profile on vocalizr! " %}
+                {% else %}
+                    {% set message = "Check out " ~ userInfo.username ~ " on vocalizr! " %}
+                {% endif %}
+                <a target="_blank" href="http://twitter.com/intent/tweet?text={{ message ~ ' ' ~ url('user_view', {username: userInfo.username}) ~ ' #vocalizr'|url_encode() }}"><i class="fab fa-twitter-square"></i></a>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="col-sm-9 no-padding-left mobile-padding">
+        {% include 'VocalizrAppBundle::messages.html.twig' %}
+        <div id="profile-content">
+            <h1 class="desktop-only">
+                {{ userInfo.displayName }}
+                {% if userInfo.isCertified %}
+                    <img class="vocalizr-certified-stamp-clipped" style="width: 40px; margin-left: 0; margin-bottom: 1px" src="{{ asset('images/certified_pro_stamp_clipped.svg') }}" alt="" data-text="<div class='tip-header'>Vocalizr Certified Professional</div>A 'Certified Professional’ is deemed a professional by the experts at Vocalizr. The stamp is based on ability, experience, and skill level.<br><a href='{{ path('get_certified') }}' class='get-certified-now' style='color: #01c2e5;'>Get Certified Now</a>">
+                {% endif %}
+                {% if userInfo.isVocalist or userInfo.isProducer %}
+                <small>(<ul class="comma-list">
+                        {% if userInfo.isVocalist %}
+                            <li>{% if not userInfo.isProducer %}{% if userInfo.gender == "m" %}Male{% else %}Female{% endif %} {% endif %}Vocalist</li>
+                        {% endif %}
+                        {% if userInfo.isProducer %}
+                            <li>Producer</li>
+                        {% endif %}
+                    </ul>)</small>
+                {% endif %}
+            </h1>
+            <div class="location desktop-only">{% if userInfo.city %}{{ userInfo.city }}, {% endif %}{{ userInfo.country|countryName }}</div>
+
+            {% if userAudio|length %}
+                <div class="user-audio-wrap is-profile-audio">
+                <div class="cycle-slideshow"
+                     data-cycle-fx="scrollHorz"
+                     data-cycle-timeout="0"
+                     data-cycle-prev="#audio-{{ userInfo.id }}-prev"
+                     data-cycle-next="#audio-{{ userInfo.id }}-next"
+                     data-cycle-slides="> div.profile-track"
+                     >
+                    {% for audio in userAudio %}
+                        <div class="player-container has-controls profile-track">
+                            {% include 'include/user_audio.html.twig' with {userAudio: audio} %}
+                        </div>
+                    {% endfor %}
+                </div>
+                {% if userAudio|length > 1 %}
+                <div class="audio-nav">
+                    <a href=# id="audio-{{ userInfo.id }}-prev" class="audio-prev btn btn-sm btn-default"><i class="fa fa-chevron-left"></i></a>
+                    <a href=# id="audio-{{ userInfo.id }}-next" class="btn btn-sm btn-default audio-next"><i class="fa fa-chevron-right"></i></a>
+                </div>
+                {% endif %}
+                </div>
+            {% endif %}
+
+                <div class="clearfix"></div>
+
+            <ul class="nav nav-tabs mobile-select-tabs">
+                <li class="active"><a href="#profile" data-toggle="tab">Profile</a></li>
+                {% if userAudio|length > 1 %}
+                    <li><a href="#audio" data-toggle="tab">Tracks</a></li>
+                {% endif %}
+                {% if openProjects %}
+                    <li><a href="#gigs" data-toggle="tab">Open Gigs</a></li>
+                {% endif %}
+                <li><a href="#reviews" data-toggle="tab">Reviews</a></li>
+                {% if userVideos|length > 0 %}
+                    <li><a id="videos-tab" href="#videos" data-toggle="tab">Videos</a></li>
+                {% endif %}
+                {% if userInfo.connectCount > 0 %}
+                    <li><a id="connection-tab" href="#connections" data-toggle="tab">Connections</a></li>
+                {% endif %}
+                {% if userSpotifyPlaylists|length > 0 %}
+                    <li><a id="playlists-tab" href="#playlists" data-toggle="tab">Spotify</a></li>
+                {% endif %}
+            </ul>
+
+                <div class="tab-content">
+
+                    <!-- PROFILE TAB -->
+                    <div class="tab-pane fade in active" id="profile">
+
+                        <div class="key-info member-since">Member Since: <span class="highlight">{{ userInfo.dateRegistered|date('F j, Y') }}</span></div>
+                        <div class="key-info mic">Studio Access: <span class="highlight">{% if userInfo.studioAccess %}YES{% else %}NO{% endif %}</span></div>
+
+                        <hr>
+
+                        {% if userInfo.vocalistFee or userInfo.producerFee %}
+                            {% if userInfo.producerFee %}
+                        <div class="key-info">Producer Fee: <span class="highlight">${{ (userInfo.producerFee / 100)|number_format(0, ',') }}</span></div>
+                            {% endif %}
+                            {% if userInfo.vocalistFee %}
+                        <div class="key-info">Vocalist Fee: <span class="highlight">${{ (userInfo.vocalistFee / 100)|number_format(0, ',') }}</span></div>
+                            {% endif %}
+                        <hr>
+                        {% endif %}
+
+                        <div id="profile-key-info">
+                            <div class="key-info gender"><i class="vocalizr-icon icon-gender"></i> Gender: <span class="highlight">{% if userInfo.gender|upper == "M" %}MALE{% else %}FEMALE{% endif %}</span></div>
+                            {% if userInfo.country %}<div class="key-info country"><i class="vocalizr-icon icon-country"></i> Country: <span class="highlight">{{ userInfo.country|countryName }}</span></div>{% endif %}
+                            {% if userInfo.microphone %}<div class="key-info mic"><i class="vocalizr-icon icon-mic"></i> Microphone: <span class="highlight">{{ userInfo.microphone }}</span></div>{% endif %}
+                        </div>
+
+                        {% if userInfo.genres|length > 0 %}
+
+                        <hr>
+
+                        Genres: <span class="highlight">
+                            <ul class="comma-list">
+                            {% for genre in userInfo.genres %}
+                            <li>{{ genre.title }}</li>
+                            {% endfor %}
+                            </ul>
+                            </span>
+                        {% endif %}
+
+                        {% if userInfo.userLanguages|length > 0 %}
+                            <hr>
+
+                            Languages: <span class="highlight">
+                            <ul class="comma-list">
+                            {% for userLanguage in userInfo.userLanguages %}
+                                <li>{{ userLanguage.language.title }}</li>
+                            {% endfor %}
+                            </ul>
+                            </span>
+                        {% endif %}
+
+
+                        {% if userTags|length > 0 %}
+                        <hr>
+
+                            {% if userTags.voiceTag|length > 0 %}
+                            <div class="vote-tags">
+                                Sounds Like:
+                                {% for tag in userTags.voiceTag %}
+                                <span class="vote-tag">{{ tag.voiceTag.name }} <a data-type="voiceTag" data-id="{{ tag.id }}" href="{{ path('user_tag_vote') }}" class="{% if app.user and tag.userVoiceTagVotes|length > 0 %}voted{% endif %}{% if thisUser %}disabled{% endif %}">{{ tag.agree }}</a></span>
+                                {% endfor %}
+                            </div>
+                            <hr>
+                            {% endif %}
+
+                            {% if userTags.vocalStyle|length > 0 %}
+                            <div class="vote-tags">
+                                Vocal Styles:
+                                {% for tag in userTags.vocalStyle %}
+                                <span class="vote-tag">{{ tag.vocalStyle.title }} <a data-type="vocalStyle" data-id="{{ tag.id }}" href="{{ path('user_tag_vote') }}" class="{% if app.user and tag.userVocalStyleVotes|length > 0 %}voted{% endif %}{% if thisUser %}disabled{% endif %}">{{ tag.agree }}</a></span>
+                                {% endfor %}
+                            </div>
+                            <hr>
+                            {% endif %}
+
+                            {% if userTags.vocalCharacteristic|length > 0 %}
+                            <div class="vote-tags">
+                                Vocal Characteristic:
+                                {% for tag in userTags.vocalCharacteristic %}
+                                <span class="vote-tag">{{ tag.vocalCharacteristic.title }} <a data-type="vocalCharacteristic" data-id="{{ tag.id }}" href="{{ path('user_tag_vote') }}" class="{% if app.user and tag.userVocalCharacteristicVotes|length > 0 %}voted{% endif %}{% if thisUser %}disabled{% endif %}">{{ tag.agree }}</a></span>
+                                {% endfor %}
+                            </div>
+                            <hr>
+                            {% endif %}
+
+                        {% endif %}
+
+                        {% if not userInfo.profile is empty %}
+                            <hr>
+
+                            {{ userInfo.profile|nl2br }}
+                        {% endif %}
+                    </div>
+                    <!-- /END PROFILE TAB -->
+
+                    <!-- AUDIO TAB -->
+                    <div class="tab-pane fade" id="audio">
+                        {% if userAudio|length > 0 %}
+                            {% for audio in userAudio %}
+                                <div class="player-container has-controls profile-track">
+                                    {% include 'include/user_audio.html.twig' with {userAudio: audio} %}
+                                </div>
+                                {% if loop.index != userAudio|length %}
+                                <hr>
+                                {% endif %}
+                            {% endfor %}
+                        {% else %}
+                        <p>Member has not uploaded any audio yet.</p>
+                        {% endif %}
+
+                    </div>
+                    <!-- /END AUDIO TAB -->
+
+                    {% if openProjects %}
+                    <!-- OPEN GIGS TAB -->
+                    <div class="tab-pane" id="gigs">
+                        <div id="gig-results">
+                        {% for project in openProjects %}
+                            <div class="gig-list-item">
+                                <div class="audio">
+                                    {% if project.projectAudio|length > 0 %}
+                                        {% set projectAudio = project.projectAudio[0] %}
+                                        <div class="ui360 track-play"><a href="{{ path('project_audio', {uuid: project.uuid, slug: projectAudio.slug}) }}" type="audio/mp3"><span>PLAY</span></a></div>
+                                    {% endif %}
+                                </div>
+                                <div class="project-info">
+                                    <a href="{{ path('project_view', {uuid: project.uuid } ) }}" class="gig-title">{{ project.title }}</a>
+                                    <div class="deadline">BIDDING ENDS IN {{ project.bidsDue|timeLeftSingle.num }} {{ project.bidsDue|timeLeftSingle.text|upper }}</div><br>
+                                    <div class="info looking-for">Looking for: <span class="highlight">{% if project.lookingFor == 'vocalist' %}{% if project.gender is null %}MALE OR FEMALE{% else %}{% if project.gender == 'male' %}MALE{% else %}FEMALE{% endif %}{% endif %}{% endif %} {{ project.lookingFor|upper }}</span></div>
+                                    <div class="bidding-info">
+                                        <div class="info budget">Budget: <span class="highlight">${{ project.budgetFrom }}{% if project.budgetTo > 0 %} - ${{ project.budgetTo }}{% else %}+{% endif %}</span></div>
+                                        <div class="info">Bids: <span class="highlight">{{ project.numBids }}</span></div>
+                                        <div class="info">Avg Bid: <span class="highlight">${% if project.numBids > 0 %}{{ ((project.bidTotal / project.numBids) / 100)|number_format(2) }}{% else %}0{% endif %}</span></div>
+
+                                        {% if app.user and project.userInfo != app.user and project.projectBids|length > 0  %}
+                                            {% set userBid = project.projectBids[0] %}
+                                            <div class="info">Your bid: <span class="highlight">${{ (userBid.amount/100)|number_format(2) }}</span></div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                        </div>
+                    </div>
+                    <!-- /END OPEN GIGS TAB -->
+                    {% endif %}
+
+                    <!-- REVIEWS TAB -->
+                    <div class="tab-pane" id="reviews">
+                        {% include '@VocalizrApp/User/view/reviews.html.twig' %}
+                    </div>
+                    <!-- /END REVIEWS TAB -->
+
+                    {% if userVideos|length > 0 %}
+                        <div class="tab-pane" id="videos">
+                            <div data-role="video-container">
+                                {% include 'VocalizrAppBundle:User:view_videos.html.twig' %}
+                            </div>
+                            {% if userInfo.getVideosCount > userVideos|length %}
+                                <div class="form-group">
+                                    <button data-limit="10" data-edit="0" data-path="{{ path('user_get_user_video') }}" data-id="{{ userInfo.id }}" class="btn btn-default" data-role="add-more-videos">Load more</button>
+                                </div>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+
+                    {% if userInfo.connectCount > 0 %}
+                        <div class="tab-pane" id="connections">
+                            <div data-role="user-connections-container" class="user-connections">
+                                {{ render(controller('VocalizrAppBundle:User:viewConnections', {id: userInfo.id} )) }}
+                                {% if userInfo.connectCount > 20 %}
+                                    <div class="form-group">
+                                        <button data-path="{{ path('user_view_connections', {id: userInfo.id}) }}"
+                                                data-id="{{ userInfo.id }}"
+                                                data-connections-count="{{ userInfo.connectCount }}"
+                                                data-loading-text="LOADING..."
+                                                class="btn btn-sm btn-default"
+                                                data-role="add-more-connections">LOAD MORE
+                                        </button>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% endif %}
+
+                    {% if userSpotifyPlaylists|length > 0 %}
+                        <div class="tab-pane" id="playlists">
+                            <div class="col-md-12" data-role="spotify-playlist-container">
+                                {% if userSpotifyPlaylists|length > 0 %}
+                                    {% include 'VocalizrAppBundle:User:user_spotify_playlists.html.twig' with {edit: false, user: userInfo} %}
+                                {% endif %}
+                            </div>
+
+                            <div class="form-group col-md-12">
+                                <button data-edit="0" data-path="{{ path('user_edit_add_spotify_playlist') }}" data-id="{{ userInfo.id }}" class="{% if userInfo.UserSpotifyPlaylistsCount <= userSpotifyPlaylists|length %} hidden {% endif %}btn btn-sm btn-default" data-role="add-more-spotify-playlists">LOAD MORE</button>
+                            </div>
+
+                        </div>
+                    {% endif %}
+
+
+                </div>
+
+            {% if app.user and app.user.isAdmin %}
+                <div style="height: 10px;"></div>
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        ADMIN ONLY
+                    </div>
+                    <div class="panel-body">
+                        <div class="panel-row" style="text-align:left;">
+                            Id: <span class="white-highlight">{{ userInfo.id }}</span>,
+                            {% if userInfo.firstName %}
+                            Firstname: <span class="white-highlight">{{ userInfo.firstName }}</span>,
+                            {% endif %}
+                            Email: <span class="white-highlight"><a href="mailto:{{ userInfo.email }}">{{ userInfo.email }}</a></span><br>
+                            In their wallet: <span class="white-highlight">${{ userInfo.walletDollars }}</span>
+                            <br><br>
+
+                            <p><a href="{{ path('loginAs', {id : userInfo.id}) }}" class="btn btn-default btn-sm">LOGIN AS USER</a></p>
+                                {% if not userInfo.isCertified %}
+                                    <p><a href="{{ path('admin_user_certify', {id: userInfo.id, from: 'vocalists'}) }}" class="btn btn-default btn-app-certify btn-sm roll-alt">CERTIFY</a></p>
+                                {% else %}
+                                    <p><a href="{{ path('admin_user_certify', {id: userInfo.id, from: 'vocalists'}) }}" class="btn btn-default btn-app-certify btn-sm roll-alt">REMOVE CERTIFY</a></p>
+                                {% endif %}
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

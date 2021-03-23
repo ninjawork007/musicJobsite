@@ -1,0 +1,67 @@
+{% extends '::anonymous.html.twig' %}
+
+{% block title %}Login{% endblock %}
+
+{% block description %}Login{% endblock %}
+
+{% block body %}
+
+    <div id="fb-root"></div>
+    <script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_GB/sdk.js#xfbml=1&version=v6.0&appId=211912350113408&autoLogAppEvents=1"></script>
+    <div class="row">
+        <div class="container">
+            <div class="login-wrap">
+                {% include 'VocalizrAppBundle::messages.html.twig' %}
+
+                <div class="form-message">Sign in or <a href="{{ path('register') }}">Create an account</a></div>
+
+                {% if error %}
+                    <div class="alert alert-error">{{ error.message|trans }}</div>
+                {% endif %}
+
+                <div class="container">
+                    <div id="login-form-container">
+                        <div class="light-content">
+                            <form class="form login-form clearfix" action="{{ path('_login_check') }}" method="post">
+
+                                <div class="row form-group">
+                                    <div class="col-sm-12">
+                                        <div>
+                                            <label for="email" class="field-label required">Email address:</label>
+                                            <input type="text" id="email" name="_username" value="{{ last_username }}" class="form-control input" tabindex="1">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row form-group">
+                                    <div class="col-sm-12">
+                                        <div>
+                                            <label for="password" class="field-label required">Password:</label>
+                                            <input type="password" id="password" name="_password" class="form-control input" tabindex="2">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="fields-row">
+                                    <div class="field-wrap">
+                                        <input type="checkbox" id="remember_me" name="_remember_me" checked /> Keep me logged in
+                                    </div>
+                                </div>
+
+                                <div class="form-group centered">
+                                    <div class="btn-wrap">
+                                        <input type="submit" name="login_submit" value="Sign in" class="btn btn-lg btn-default" tabindex="3">
+                                    </div>
+                                    <a href="{{ path('_reset_pass') }}" tabindex="4">Forgot your password?</a>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <div class="join-facebook">
+                <div class="fb-like" data-href="https://facebook.com/vocalizr" data-width="" data-layout="box_count" data-action="like" data-size="large" data-share="false"></div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

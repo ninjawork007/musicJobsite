@@ -1,0 +1,9 @@
+Hey <strong>{{ userInfo.usernameOrFirstName }}</strong>!
+
+<p>The bidding is closed for your gig "<a href="{{ url('project_view', {uuid: project.uuid}) }}">{{ project.title }}</a>".
+    You have received <strong>{{ project.numBids }}</strong> bid{% if project.numBids > 1 %}s{% endif %} from great {{ project.lookingFor }}s, so now is the time to award your gig!</p>
+
+<p style="text-align: center;"><a href="{{ url('project_view', {uuid: project.uuid}) }}" style="text-decoration:none;padding: 5px 10px;background:#14b9d6;color:#fff;display: inline-block;">View and award your Gig</a></p>
+
+<p>If you are not going to award your Gig, and you have some suggestions as to how we can make Vocalizr better, let us know here: <a href="mailto: help@vocalizr.com" style="text-decoration:none;padding: 5px 10px;background:#14b9d6;color:#fff;display: inline-block;">help@vocalizr.com</a></p>
+

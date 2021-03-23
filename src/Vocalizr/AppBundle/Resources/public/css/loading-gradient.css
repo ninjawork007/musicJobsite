@@ -1,0 +1,20 @@
+.loading-gradient {
+    background-image: repeating-linear-gradient(90deg, rgb(85, 100, 105) 0%, rgba(85, 100, 105, 0.23) 30%, rgba(85, 100, 105, 0) 60%, rgba(85, 100, 105, 0.15) 90%, rgb(85, 100, 105) 100%);
+    background-size: 200% auto;
+    background-position: 0 100%;
+    animation: loading_gradient 1s infinite;
+    animation-fill-mode: forwards;
+    animation-timing-function: cubic-bezier(0,.67,.44,1);
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 100%;
+    width: 100%;
+    border-radius: 1px;
+    z-index: 999999;
+}
+
+@keyframes loading_gradient {
+    0%   { background-position: 0 0; }
+    100% { background-position: -200% 0; }
+}

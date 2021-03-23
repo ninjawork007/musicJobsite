@@ -1,0 +1,159 @@
+body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.page-wrap {
+    width: 100%;
+    max-width: 946px;
+    padding-left: 20px;
+    padding-right: 20px;
+    margin-left: -6px;
+}
+
+.page-wrap > * + * {
+    margin-top: 70px;
+}
+
+.logo-header {
+    padding-top: 76px;
+    padding-bottom: 0;
+}
+.sidebar {
+    padding-right: 2px;
+    padding-bottom: 40px;
+}
+.sidebar > * + * {
+    margin-top: 30px;
+}
+
+div.panel-muted {
+    margin-top: 5px;
+}
+
+.stayhome .voc-panel.payment .heading {
+    padding-top: 17px;
+    padding-left: 16px;
+}
+.stayhome .voc-panel.payment > .content {
+    padding-left: 16px;
+}
+.form-control {
+    color: #FFFFFF;
+}
+.payment-method-img {
+    margin-bottom: 11px;
+}
+button[id=paypal] {
+    margin-top: 2px;
+}
+.voc-panel.payment label.field-label {
+    text-transform: none;
+    font-size: 11px;
+    font-weight: 300;
+    color: #B7B7B7;
+    margin-bottom: 9px;
+}
+.voc-panel.pro .badge-recommend {
+    text-transform: uppercase;
+    padding-left: 12px;
+    padding-right: 10px;
+    font-weight: 700;
+}
+.voc-panel.pro ul {
+    padding-left: 28px;
+}
+.page-content-wrap {
+    display: flex;
+    justify-content: space-between;
+}
+
+.badge-recommend {
+    width: auto;
+}
+
+.page-content {
+    max-width: 518px;
+}
+h1.page-title {
+    margin-bottom: 24px;
+    margin-left: -1px;
+    margin-top: -3px;
+}
+h1.page-title > span {
+    background-color: #17242B;
+    padding: 0 26px 0px 7px;
+
+    color: #fff;
+    font-family: Museo;
+    font-style: normal;
+    font-weight: 900;
+    font-size: 36px;
+    line-height: 51px;
+}
+h1.page-title > span:nth-child(3) {
+    padding-right: 8px;
+}
+
+.page-content > p {
+    padding-bottom: 21px;
+    font-family: Museo Sans;
+    font-style: normal;
+    font-weight: 300;
+    font-size: 18px;
+    line-height: 22px;
+    color: #fff;
+}
+
+.page-content > p:last-child {
+    font-weight: 400;
+}
+
+.voc-panel.plan .title {
+    font-family: Museo Sans;
+    font-style: normal;
+    font-weight: 300;
+    font-size: 16px;
+    line-height: 19px;
+    color: #fff;
+}
+
+.page-content > b {
+    font-weight: 900;
+}
+.page-content b, .page-content strong, .page-content a.external {
+    font-weight: 900;
+}
+.stayhome .voc-panel.plan {
+    height: auto;
+}
+
+@media screen and (max-width: 768px) {
+    .page-wrap {
+        margin-left: 0;
+    }
+    .page-content-wrap {
+        margin-top: 20px;
+        flex-direction: column;
+    }
+    .stayhome .voc-panel {
+        width: 100% !important;
+    }
+    .stayhome .logo-header {
+        padding-top: 30px;
+        margin-left: 0;
+    }
+    .page-content > p {
+        font-size: 16px;
+    }
+    h1.page-title {
+        margin-bottom: 12px;
+    }
+    h1.page-title > span {
+        font-size: 32px;
+        line-height: 44px;
+    }
+    .page-content {
+        max-width: 100%;
+    }
+}

@@ -1,0 +1,242 @@
+{% extends '::app.html.twig' %}
+
+{% block title %}Bids, Gig Center{% endblock %}
+
+{% block stylesheet %}
+    {% stylesheets
+        '@VocalizrAppBundle/Resources/public/css/highlight-bid-modal.css'
+    %}<link rel="stylesheet" href="{{ asset_url }}" />{% endstylesheets %}
+{% endblock %}
+
+{% block javascript %}
+    <script src="https://js.stripe.com/v3/"></script>
+    <script>
+        var stripe = Stripe("{{ stripe_checkout_key }}");
+    </script>
+
+    <div id="bid-highlight" style="display: none">
+        {% include 'include/panel/highlight_bid.html.twig' %}
+    </div>
+{% endblock %}
+
+{% block body %}
+    <div class="col-sm-12">
+        <h1>Gig Center</h1>
+
+        <div class="row">
+            <div class="col-sm-12">
+                <ul class="nav nav-tabs gig-center-tabs">
+                    <li><a href="{{ path("project_center") }}">Gigs / Contests {% if app.user.unreadProjectActivity %}<span class="gig-center-status new">NEW</span>{% endif %}</a></li>
+                    <li class="active"><a href="{{ path("project_center_bids") }}">Bids / Entries</a></li>
+                    <li><a href="{{ path("project_center_invites") }}">Invitations{% if app.user.unseenProjectInvitation %}<span class="gig-center-status new">NEW</span>{% endif %}</a></li>
+                </ul>
+
+                <div class="tab-content tab-gig-center">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="gig-center-list-header">
+                                <h2>CURRENT BIDS</h2>
+                            </div>
+                            <div class="gig-center-list {% if currentBids|length == 0 %}empty{% endif %}">
+                                {% if currentBids|length > 0 %}
+                                    
+                                    {% for projectBid in currentBids %}
+                                        <div class="gig-center-item current-bids">
+                                            <div class="gig-info">
+                                                <a href="{{ path('project_view', {'uuid' : projectBid.project.uuid}) }}" class="gig-title">{{ projectBid.project.title }}</a>
+                                                {% if projectBid.project.projectType == 'paid' %}
+                                                    <div class="item bid-amount">Your bid: <span class="white-highlight"> ${{ (projectBid.amount / 100)|number_format(2) }} USD</span></div>
+                                                {% else %}
+                                                    <div class="item bid-amount">Payment: <span class="white-highlight"> ${{ (projectBid.amount / 100)|number_format(2) }} USD</span></div>
+                                                    {% if projectBid.project.sfs %}
+                                                        <span class="badge badge-sfs">SEARCH FOR A SINGER</span>
+                                                    {% else %}
+                                                        <span class="badge badge-orange">CONTEST</span>
+                                                    {% endif %}
+                                                {% endif %}
+                                                {% if projectBid.project.royalty %}
+                                                    <div class="item royalty-amount">
+                                                        Royalties: <span class="white-highlight"> {{ projectBid.project.royalty }}%</span>
+                                                        {% if projectBid.project.royaltyMechanical %}
+                                                            <span class="icon-royalty-mechanical" data-text="Mechanical royalties offered">M</span>
+                                                        {% endif %}
+                                                        {% if projectBid.project.royaltyPerformance %}
+                                                            <span class="icon-royalty-performance" data-text="Performance royalties offered">P</span>
+                                                        {% endif %}
+                                                    </div>
+                                                {% endif %}<br>
+                                                {% if projectBid.project.bidsDue|timeLeftSingle %}
+                                                    <div class="deadline bids">BIDDING ENDS IN {{ projectBid.project.bidsDue|timeLeftSingle.num }} {{ projectBid.project.bidsDue|timeLeftSingle.text|upper }}</div><br>
+                                                {% else %}
+                                                    <div class="deadline bids soon">BIDDING HAS ENDED</div><br>
+                                                {% endif %}
+                                                <div class="item">Bids: <span class="highlight">{{ projectBid.project.numBids }}</span></div>
+                                                {% if projectBid.project.projectType == 'paid' %}
+                                                    <div class="item">Avg Bid: <span class="highlight">${{ ((projectBid.project.bidTotal / projectBid.project.numBids) / 100)|number_format(2) }}</span></div>
+                                                    <div class="item">Budget: <span class="highlight">${{ projectBid.project.budgetFrom|number_format(2) }}{% if projectBid.project.budgetTo > 0 %} - ${{ projectBid.project.budgetTo|number_format(2) }}{% else %}+{% endif %}</span></div>
+                                                {% endif %}
+                                            </div>
+
+                                            <div class="gig-info pull-right">
+                                                <div class="item user-info">
+                                                    Employer: <a href="{{ path('user_view', {'username':projectBid.project.userInfo.username}) }}">{{ projectBid.project.userInfo.displayName }}</a>
+                                                    {% if not projectBid.project.isContest and not projectBid.highlightOption %}
+                                                        <a href="#" class="btn btn-sm btn-show-bid-highlight-modal btn-primary" data-uuid="{{ projectBid.uuid }}">Highlight Bid</a>
+                                                    {% endif %}
+                                                    <div class="avatar">
+                                                        {% if projectBid.project.userInfo.path is null %}
+                                                            <img src="{{ asset('images/default_avatar.svg') }}" width="42" height="42" class="img-circle">
+                                                        {% else %}
+                                                            <img src="{{ asset('uploads/avatar/small/' ~ projectBid.project.userInfo.path ) }}" width="42" height="42" class="img-circle  avatar-sm-{{ projectBid.project.userInfo.username }}">
+                                                        {% endif %}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                
+                                
+                                {% else %}
+                                    You do not have any current recent bids
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="gig-center-list-header">
+                                <h2>SUCCESSFUL BIDS</h2>
+                            </div>
+                            <div class="gig-center-list {% if successfulBids|length == 0 %}empty{% endif %}">
+                                {% if successfulBids|length > 0 %}
+                                
+                                
+                                
+                                    {% for project in successfulBids %}
+                                        <div class="gig-center-item successful-bids">
+                                            <div class="gig-info">
+                                                <a href="{{ path('project_studio', {'uuid' : project.uuid}) }}" class="gig-title">{{ project.title }}</a>
+                                                {% if project.projectType == 'paid' %}
+                                                    <div class="item bid-amount">Your bid: <span class="white-highlight"> ${{ (project.projectBid.amount / 100)|number_format(2) }} USD</span></div>
+                                                {% else %}
+                                                    <div class="item bid-amount">Payment: <span class="white-highlight"> ${{ (project.projectBid.amount / 100)|number_format(2) }} USD</span></div>
+                                                    {% if project.sfs %}
+                                                        <span class="badge badge-sfs">SEARCH FOR A SINGER</span>
+                                                    {% else %}
+                                                        <span class="badge badge-orange">CONTEST</span>
+                                                    {% endif %}
+                                                {% endif %}
+                                                {% if project.royalty %}
+                                                    <div class="item royalty-amount">
+                                                        Royalties: <span class="white-highlight"> {{ project.royalty }}%</span>
+                                                        {% if project.royaltyMechanical %}
+                                                            <span class="icon-royalty-mechanical" data-text="Mechanical royalties offered">M</span>
+                                                        {% endif %}
+                                                        {% if project.royaltyPerformance %}
+                                                            <span class="icon-royalty-performance" data-text="Performance royalties offered">P</span>
+                                                        {% endif %}
+                                                    </div>
+                                                {% endif %}
+                                                {% if not project.isComplete %}<br>
+                                                <div class="gig-in-progress">IN PROGRESS</div><br>
+                                                {% endif %}
+                                                <br>
+                                                <div class="item">Date awarded: <span class="highlight">{{ project.awardedAt|date('M d, Y') }}</span></div>
+                                                {% if project.isComplete %}
+                                                <div class="item">Date completed: <span class="highlight">{{ project.completedAt|date('M d, Y') }}</span></div>
+                                                {% endif %}
+                                            </div>
+
+                                            <div class="gig-info pull-right">
+                                                <div class="item user-info">
+                                                    Employer: <a href="{{ path('user_view', {'username':project.userInfo.username}) }}">{{ project.userInfo.displayName }}</a>
+                                                    <div class="avatar">
+                                                        {% if project.userInfo.path is null %}
+                                                            <img src="{{ asset('images/default_avatar.svg') }}" width="42" height="42" class="img-circle">
+                                                        {% else %}
+                                                            <img src="{{ asset('uploads/avatar/small/' ~ project.userInfo.path ) }}" width="42" height="42" class="img-circle  avatar-sm-{{ project.userInfo.username }}">
+                                                        {% endif %}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                
+                                
+                                                                
+                                {% else %}
+                                    You do not have any recent successful bids
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="gig-center-list-header">
+                                <h2>UNSUCCESSFUL BIDS</h2>
+                            </div>
+                            <div class="gig-center-list {% if unsuccessfulBids|length == 0 %}empty{% endif %}">
+                                {% if unsuccessfulBids|length > 0 %}
+                                    
+                                    {% for projectBid in unsuccessfulBids %}
+                                        <div class="gig-center-item successful-bids">
+                                            <div class="gig-info">
+                                                <a href="{{ path('project_view', {'uuid' : projectBid.project.uuid}) }}" class="gig-title">{{ projectBid.project.title }}</a>
+                                                {% if projectBid.project.projectType == 'paid' %}
+                                                    <div class="item bid-amount">Your bid: <span class="white-highlight"> ${{ (projectBid.amount / 100)|number_format(2) }} USD</span></div>
+                                                {% else %}
+                                                    <div class="item bid-amount">Payment: <span class="white-highlight"> ${{ (projectBid.amount / 100)|number_format(2) }} USD</span></div>
+                                                    {% if projectBid.project.sfs %}
+                                                        <span class="badge badge-sfs">SEARCH FOR A SINGER</span>
+                                                    {% else %}
+                                                        <span class="badge badge-orange">CONTEST</span>
+                                                    {% endif %}
+                                                {% endif %}
+                                                {% if projectBid.project.royalty %}
+                                                    <div class="item royalty-amount">
+                                                        Royalties: <span class="white-highlight"> {{ projectBid.project.royalty }}%</span>
+                                                        {% if projectBid.project.royaltyMechanical %}
+                                                            <span class="icon-royalty-mechanical" data-text="Mechanical royalties offered">M</span>
+                                                        {% endif %}
+                                                        {% if projectBid.project.royaltyPerformance %}
+                                                            <span class="icon-royalty-performance" data-text="Performance royalties offered">P</span>
+                                                        {% endif %}
+                                                    </div>
+                                                {% endif %}
+                                                <br>
+                                                <div class="item">Date awarded: <span class="highlight">{{ projectBid.project.awardedAt|date('M d, Y') }}</span></div>
+                                                <div class="item">Winner: <a href="{{ path('user_view', {'username':projectBid.project.employeeUserInfo.username}) }}">{{ projectBid.project.employeeUserInfo.displayName }}</a></div>
+                                                {% if projectBid.project.projectType == 'paid' %}
+                                                    <div class="item">Winning bid: <span class="highlight">${{ (projectBid.project.projectBid.amount/100)|number_format(2) }}</span></div>
+                                                {% endif %}
+                                            </div>
+
+                                            <div class="gig-info pull-right">
+                                                <div class="item user-info">
+                                                    Employer: <a href="{{ path('user_view', {'username':projectBid.project.employeeUserInfo.username}) }}">{{ projectBid.project.userInfo.displayName }}</a>
+                                                    <div class="avatar">
+                                                        {% if projectBid.project.userInfo.path is null %}
+                                                            <img src="{{ asset('images/default_avatar.svg') }}" width="42" height="42" class="img-circle">
+                                                        {% else %}
+                                                            <img src="{{ asset('uploads/avatar/small/' ~ projectBid.project.userInfo.path ) }}" width="42" height="42" class="img-circle  avatar-sm-{{ projectBid.project.userInfo.username }}">
+                                                        {% endif %}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                {% else %}
+                                    You do not have any recent unsuccessful bids
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        
+    </div>
+{% endblock %}

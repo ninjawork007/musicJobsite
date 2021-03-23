@@ -1,0 +1,51 @@
+<div id="connectModal" class="modal-dialog">
+    <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <h4 class="modal-title">Connection Request</h4>
+        </div>
+        <div class="modal-body">
+            <div class="connect-user">
+                <div class="connect-user-avatar avatar">
+                    {% if toUser.path is empty %}
+                    <img src="{{ asset('images/default_avatar.svg') }}" alt="{{ toUser.username }}" width="58" height="58" class="img-circle" />
+                    {% else %}
+                    <img src="{{ asset('uploads/avatar/small/' ~ toUser.path ) }}" alt="{{ toUser.username }}" width="58" height="58" class="img-circle" />
+                    {% endif %}
+                    {% if toUser.isSubscribed %}
+                        <img class="svg-stamp-pro" src="{{ asset('images/vocalizr_pro_stamp.svg') }}" alt="pro" data-text="<div class='tip-header'>This Vocalizr user is an <a href='{{ path('membership') }}' class=stamp-pro-hover>Access Pass</a> member</div>">
+                    {% endif %}
+                </div>
+                <div class="connect-user-info">
+                    <div class="connect-user-name">
+                        <a href="{{ path('user_view', {username: toUser.username}) }}">{{ toUser.displayName }}</a>
+                        {% if toUser.isCertified %}
+                            <img class="vocalizr-certified-stamp-clipped" style="margin-bottom: 1px" src="{{ asset('images/certified_pro_stamp_clipped.svg') }}" alt="" data-text="<div class='tip-header'>Vocalizr Certified Professional</div>A 'Certified Professional’ is deemed a professional by the experts at Vocalizr. The stamp is based on ability, experience, and skill level.<br><a href='{{ path('get_certified') }}' class='get-certified-now' style='color: #01c2e5;'>Get Certified Now</a>">
+                        {% endif %}
+                    </div>
+                    <span class="white-highlight">
+                    {% if toUser.isVocalist and toUser.isProducer %}
+                        Producer &amp; Vocalist
+                    {% elseif toUser.isVocalist %}
+                        Vocalist
+                    {% elseif toUser.isProducer %}
+                        Producer
+                    {% endif %}</span>
+                    <br>{{ toUser.country|countryName }}
+                </div>
+            </div>
+            <div class="modal-row" style="font-size: 14px;">
+                <form id="frm-connect" action="{{ path('user_connect', {username: toUser.username} ) }}" method="post">
+                    <input id="connect-user" type="hidden" name="connect_user" value="{{ toUser.username }}" />
+                    <p><small class="small white-highlight">{{ connectCount }} connection request{% if connectCount != 1 %}s{% endif %} remaining for the month</small></p>
+
+                    {% if not app.user.isSubscribed %}
+                        <p><a href="{{ path('user_upgrade', {source: 'unlimited_connections'}) }}" class="btn btn-default btn-sm pull-right">UPGRADE</a></p>
+                    {% endif %}
+                    <p><button type="submit" name="send_invite" class="btn btn-primary btn-sm">SEND INVITE</button> <span id="cue" class="error"></span></p>
+
+                </form>
+            </div>
+        </div>
+    </div><!-- /.modal-content -->
+</div><!-- /.modal-dialog -->

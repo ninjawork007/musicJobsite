@@ -1,0 +1,66 @@
+{% extends 'include/panel/popup_panel.html.twig' %}
+{% block classes %}highlight-bid-modal{% endblock %}
+{% block header_left %}
+    Highlight Your Bid
+{% endblock %}
+{% block header_right %}
+    <svg width="28" height="27" viewBox="0 0 28 27" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M26.5 13.5C26.5 20.0765 20.9554 25.5 14 25.5C7.04456 25.5 1.5 20.0765 1.5 13.5C1.5 6.92353 7.04456 1.5 14 1.5C20.9554 1.5 26.5 6.92353 26.5 13.5Z" stroke="#00BBD4" stroke-width="3"/>
+        <path d="M14.5393 6.37048L15.2698 8.1984C15.3904 8.50019 15.7471 8.61878 16.018 8.44719L17.659 7.40777C18.1025 7.12687 18.6555 7.53805 18.5315 8.05646L18.0725 9.97467C17.9968 10.2914 18.2172 10.6019 18.535 10.626L20.4596 10.7721C20.9797 10.8116 21.191 11.4769 20.7929 11.8217L19.3198 13.0975C19.0766 13.3081 19.0766 13.6919 19.3198 13.9025L20.7929 15.1783C21.1911 15.5231 20.9798 16.1884 20.4596 16.2279L18.535 16.374C18.2172 16.3981 17.9968 16.7086 18.0726 17.0253L18.5315 18.9435C18.6555 19.4619 18.1025 19.8731 17.659 19.5922L16.018 18.5528C15.7471 18.3812 15.3904 18.4998 15.2698 18.8016L14.5393 20.6295C14.3418 21.1235 13.6582 21.1235 13.4608 20.6295L12.7302 18.8016C12.6096 18.4998 12.253 18.3812 11.982 18.5528L10.341 19.5922C9.89754 19.8731 9.34447 19.4619 9.46852 18.9435L9.92746 17.0253C10.0032 16.7086 9.78279 16.3981 9.46503 16.374L7.54039 16.2279C7.02026 16.1884 6.809 15.5231 7.2071 15.1783L8.68022 13.9025C8.92343 13.6919 8.92343 13.3081 8.68022 13.0975L7.20707 11.8217C6.80894 11.4769 7.02021 10.8116 7.54036 10.7721L9.465 10.626C9.78277 10.6019 10.0032 10.2914 9.92743 9.97467L9.46849 8.05646C9.34447 7.53805 9.89754 7.12687 10.341 7.40777L11.982 8.44719C12.2529 8.61881 12.6096 8.50022 12.7302 8.1984L13.4607 6.37048C13.6582 5.87651 14.3418 5.87651 14.5393 6.37048ZM17.8937 13.5C17.8937 11.303 16.147 9.51562 14 9.51562C11.853 9.51562 10.1063 11.303 10.1063 13.5C10.1063 15.697 11.853 17.4844 14 17.4844C16.147 17.4844 17.8937 15.697 17.8937 13.5ZM16.9775 13.5C16.9775 15.18 15.6418 16.5469 14 16.5469C12.3582 16.5469 11.0225 15.18 11.0225 13.5C11.0225 11.8199 12.3582 10.4531 14 10.4531C15.6418 10.4531 16.9775 11.8199 16.9775 13.5Z" fill="white"/>
+    </svg>
+{% endblock %}
+{% block main %}
+    <div class="body">
+        For <b>1.99-3.99</b> you can upgrade your bid and make it stand out by <b class="w500">highlighting</b> it.
+        Highlighted bids bring more attention to the client which makes it easier to be noticed.
+        <small class="small">*Paid bid highlights are non-refundable</small>
+    </div>
+    <div class="options black-check" data-href="{{ path('stripe_session_bid_upgrade') }}">
+        {% set options = [
+            {
+                option: 'Blue Highlight',
+                price: '3.99',
+                image: '',
+            },
+            {
+                option: 'Blue Shaded',
+                price: '2.99',
+                image: '',
+            },
+            {
+                option: 'Blue Border',
+                price: '1.99',
+                image: '',
+            },
+            {
+                option: 'Standard Bid',
+                price: 'Free',
+                image: '',
+            },
+        ] %}
+        {% for value, option in options %}
+            {% set value = value + 1 %}
+            <div class="option {{ value == 4 ? 'desktop-only' }} {{ value == 4 ? 'free' : 'paid' }}">
+                <input id="bid_option_{{ value }}" name="bid_option" type="radio" value="{{ value }}">
+                <label for="bid_option_{{ value }}">
+                    <span class="title">
+                        {% if value %}
+                            <span class="top">Option {{ value }}</span>
+                        {% endif %}
+                        <span class="description">{{ option.option }}</span>
+                        <span class="price">{{ option.price }}</span>
+                    </span>
+                    <span class="preview">
+                        <img class="desktop-only" src="{{ asset('images/bid_preview/desktop/' ~ value ~'.svg') }}" alt="Option {{ value }} preview">
+                        <img class="mobile-only" src="{{ asset('images/bid_preview/mobile/' ~ value ~'.svg') }}" alt="Option {{ value }} preview">
+                    </span>
+                </label>
+
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}
+{% block footer %}
+    <button class="btn btn-primary paid" type="submit">Pay & Highlight Bid Now</button>
+    <button class="btn btn-secondary mobile-only free">Not this time!</button>
+{% endblock %}

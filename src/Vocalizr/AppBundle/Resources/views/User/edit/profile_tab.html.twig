@@ -1,0 +1,176 @@
+<!-- PROFILE TAB -->
+<div class="tab-pane fade in" id="profile">
+    <form id="user-edit-form" action="" method="post" novalidate>
+
+        <div class="row">
+            <div class="col-md-9">
+                <div class="row form-group">
+                    <div class="col-sm-6">
+                        {{ form_row(form.display_name) }}
+                    </div>
+                </div>
+
+                <div class="row form-group">
+                    <div class="col-sm-6">
+                        {{ form_row(form.first_name) }}
+                    </div>
+                    <div class="col-sm-6">
+                        {{ form_row(form.last_name) }}
+                    </div>
+                </div>
+
+                <div class="row form-group">
+                    <div class="col-sm-12">
+                        {{ form_row(form.profile) }}
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 form-group user-edit-avatar">
+
+                <div class="account-avatar-wrap col-sm-12">
+                    <div class="account-avatar">
+                        {% if app.user.path is empty %}
+                            <img id="user-account-avatar" src="{{ asset('images/default_avatar.svg') }}" width="162" height="162" class="img-circle avatar-lg-{{ app.user.username }}" />
+                        {% else %}
+                            <img id="user-account-avatar" src="{{ asset('uploads/avatar/large/' ~ app.user.path ) }}" width="162" height="162" class="img-circle avatar-lg-{{ app.user.username }}" />
+                        {% endif %}
+                    </div>
+                    <div id="upload-avatar-container" data-url="{{ path('upload_audio') }}" data-username="{{ app.user.username }}">
+                        <a id="upload-avatar-btn" class="btn btn-sm btn-default" href="{{ path('user_save_avatar') }}">CHANGE IMAGE</a>
+                        <div id="upload-avatar-status" class="avatar-info"></div>
+                        <div id="upload-avatar-error" class="avatar-info"></div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        {#
+    <hr>
+    <div class="row">
+        {% set location = '' %}
+        {% if (app.user.city and app.user.state) %}
+                {% set location = app.user.city ~ ', ' ~ app.user.state ~ ', ' ~ app.user.country|countryName %}
+        {% elseif (app.user.country) %}
+            {% set location = app.user.country|countryName %}
+        {% endif %}
+        <div class="col-sm-5">
+            <label class="field-label" for="location">NEW LOCATION <span class="help-note">(City, State, Country)</span> {{ form_errors(locationForm.city) }}</label>
+            <input id="geo-location" type="text" name="location" class="form-control" value="" placeholder="Start typing your city...">
+            {{ form_widget(locationForm.city) }}
+            {{ form_widget(locationForm.state) }}
+            {{ form_widget(locationForm.location_lat) }}
+            {{ form_widget(locationForm.location_lng) }}
+            {{ form_widget(locationForm.country) }}
+            {{ form_row(locationForm._token) }}
+        </div>
+        <div class="col-sm-7">
+            {% if location %}
+            <div class="current-location">
+                <div class="icon-wrap"><i class="fa fa-map-marker"></i></div>
+                <div class="location-text">YOUR CURRENT LOCATION<br><span class="white-highlight">{{ location }}</span>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+    </div>
+    #}
+        <hr>
+
+        <div class="row form-group">
+            <div class="col-sm-5">
+                {{ form_row(form.gender) }}
+            </div>
+            <div class="col-sm-5">
+                {{ form_row(form.languages) }}
+            </div>
+        </div>
+
+        <div class="row form-group">
+            <div class="col-sm-5">
+                {{ form_row(form.city) }}
+            </div>
+            <div class="col-sm-5">
+                {{ form_row(form.country) }}
+            </div>
+        </div>
+
+        <hr>
+
+        <div class="row">
+            <div class="col-sm-5 checkboxes">
+                <label>I AM A:</label>
+                {{ form_widget(form.is_producer) }}
+                {{ form_widget(form.is_vocalist) }}
+            </div>
+            <div class="col-sm-7 checkboxes">
+                {{ form_widget(form.studio_access) }}
+            </div>
+        </div>
+
+        <hr>
+
+        <div id="fees-wrap">
+            <div class="row">
+                <div id="producer-fee" class="col-sm-5{% if not form.vars.value.isProducer %} hide{% endif %}">
+                    <label for="">PRODUCER FEE</label>
+                    <div class="input-group">
+                        <span class="input-group-addon">USD$</span>
+                        <input id="user_producer_fee" type="text" name="{{ form.producer_fee.vars.full_name }}" value="{{ form.vars.value.producerFee }}" class="form-control">
+                    </div>
+
+                </div>
+                <div  id="vocalist-fee" class="col-sm-5{% if not form.vars.value.isVocalist %} hide{% endif %}">
+                    <label for="">VOCALIST FEE</label>
+                    <div class="input-group">
+                        <span class="input-group-addon">USD$</span>
+                        <input id="user_vocalist_fee" type="text" name="{{ form.vocalist_fee.vars.full_name }}" value="{{ form.vars.value.vocalistFee }}" class="form-control">
+                    </div>
+                </div>
+            </div>
+
+            <hr>
+        </div>
+
+        <div class="row">
+            <div class="col-sm-12">
+                {{ form_row(form.genres) }}
+            </div>
+        </div>
+
+        <div class="vocal-profile">
+            <hr>
+
+            <div class="row">
+                <div class="col-sm-7 mic-field">
+                    <label for="mic">MY MICROPHONE:</label>
+                    {{ form_widget(form.microphone) }}
+                </div>
+            </div>
+
+            <hr class="vocal-profile">
+
+            <div class="row form-group">
+                <div class="col-sm-5">
+                    {{ form_row(form.vocal_characteristics) }}
+                </div>
+                <div class="col-sm-5">
+                    {{ form_row(form.vocal_styles) }}
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-12">
+                    {{ form_row(form.sounds_like) }}
+                </div>
+            </div>
+        </div>
+
+        <hr>
+
+        {{ form_row(form._token) }}
+
+        <button type="submit" name="save" value="account" class="btn btn-sm btn-default">SAVE</button>
+    </form>
+</div>
+<!--/END PROFILE TAB -->

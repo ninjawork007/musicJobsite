@@ -1,0 +1,271 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <service id="vocalizr.twig.helper_extension" class="Vocalizr\AppBundle\Twig\HelperExtension">
+            <tag name="twig.extension" />
+            <argument type="service" id="service_container" />
+            <argument type="service" id="router" />
+            <argument type="service" id="kernel" />
+        </service>
+        <service id="vocalizr_app.twig.country_extension" class="Vocalizr\AppBundle\Twig\CountryExtension">
+            <tag name="twig.extension" />
+            <argument type="service" id="vocalizr_app.model.country" />
+        </service>
+        <service id="vocalizr_app.twig.waveform_extension" class="Vocalizr\AppBundle\Twig\WaveformExtension">
+            <tag name="twig.extension" />
+            <argument type="service" id="vocalizr_app.service.waveform" />
+            <argument type="service" id="router" />
+        </service>
+        <service id="vocalizr_app.twig.user_restriction_extension" class="Vocalizr\AppBundle\Twig\UserRestrictionsExtension">
+            <tag name="twig.extension" />
+            <argument type="service" id="vocalizr_app.user_restriction" />
+        </service>
+        <service id="vocalizr_app.twig.pro_profile_extension" class="Vocalizr\AppBundle\Twig\ProProfileExtension">
+            <tag name="twig.extension" />
+            <argument type="service" id="vocalizr_app.model.user_connect" />
+        </service>
+
+        <!-- LISTENERS -->
+        <service id="event.subscriber.vocalizr_event_subscriber" class="Vocalizr\AppBundle\EventListener\VocalizrEventSubscriber">
+            <argument type="service" id="service_container" />
+            <tag name="doctrine.event_subscriber" connection="default" />
+        </service>
+        <service id="event.listener.vocalizr_controller_listener" class="Vocalizr\AppBundle\EventListener\ControllerListener">
+            <argument type="service" id="service_container" />
+            <tag name="kernel.event_listener" event="kernel.controller"/>
+        </service>
+
+        <service id="event.listener.user_wallet" class="Vocalizr\AppBundle\EventListener\UserWalletListener">
+            <argument type="service" id="service_container" />
+            <tag name="doctrine.event_listener" event="prePersist" />
+        </service>
+        <service id="event.listener.user_review" class="Vocalizr\AppBundle\EventListener\UserReviewListener">
+            <argument type="service" id="service_container" />
+            <tag name="doctrine.event_listener" event="prePersist" />
+        </service>
+        <service id="event.listener.just_created" class="Vocalizr\AppBundle\EventListener\GigContestCreateListener">
+            <argument type="service" id="hip_mandrill.dispatcher" />
+            <argument type="service" id="router" />
+            <tag name="kernel.event_listener" event="contest_or_gig.just_created" method="onCreateAction" />
+        </service>
+        <service id="event.listener.withdraw_status" class="Vocalizr\AppBundle\EventListener\WithdrawStatusListener">
+            <argument type="service" id="vocalizr_app.service.mandrill" />
+            <argument type="service" id="service_container" />
+            <tag name="doctrine.event_listener" event="onFlush" />
+        </service>
+        <service id="event.subscriber.access_request" class="Vocalizr\AppBundle\EventListener\AccessRequestSubscriber">
+            <argument type="service" id="service_container" />
+            <tag name="kernel.event_subscriber" />
+        </service>
+        <service id="event.listener.payment.project" class="Vocalizr\AppBundle\EventListener\Payment\ProjectPaymentListener">
+            <argument type="service" id="vocalizr_app.model.project" />
+            <argument type="service" id="vocalizr_app.model.wallet_transaction" />
+            <argument type="service" id="vocalizr_app.stripe_configuration_provider" />
+            <argument type="service" id="vocalizr_app.project_price_calculator" />
+            <tag name="kernel.event_listener" event="vocalizr_app.payment.completed" method="onPaymentSessionCompleted" />
+
+        </service>
+        <service id="event.listener.payment.user_upgrade" class="Vocalizr\AppBundle\EventListener\Payment\UserUpgradeListener">
+            <argument type="service" id="vocalizr_app.stripe_configuration_provider" />
+            <argument type="service" id="doctrine.orm.entity_manager" />
+            <argument type="service" id="vocalizr_app.model.wallet_transaction" />
+            <tag name="kernel.event_listener" event="vocalizr_app.payment.completed" method="onPaymentSessionCompleted" />
+        </service>
+        <service id="event.listener.payment.project_bid" class="Vocalizr\AppBundle\EventListener\Payment\ProjectBidPaymentListener">
+            <argument type="service" id="vocalizr_app.model.wallet_transaction" />
+            <argument type="service" id="vocalizr_app.stripe_configuration_provider" />
+            <tag name="kernel.event_listener" event="vocalizr_app.payment.completed" method="onPaymentSessionCompleted" />
+        </service>
+        <service id="event.listener.payment.user_certification" class="Vocalizr\AppBundle\EventListener\UserCertificationListener">
+            <argument type="service" id="doctrine.orm.entity_manager" />
+            <tag name="kernel.event_listener" event="vocalizr_app.payment.completed" method="onPaymentCertificationCompleted" />
+        </service>
+
+        <service id="event.listener.stripe.webhook.identity" class="Vocalizr\AppBundle\EventListener\StripeWebhook\IdentityListener">
+            <argument type="service" id="doctrine.orm.entity_manager" />
+            <tag name="kernel.event_listener" event="vocalizr_app.stripe.webhook" method="onWebhook" />
+        </service>
+
+        <service id="event.listener.stripe.webhook.checkout_session" class="Vocalizr\AppBundle\EventListener\StripeWebhook\CheckoutSessionListener">
+            <argument type="service" id="service_container" />
+            <argument type="service" id="doctrine.orm.entity_manager" />
+            <tag name="kernel.event_listener" event="vocalizr_app.stripe.webhook" method="onWebhook" />
+        </service>
+
+        <service id="event.listener.stripe.webhook.subscription" class="Vocalizr\AppBundle\EventListener\StripeWebhook\SubscriptionListener">
+            <argument type="service" id="doctrine.orm.entity_manager" />
+            <argument type="service" id="templating" />
+            <argument type="service" id="vocalizr_app.service.mandrill" />
+            <argument type="service" id="vocalizr_app.model.user_subscription" />
+            <tag name="kernel.event_listener" event="vocalizr_app.stripe.webhook" method="onWebhook" />
+        </service>
+
+        <service id="event.listener.stripe.webhook.charge" class="Vocalizr\AppBundle\EventListener\StripeWebhook\ChargeListener">
+            <argument type="service" id="doctrine.orm.entity_manager" />
+            <tag name="kernel.event_listener" event="vocalizr_app.stripe.webhook" method="onWebhook" />
+        </service>
+
+        <service id="event.listener.stripe.webhook.invoice" class="Vocalizr\AppBundle\EventListener\StripeWebhook\InvoiceListener">
+            <argument type="service" id="doctrine.orm.entity_manager" />
+            <argument type="service" id="templating" />
+            <argument type="service" id="vocalizr_app.service.mandrill" />
+            <tag name="kernel.event_listener" event="vocalizr_app.stripe.webhook" method="onWebhook" />
+        </service>
+        <!-- END LISTENERS -->
+
+        <service id="service.mail" class="Vocalizr\AppBundle\Service\MailService">
+            <argument type="service" id="doctrine" />
+            <argument type="service" id="service_container" />
+            <argument type="service" id="templating" />
+        </service>
+
+        <service id="authentication_handler" class="Vocalizr\AppBundle\Handler\AuthenticationHandler">
+            <argument type="service" id="doctrine" />
+            <argument type="service" id="security.context" />
+            <argument type="service" id="service_container" />
+            <argument type="service" id="router" />
+            <argument type="service" id="vocalizr_app.model.user_audit" />
+        </service>
+
+        <service id="service.sc" class="Vocalizr\AppBundle\Service\SoundcloudService">
+            <argument type="service" id="doctrine" />
+            <argument type="service" id="service_container" />
+            <argument type="service" id="templating" />
+        </service>
+
+        <service id="service.paypal" class="Vocalizr\AppBundle\Service\PayPalService">
+            <argument type="service" id="doctrine" />
+            <argument type="service" id="service_container" />
+            <argument type="service" id="templating" />
+            <argument type="service" id="vocalizr_app.service.mandrill" />
+        </service>
+
+        <service id="service.helper" class="Vocalizr\AppBundle\Service\HelperService">
+            <argument type="service" id="doctrine" />
+            <argument type="service" id="service_container" />
+            <argument type="service" id="templating" />
+        </service>
+
+        <service id="vocalizr_app.service.membership_source_helper" class="Vocalizr\AppBundle\Service\MembershipSourceHelper">
+            <argument type="service" id="session" />
+            <argument type="service" id="router" />
+        </service>
+
+        <service id="vocalizr_app.service.mandrill" class="Vocalizr\AppBundle\Service\MandrillService">
+            <argument type="service" id="hip_mandrill.dispatcher" />
+        </service>
+
+        <service id="vocalizr_app.service.waveform" class="Vocalizr\AppBundle\Service\WaveformService">
+            <argument type="service" id="doctrine.orm.entity_manager" />
+            <argument type="service" id="vocalizr_app.media_info" />
+            <argument>%kernel.root_dir%</argument>
+            <argument>%soundcloud_client_id%</argument>
+        </service>
+
+        <service id="vocalizr_app.model.base_model" class="Vocalizr\AppBundle\Model\Model" abstract="true">
+            <call method="setBaseDependencies">
+                <argument type="service" id="doctrine.orm.entity_manager" />
+                <argument type="service" id="service_container" />
+            </call>
+        </service>
+
+        <!--Models -->
+        <service id="vocalizr_app.model.user_video" class="Vocalizr\AppBundle\Model\UserVideoModel" parent="vocalizr_app.model.base_model">
+        </service>
+
+        <service id="vocalizr_app.model.user_info" class="Vocalizr\AppBundle\Model\UserInfoModel" parent="vocalizr_app.model.base_model">
+        </service>
+
+        <service id="vocalizr_app.model.user_connect" class="Vocalizr\AppBundle\Model\UserConnectModel" parent="vocalizr_app.model.base_model">
+        </service>
+
+        <service id="vocalizr_app.model.user_subscription" class="Vocalizr\AppBundle\Model\UserSubscriptionModel" parent="vocalizr_app.model.base_model">
+        </service>
+
+        <service id="vocalizr_app.model.user_spotify_playlist" class="Vocalizr\AppBundle\Model\UserSpotifyPlaylistModel" parent="vocalizr_app.model.base_model">
+        </service>
+
+        <service id="vocalizr_app.model.user_info_language" class="Vocalizr\AppBundle\Model\UserInfoLanguageModel" parent="vocalizr_app.model.base_model">
+        </service>
+
+        <service id="vocalizr_app.model.country" class="Vocalizr\AppBundle\Model\CountryModel" parent="vocalizr_app.model.base_model">
+        </service>
+
+        <service id="vocalizr_app.model.hint" class="Vocalizr\AppBundle\Model\HintModel">
+            <argument type="service" id="session" />
+            <argument type="service" id="security.context" />
+            <argument type="service" id="doctrine.orm.entity_manager" />
+        </service>
+
+        <service id="vocalizr_app.model.user_audit" class="Vocalizr\AppBundle\Model\UserActionAuditModel" parent="vocalizr_app.model.base_model">
+        </service>
+
+        <service id="vocalizr_app.model.user_audio" class="Vocalizr\AppBundle\Model\UserAudioModel" parent="vocalizr_app.model.base_model">
+            <argument type="service" id="doctrine_mongodb.odm.document_manager" />
+            <argument type="service" id="vocalizr_app.media_info" />
+            <argument type="service" id="vocalizr_app.service.process_image" />
+            <argument>%kernel.root_dir%/../tmp</argument>
+        </service>
+
+        <service id="vocalizr_app.model.project" class="Vocalizr\AppBundle\Model\ProjectModel" parent="vocalizr_app.model.base_model">
+            <argument type="service" id="vocalizr_app.service.mandrill" />
+            <argument type="service" id="router" />
+            <argument type="service" id="vocalizr_app.project_price_calculator" />
+            <argument type="service" id="vocalizr_app.model.wallet_transaction" />
+            <argument type="service" id="vocalizr_app.stripe_manager" />
+        </service>
+
+        <service id="vocalizr_app.model.counter" class="Vocalizr\AppBundle\Model\CounterModel" parent="vocalizr_app.model.base_model">
+        </service>
+
+        <service id="vocalizr_app.model.wallet_transaction" class="Vocalizr\AppBundle\Model\UserWalletTransactionModel" parent="vocalizr_app.model.base_model" />
+
+        <service id="vocalizr_app.paypal_api" class="Vocalizr\AppBundle\Service\PayPalApiService">
+            <argument type="service" id="service_container" />
+        </service>
+        <service id="vocalizr_app.google_sheets" class="Vocalizr\AppBundle\Service\GoogleSheetsService">
+            <argument type="service" id="service_container" />
+        </service>
+
+        <service id="vocalizr_app.user_restriction" class="Vocalizr\AppBundle\Service\UserRestrictionService">
+            <argument type="service" id="service_container" />
+            <argument type="service" id="doctrine.orm.entity_manager" />
+        </service>
+
+        <service id="vocalizr_app.media_info" class="Vocalizr\AppBundle\Service\MediaInfoService">
+            <argument>%kernel.root_dir%/../tmp</argument>
+        </service>
+
+        <service id="vocalizr_app.service.process_image" class="Vocalizr\AppBundle\Service\ProcessImageService">
+            <argument>%kernel.root_dir%/../web</argument>
+        </service>
+
+        <service id="vocalizr_app.service.statistics" class="Vocalizr\AppBundle\Service\StatisticsService">
+            <argument type="service" id="doctrine_mongodb.odm.document_manager" />
+            <argument type="service" id="session" />
+        </service>
+        <service id="vocalizr_app.project_price_calculator" class="Vocalizr\AppBundle\Service\ProjectPriceCalculator">
+            <argument type="service" id="doctrine.orm.entity_manager" />
+        </service>
+
+        <service id="vocalizr_app.stripe_configuration_provider" class="Vocalizr\AppBundle\Service\StripeConfigurationProvider">
+            <argument>%kernel.environment%</argument>
+            <argument>%kernel.root_dir%/../src/Vocalizr/AppBundle/Resources/config</argument>
+        </service>
+
+        <service id="vocalizr_app.stripe_manager" class="Vocalizr\AppBundle\Service\StripeManager">
+            <argument type="service" id="service_container" />
+            <argument key="$apiKey">%stripe_api_key%</argument>
+            <argument key="$baseUrl">https://api.stripe.com/v1</argument>
+            <argument key="$env">%kernel.environment%</argument>
+        </service>
+
+        <service id="vocalizr_app.revenue_manager" class="Vocalizr\AppBundle\Service\RevenueManager">
+            <argument type="service" id="service_container" />
+        </service>
+    </services>
+</container>

@@ -1,0 +1,339 @@
+{% extends '::app.html.twig' %}
+
+{% block title %}Activity{% endblock %}
+
+{% block description %}dashboard, feed{% endblock %}
+
+{% block javascript %}
+
+    {% if app.user.completedProfile is null %}
+        {% javascripts
+            '@VocalizrAppBundle/Resources/public/js/uploader/plupload.full.min.js'
+            '@VocalizrAppBundle/Resources/public/js/avatar-uploader.js'
+            '@VocalizrAppBundle/Resources/public/js/task-audio-uploader.js'
+         %}
+            <script type="text/javascript" src="{{ asset_url }}"></script>
+        {% endjavascripts %}
+
+        {% javascripts
+            '@VocalizrAppBundle/Resources/public/js/jquery.geocomplete.min.js'
+            '@VocalizrAppBundle/Resources/public/js/infinite-scroll.js'
+        %}
+            <script type="text/javascript" src="{{ asset_url }}"></script>
+        {% endjavascripts %}
+
+        <script>
+            AvatarUploader.init('upload-avatar-container', 'upload-avatar-btn');
+            TaskAudioUploader.init('task-user-audio-container', 'upload-audio-btn');
+            $('#geo-location').geocomplete({
+                details: "#user-city-form",
+                types: ['(cities)'],
+                blur: true,
+                detailsAttribute: "data-geo"
+            });
+
+        </script>
+    {% endif %}
+
+    {% javascripts
+        '@VocalizrAppBundle/Resources/public/js/wavesurfer.min.js'
+        '@VocalizrAppBundle/Resources/public/js/infinite-scroll.js'
+        '@VocalizrAppBundle/Resources/public/js/waveforms.js'
+    %}
+        <script type="text/javascript" src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+
+    <script>
+        $(document).ready(function(){
+            new VocalizrScroll($, '{{ path('add_dashboard_activities') }}');
+        });
+    </script>
+{% endblock %}
+
+
+{% block body %}
+     {% if sfs %}
+        <div class="row">
+            <div class="sfs-banner">
+                <a href="{{ path('contest_view', {uuid: sfs.uuid}) }}"><img src="/images/sfs/banner-thin-{{ sfs.uuid }}.jpg" class="img-responsive" /></a>
+            </div>
+        </div>
+         {% endif %}
+    <div class="row">
+        <div class="col-sm-8">
+            <div id="activity-header">
+                <h1>Vocalizr Activity</h1>
+                <div class="activity-filter">
+                    <ul>
+                        <li>Show:</li>
+                        <li {% if app.session.get('activity_filter') == 'all' %}class="active"{% endif %}><a href="{{ path('filtered_activity', {filter : 'all'})}}" class="activity-link">All</a></li>
+                        <li {% if app.session.get('activity_filter') == 'vocalists' %}class="active"{% endif %}><a href="{{ path('filtered_activity', {filter : 'vocalists'})}}" class="activity-link">Vocalists</a></li>
+                        <li {% if app.session.get('activity_filter') == 'producers' %}class="active"{% endif %}><a href="{{ path('filtered_activity', {filter : 'producers'})}}" class="activity-link">Producers</a></li>
+                        <li {% if app.session.get('activity_filter') == 'gigs' %}class="active"{% endif %}><a href="{{ path('filtered_activity', {filter : 'gigs'})}}" class="activity-link">Jobs</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div id="vocalizr-activity">
+                {% include 'VocalizrAppBundle:Dashboard:activity.html.twig' %}
+            </div>
+
+            <div class="activity-paging">
+                <!--<a class="btn btn-default btn-sm">VIEW 5 MORE</a>-->
+            </div>
+        </div>
+        <div class="col-sm-4">
+            {% if app.user.completedProfile is null %}
+            <div class="update-profile-panel panel panel-green">
+                <div class="panel-heading">
+                    COMPLETE YOUR PROFILE
+                </div>
+                <div class="panel-body">
+                    <div class="panel-row">
+                        {% if app.user.isVocalist %}
+                            Increase your chances of winning work and more exposure.
+                        {% else %}
+                            Vocalists are more likely to work with producers with completed profiles.
+                        {% endif %}
+                    </div>
+                    <div class="profile-task">
+                        <div class="task-header">
+                            <div class="tick-box"></div>
+                            <div class="task-info">
+                                Tell us your location
+                            </div>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="profile-task {% if app.user.path is null %}incomplete{% endif %}">
+                        <div class="task-header">
+                            <div class="tick-box"></div>
+                            <div class="task-info">
+                                Upload your photo
+                            </div>
+                        </div>
+                        <div class="task-edit">
+                            <p>Upload a photo to be easily identified by other members</p>
+                            <div id="upload-avatar-container" data-url="{{ path('upload_audio') }}" data-username="{{ app.user.username }}">
+                                <a id="upload-avatar-btn" class="btn btn-sm btn-default" href="{{ path('user_save_avatar') }}">UPLOAD IMAGE</a>
+                                <span id="upload-avatar-status" class="avatar-info"></span>
+                                <span id="upload-avatar-error" class="avatar-info"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <hr>
+                    {% if app.user.isVocalist %}
+                    <div class="profile-task {% if not hasSoundsLike %}incomplete{% endif %}">
+                        <div class="task-header">
+                            <div class="tick-box"></div>
+                            <div class="task-info">
+                                Tell us who you sound like
+                            </div>
+                        </div>
+                        <div class="task-edit">
+                            <p>Producers will often search by artists whose voices they want a similar sound to.</p>
+                            <form id="sounds-like-form" action="{{ path('dashboard_sounds_like') }}" method="post" style="display:inline" novalidate>
+
+                                {{ form_row(userSoundsLikeForm.sounds_like) }}
+                                {{ form_row(userSoundsLikeForm._token) }}
+
+                                <div class="form-buttons">
+                                    <button type="button" name="save" value="save" class="btn btn-sm btn-default">SAVE</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    <hr>
+                    {% endif %}
+                    {% if app.user.isProducer %}
+                    <div class="profile-task {% if not hasGenres %}incomplete{% endif %}">
+                        <div class="task-header">
+                            <div class="tick-box"></div>
+                            <div class="task-info">
+                                Specify your genres
+                            </div>
+                        </div>
+                        <div class="task-edit">
+                            <p>Specify genres you're interested in to get better recommendations of vocalists for you.</p>
+                            <form id="user-genres-form" action="{{ path('dashboard_user_genre') }}" method="post" style="display:inline" novalidate>
+
+                                {{ form_row(userGenresForm.genres) }}
+                                {{ form_row(userGenresForm._token) }}
+
+                                <div class="form-buttons">
+                                    <button type="button" name="save" value="save" class="btn btn-sm btn-default">SAVE</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    <hr>
+                    {% endif %}
+                    <div class="profile-task {% if not hasAudio %}incomplete{% endif %}">
+                        <div class="task-header">
+                            <div class="tick-box"></div>
+                            <div class="task-info">
+                                Upload audio
+                            </div>
+                        </div>
+                        <div class="task-edit">
+                            <p>Upload audio that best represents your sound.</p>
+                            <form id="task-user-audio-form" action="{{ path('dashboard_user_audio') }}" method="post">
+                                <div id="task-user-audio-container" data-url="{{ path('upload_audio') }}" data-extensions="{{ upload_audio_allowed }}" data-form="task-user-audio-form">
+                                    <div id="task-upload-audio-error" class="hide"></div>
+                                    <div id="task-upload-audio-status" class="hide"></div>
+                                    <div id="task-upload-btns">
+                                        <a id="upload-audio-btn" href="" class="btn btn-sm btn-default">UPLOAD</a>
+                                        {% if app.user.hasSoundCloud %}
+                                        <a data-toggle="vmodal" href="{{ path('soundcloud_tracks') }}?task=1" class="btn btn-sm btn-soundcloud"><i class="vocalizr-icon icon-soundcloud"></i> SELECT AUDIO</a>
+                                        {% endif %}
+                                        <span class="help-note">MP3 ONLY</span>
+                                    </div>
+                                    <div class="upload-audio-bar-container">
+                                        <div class="progress"><div class="upload-audio-bar progress-bar" style="width: 0;"></div></div>
+                                    </div>
+                                    <div id="user-audio-title">
+                                        <label id="audio-title-label">AUDIO TITLE</label>
+                                        <input id="audio-title" type="text" name="audio_title" value="" class="form-control" placeholder="Please enter the title of your audio">
+                                        <div class="form-buttons">
+                                            <button type="submit" name="save" value="save" class="btn btn-sm btn-default">SAVE</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    STATISTICS
+                    <a href="{{ path('user_stats') }}" class="btn btn-default btn-sm">SEE ALL</a>
+                </div>
+                <div class="panel-body">
+                    <div class="panel-row">
+                        <span class="white-highlight">In the last 30 days...</span><br>
+                        <div class="stats-widget">
+                            <div class="stat">
+                                <div class="desc">Profile Views</div>
+                                <div class="num">{{ stats.profileViews }}</div>
+                            </div>
+                            <div class="stat">
+                                <div class="desc">Audio Likes</div>
+                                <div class="num">{{ stats.audioLikes }}</div>
+                            </div>
+                            <div class="stat">
+                                <div class="desc">Audio Plays</div>
+                                <div class="num">{{ stats.audioPlays }}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% if articles|length > 0 %}
+                <div class="featured-projects panel panel-default">
+                    <div class="panel-heading">
+                        LATEST ARTICLES
+                        <a href="{{ path('vmag_index') }}" class="btn btn-default btn-sm">SEE ALL</a>
+                    </div>
+                    <div class="panel-body">
+                        {% for article in articles %}
+                            {% set day = article.publishedAt|date('d')  %}
+                            {% set mth = article.publishedAt|date('m')  %}
+                            {% set yr = article.publishedAt|date('y')  %}
+                            <div class="article-item">
+                                <div class="article-item-img">
+                                    <a href="{{ path('vmag_article', {mth: mth, day: day, yr: yr, slug: article.slug}) }}" target="_blank"><img src="{{ asset('/' ~ article.webPathSmall) }}{% if article.updatedAt %}&{{ article.updatedAt|date('U') }}{% endif %}" class="varticle-image img-responsive" alt="{{ article.title }}"></a>
+                                </div>
+                                <div class="article-item-info">
+                                    <a href="{{ path('vmag_article', {mth: mth, day: day, yr: yr, slug: article.slug}) }}" target="_blank">{{ article.title|slice(0, 38) }}{% if article.title|length > 37 %}..{% endif %}</a>
+                                </div>
+                            </div>
+                            {% if not loop.last %}
+                            <hr>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endif %}
+            {% if featuredProjects|length > 0 %}
+                <div class="featured-projects panel panel-default">
+                    <div class="panel-heading">
+                        FEATURED
+                        <a href="{{ path('gig_hunter') }}" class="btn btn-default btn-sm">SEE ALL</a>
+                    </div>
+                    <div class="panel-body">
+                        {% for project in featuredProjects %}
+                            <div class="featured-project">
+                                <a href="{{ path('user_view', {'username':project.userInfo.username}) }}" class="avatar">
+                                    {% if project.userInfo.path is empty %}
+                                    <img src="{{ asset('images/default_avatar.svg') }}" width="50" height="50" title="{{ project.userInfo.username }}" class="img-circle" >
+                                    {% else %}
+                                    <img src="{{ asset('uploads/avatar/large/' ~ project.userInfo.path ) }}" width="50" height="50" title="{{ project.userInfo.username }}" class="img-circle">
+                                    {% endif %}
+                                </a>
+                                <div class="info">
+                                    <div class="title"><a href="{{ path('project_view', {'uuid' : project.uuid }) }}">{{ project.title }}</a></div>
+                                    <div class="name">by <a href="{{ path('user_view', {'username':project.userInfo.username}) }}" class="username">{{ project.userInfo.displayName }}</a></div>
+                                    {% if project.projectType == 'collaboration' %}
+                                        <span class="badge badge-orange">COLLABORATION</span>
+                                    {% endif %}
+                                    <div class="looking-for">Looking for:  <span class="type">{% if project.lookingFor == 'vocalist' %}{% if project.gender is null %}Vocalist{% else %}{% if project.gender == 'male' %}Male vocalist{% else %}Female vocalist{% endif %}{% endif %}{% else %}Producer{% endif %}</span></div>
+                                    {% if project.projectType == 'paid' %}
+                                        <div class="budget">Budget: <span>${{ project.budgetFrom }}{% if project.budgetTo > 0 %} - ${{ project.budgetTo }}{% else %}+{% endif %} USD</span></div>
+                                    {% endif %}
+                                    {% if project.royalty %}
+                                    <div class="royalty">Royalty: <span>{{ project.royalty }}%</span></div>
+                                    {% endif %}
+                                </div>
+
+                            </div>
+                            {% if not loop.last %}
+                            <hr>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endif %}
+            {% if featuredProjects|length == 0 and projects|length > 0 %}
+                <div class="featured-projects panel panel-default">
+                    <div class="panel-heading">
+                        LATEST GIGS
+                        <a href="{{ path('gig_hunter') }}" class="btn btn-default btn-sm">SEE ALL</a>
+                    </div>
+                    <div class="panel-body">
+                        {% for project in projects %}
+                            <div class="featured-project">
+                                <a href="{{ path('user_view', {'username':project.userInfo.username}) }}" class="avatar">
+                                    {% if project.userInfo.path is empty %}
+                                    <img src="{{ asset('images/default_avatar.svg') }}" width="50" height="50" title="{{ project.userInfo.username }}" class="img-circle" >
+                                    {% else %}
+                                    <img src="{{ asset('uploads/avatar/large/' ~ project.userInfo.path ) }}" width="50" height="50" title="{{ project.userInfo.username }}" class="img-circle">
+                                    {% endif %}
+                                </a>
+                                <div class="info">
+                                    <div class="title"><a href="{{ path('project_view', {'uuid' : project.uuid }) }}">{{ project.title }}</a></div>
+                                    <div class="name">by <a href="{{ path('user_view', {'username':project.userInfo.username}) }}" class="username">{{ project.userInfo.displayName }}</a></div>
+                                    {% if project.projectType == 'collaboration' %}
+                                        <span class="badge badge-orange">COLLABORATION</span>
+                                    {% endif %}
+                                    <div class="looking-for">Looking for:  <span class="type">{% if project.lookingFor == 'vocalist' %}{% if project.gender is null %}Vocalist{% else %}{% if project.gender == 'male' %}Male vocalist{% else %}Female vocalist{% endif %}{% endif %}{% else %}Producer{% endif %}</span></div>
+                                    {% if project.projectType == 'paid' %}
+                                        <div class="budget">Budget: <span>${{ project.budgetFrom }}{% if project.budgetTo > 0 %} - ${{ project.budgetTo }}{% else %}+{% endif %} USD</span></div>
+                                    {% endif %}
+                                    {% if project.royalty %}
+                                    <div class="royalty">Royalty: <span>{{ project.royalty }}%</span></div>
+                                    {% endif %}
+                                </div>
+
+                            </div>
+                            {% if not loop.last %}
+                            <hr>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

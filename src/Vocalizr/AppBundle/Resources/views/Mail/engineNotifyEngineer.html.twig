@@ -1,0 +1,17 @@
+Hey Vocalizr Engineer!
+
+<p>Order Number: <strong>{{ order.id }}</strong></p>
+
+<p>We have just received an order for the Engine Room. Title: <strong>{{ order.title }}</strong></p>
+
+<p>Selected service is: <strong>{{ order.EngineProduct.title }}</strong>. Amount paid was: <strong>${{ (order.amount / 100)|number_format(2) }}</strong>.</p>
+
+{% if order.notes %}
+    <p><strong>Notes with order</strong:<br>
+       {{ order.notes|nl2br }} 
+        
+    </p>
+{% endif %}
+
+
+<p><a href="{{ url('admin_engine_order', {uid: order.uid} ) }}" style="text-decoration:none;padding: 5px 10px;background:#14b9d6;color:#fff;display: inline-block;">View Order</a></p>

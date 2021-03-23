@@ -1,0 +1,5 @@
+parameters:
+  withdraw_emails:
+    - 'patriyenispd@yahoo.com'
+    - 'imassutihidayati@gmail.com'
+    - 'basugiro@gmail.com'

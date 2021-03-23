@@ -1,0 +1,22 @@
+{# activity #}
+{# audiosByUser #}
+{% for activityItem in activity %}
+    {% set project = activityItem.project %}
+    {% set activityData = activityItem.data|json_decode %}
+    {% set actioned = activityItem.actioned_user_info %}
+    {% set actionedDisplayName = actioned.username %}
+    {% if actioned.display_name %}
+        {% set actionedDisplayName = actioned.display_name %}
+    {% endif %}
+    {% if activityItem.activity_type == 'new_project' and activityItem.project.publish_type != "private" %}
+        {% include '@VocalizrApp/Dashboard/activity/newProject.html.twig' %}
+    {% elseif activityItem.activity_type == 'new_member' %}
+        {% include '@VocalizrApp/Dashboard/activity/newMember.html.twig' %}
+    {% elseif activityItem.activity_type == 'project_completed' and activityItem.project.publish_type != "private" %}
+        {% include '@VocalizrApp/Dashboard/activity/projectCompleted.html.twig' %}
+    {% elseif activityItem.activity_type == 'project_awarded' %}
+        {% include '@VocalizrApp/Dashboard/activity/projectAwarded.html.twig' %}
+    {% elseif activityItem.activity_type == 'tag_vote' %}
+        {% include '@VocalizrApp/Dashboard/activity/tagVote.html.twig' %}
+    {% endif %}
+{% endfor %}

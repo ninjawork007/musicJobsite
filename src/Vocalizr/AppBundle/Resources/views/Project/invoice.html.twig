@@ -1,0 +1,36 @@
+<div class="page-content">
+    <h4>1. PROJECT NAME</h4>
+        {{ project.title|upper }}
+
+    <h4>2. FROM</h4>
+        <p>{{ project.employerName|upper }}, {{ project.UserInfo.city|upper }}, {{ project.UserInfo.country|countryName|upper }} <strong>(Employer)</strong></p>
+
+    <h4>3. TO</h4>
+        <p>{{ project.employeeName|upper }}, {{ project.EmployeeUserInfo.city|upper }}, {{ project.EmployeeUserInfo.country|countryName|upper }} <strong>(Employee)</strong></p>
+
+    <h4>4. PAYMENTS</h4>
+
+    <table cellspacing="0" cellpadding="5" border="1"  width="100%" style="border-collapse: collapse">
+        <tr>
+            <td class="num">Payment Amount</td>
+            <td style="text-align: right"><strong>USD ${{ (projectBid.amount / 100)|number_format(2) }}</strong></td>
+        </tr>
+        <tr valign="top">
+            <td class="num">Vocalizr Fee</td>
+            <td style="text-align: right"><strong>USD ${{ (projectBid.amount|getPricePercent(employeeSubscriptionPlan.payment_percent_taken) / 100)|number_format(2) }}</strong></td>
+        </tr>
+        <tr valign="top">
+            <td class="num">Mechanical Royalty</td>
+            <td style="text-align: right"><strong>{% if project is defined and project.royaltyMechanical %}{{ project.royalty }}{% else %}0{% endif %}%</strong></td>
+        </tr>
+        <tr valign="top">
+            <td class="num">Perfomance Royalty</td>
+            <td style="text-align: right"><strong>{% if project is defined and project.royaltyPerformance %}{{ project.royalty }}{% else %}0{% endif %}%</strong></td>
+        </tr>
+        <tr valign="top">
+            <td class="num">Master Royalty</td>
+            <td style="text-align: right"><strong>{% if project is defined and (project.royaltyPerformance or project.royaltyMechanical) %}{{ project.royalty }}{% else %}0{% endif %}%</strong></td>
+        </tr>
+    </table>
+
+</div>

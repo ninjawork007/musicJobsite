@@ -1,0 +1,29 @@
+{% set disputeOpenedByMe = (disputeActive.fromUserInfo.id == app.user.id) %}
+{% set difference = disputeActive.createdAt.diff(date('now')) %}
+{% set hoursRemained = 72 - difference.days * 24 - difference.h - 1 %}
+{% if not disputeOpenedByMe %}
+    <br><p>Action the current active dispute, then you can counter if you like.</p>
+    {% if hoursRemained > 0 %}
+        <p class="white-highlight">
+            You have {{ hoursRemained }} hour{{ hoursRemained % 10 != 1 ? 's' }} to respond
+            before it's awarded in the other parties favor.
+        </p>
+    {% else %}
+        <p class="white-highlight">
+            You have less than hour to respond before it's awarded in the other parties favor.
+        </p>
+    {% endif %}
+{% else %}
+    {% if hoursRemained > 0 %}
+        <p class="white-highlight">
+            The other party has {{ hoursRemained }}
+            hour{{ hoursRemained % 10 != 1 ? 's' }} to respond. If they don't, it's
+            awarded in your favor.
+        </p>
+    {% else %}
+        <p class="white-highlight">
+            The other party has less than 24 hours to respond.
+            If they don't, it's awarded in your favor.
+        </p>
+    {% endif %}
+{% endif %}

@@ -1,0 +1,36 @@
+<div class="threads-list">
+{% for thread in threads %}
+    <div id="mt-{{ thread.uuid}}" class="thread{% if activeThread.uuid == thread.uuid %} selected{% endif %}" data-thread="{{ thread.uuid }}" data-msgs-url="{{ path('thread_messages', {uuid : thread.uuid}) }}">
+        <div class="avatar">
+            {% if thread.employer == app.user %}
+                {% if thread.bidder.path is null %}
+                    <img src="{{ asset('images/default_avatar.svg') }}" width="28" height="28" class="img-circle">
+                {% else %}
+                    <img src="{{ asset('uploads/avatar/small/' ~ thread.bidder.path ) }}" width="28" height="28" class="img-circle  avatar-sm-{{ thread.bidder.username }}">
+                {% endif %}
+            {% else %}
+                {% if thread.employer.path is null %}
+                    <img src="{{ asset('images/default_avatar.svg') }}" width="28" height="28" class="img-circle">
+                {% else %}
+                    <img src="{{ asset('uploads/avatar/small/' ~ thread.employer.path ) }}" width="28" height="28" class="img-circle  avatar-sm-{{ thread.employer.username }}">
+                {% endif %}
+            {% endif %}
+        </div>
+        <div class="info-wrap">
+            {% if thread.employer == app.user %}
+                <span class="user">{{ thread.bidder.displayName }}</span><span class="unread label {% if thread.numEmployerUnread > 0 %}label-red{% else %}label-default{% endif %}">{{ thread.numEmployerUnread }}</span>
+            {% else %}
+                <span class="user">{{ thread.employer.displayName }}</span><span class="unread label {% if thread.numBidderUnread > 0 %}label-red{% else %}label-default{% endif %}">{{ thread.numBidderUnread }}</span>
+            {% endif %} <span class="date">{{ thread.lastMessageAt|timeAgoString }} ago</span><br>
+            {% if thread.project %}
+                <div class="gig-title"><i class="fa fa-folder"></i> {% if thread.project.title|length > 35 %}{{ thread.project.title|slice(0, 35) }}...{% else %}{{ thread.project.title }}{% endif %}</div>
+            {% else %}
+                <div class="gig-title"><i class="fa fa-comments"></i> Private Message</div>
+            {% endif %}
+        </div>
+    </div>
+{% endfor %}
+{% if countThreads > maxResults %}
+    <button type="button" class="btn btn-block btn-sm btn-default roll-alt btn-thread-load">LOAD MORE</button>
+{% endif %}
+</div>

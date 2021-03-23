@@ -1,0 +1,33 @@
+Hey <strong>{{ userInfo.usernameOrFirstName }}</strong>!
+
+<p>Your gig <a href="{{ url('project_view', {uuid: project.uuid}) }}">{{ project.title }}</a> is half way through it's
+    bidding phase. I wanted to check in to see how it's going and if you had any questions?</p>
+
+
+
+{% if totalBids > 0 %}
+<p><strong style="display:block;margin-bottom:5px;">Send a Message to your Bidders!</strong>
+    If you have any questions related to a bid, you can discuss it with the bidder.</p>
+  <p><a href="{{ url('project_view', {uuid: project.uuid}) }}" style="text-decoration:none;padding: 5px 10px;background:#14b9d6;color:#fff;display: inline-block;">Discuss with Bidders</a></p>
+{% endif %}
+
+{% if project.lookingFor == "vocalist" %}
+    <p><strong style="display:block;margin-bottom:5px;">Invite Vocalists</strong>
+    Get more vocalists to bid on your gig visit the <a href="{{ url('vocalists') }}">vocalists</a> page and invite them to your gig to place a bid.</p>
+    <p><a href="{{ url('vocalists') }}" style="text-decoration:none;padding: 5px 10px;background:#14b9d6;color:#fff;display: inline-block;">Invite Vocalists Now!</a></p>
+{% else %}
+    <p><strong style="display:block;margin-bottom:5px;">Invite Producers</strong>
+    Get more producers to bid on your gig visit the <a href="{{ url('producers') }}">producers</a> page and invite them to your gig to place a bid.</p>
+    <p><a href="{{ url('producers') }}" style="text-decoration:none;padding: 5px 10px;background:#14b9d6;color:#fff;display: inline-block;">Invite Producers Now!</a></p>
+{% endif %}
+
+<p><strong style="color:#000;display:block;margin-bottom:5px;">Share on Social Media</strong>
+    By sharing your gig on social media you increase exposure of finding that perfect vocalist!
+</p> 
+<p><a href="https://www.facebook.com/dialog/feed?link={{ url('project_view', {uuid: project.uuid}) }}&redirect_uri={{ url('project_view', {uuid: project.uuid}) }}" style="text-decoration:none;background: #3f5aa7;padding: 5px 10px;display:inline-block;color:#fff;margin-right: 5px;">Facebook Share</a> 
+    <a href="http://www.twitter.com/share?url={{ url('project_view', {uuid: project.uuid}) }}" style="text-decoration:none;background: #2eacf6;padding: 5px 10px;display:inline-block;color:#fff;">Tweet</a></p>
+
+<p>If you need any assistance, please don't hesitate to contact me.</p>
+
+<p>Good luck!</p>
+

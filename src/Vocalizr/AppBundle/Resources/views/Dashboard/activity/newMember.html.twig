@@ -1,0 +1,40 @@
+{% extends '@VocalizrApp/Dashboard/activity/activityItem.html.twig' %}
+{% block badge %}
+    {% if activityData.user_info.id == app.user.id %}
+        <span class="badge badge-blue">WELCOME</span>
+    {% else %}
+        <span class="badge badge-blue">NEW USER</span>
+    {% endif %}
+{% endblock %}
+{% block date_created %}
+    {% if activityData.user_info.id != app.user.id %}{{ parent() }}{% endif %}
+{% endblock %}
+{% block activity_info %}
+    {% if activityData.user_info.id == app.user.id %}
+        Thanks for joining us!<br>
+        We're excited to have you on board.
+    {% else %}
+        <a href="{{ path('user_view', {'username' : activityItem.actioned_user_info.username }) }}">{{ actionedDisplayName }}</a> has just joined Vocalizr.
+        <br>
+        {% if activityData.user_info.is_vocalist and activityData.user_info.is_producer %}
+            Check out our latest <a
+                href="{{ path('user_view', {'username' : activityData.user_info.username }) }}">vocalist
+            /
+            producer</a> by viewing {% if activityData.user_info.gender == 'm' %}his {% else %}her {% endif %}profile.
+        {% elseif activityData.user_info.is_vocalist and not activityData.user_info.is_producer %}
+            Check out our latest <a
+                href="{{ path('user_view', {'username' : activityData.user_info.username }) }}">vocalist</a> by viewing {% if activityData.user_info.gender == 'm' %}his {% else %}her {% endif %} profile.
+        {% elseif not activityData.user_info.is_vocalist and activityData.user_info.is_producer %}
+            Check out our latest <a
+                href="{{ path('user_view', {'username' : activityData.user_info.username }) }}">producer</a> by viewing {% if activityData.user_info.gender == 'm' %}his {% else %}her {% endif %} profile.
+        {% endif %}
+    {% endif %}
+{% endblock %}
+{% block activity_footer %}
+    {% if audiosByUser[activityItem.actioned_user_info.id] is defined %}
+        {% set userAudio = audiosByUser[activityItem.actioned_user_info.id] %}
+        <div class="user-list-track activity-track">
+            {% include 'include/user_audio.html.twig' with {userInfo: activityItem.actioned_user_info, userAudio: userAudio, audioLikes: audioLikes} only %}
+        </div>
+    {% endif %}
+{% endblock %}

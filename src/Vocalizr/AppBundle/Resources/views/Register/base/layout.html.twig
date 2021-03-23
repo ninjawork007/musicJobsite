@@ -1,0 +1,11 @@
+{% extends '::anonymous.html.twig' %}
+
+{% block stylesheet %}
+    {{ parent() }}
+    {% stylesheets
+        '@VocalizrAppBundle/Resources/public/css/form-elements.css'
+        '@VocalizrAppBundle/Resources/public/css/register.css'
+    %}
+        <link rel="stylesheet" href="{{ asset_url }}" />
+    {% endstylesheets %}
+{% endblock %}

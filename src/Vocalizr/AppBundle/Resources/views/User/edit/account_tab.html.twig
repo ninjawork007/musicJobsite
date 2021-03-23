@@ -1,0 +1,43 @@
+<!-- ACCOUNT TAB -->
+<div class="tab-pane fade in" id="account">
+    <h3>Change your password</h3>
+    <p>Use a random mixture of characters, upper and lower case, numbers, punctuation, spaces and symbols.</p>
+    <form action="{{ path('user_edit') }}#account" method="post" novalidate>
+        <div class="row form-group">
+            <div class="col-sm-5">
+                {{ form_row(passwordForm.current_password) }}
+            </div>
+        </div>
+
+        <div class="row form-group">
+            <div class="col-sm-5">
+                {{ form_row(passwordForm.password.first) }}
+            </div>
+            <div class="col-sm-5">
+                {{ form_row(passwordForm.password.second) }}
+            </div>
+        </div>
+        {{ form_rest(passwordForm) }}
+
+        <div class="form-group">
+            <button type="submit" name="save_password" value="account" class="btn btn-sm btn-default">SAVE</button>
+        </div>
+    </form>
+
+    <hr>
+
+    <h3>Change email address</h3>
+    <p>A confirmation email will be sent to your new email address. Once this email has been confirmed, your account will be updated.</p>
+    <form action="{{ path('user_edit') }}#account" method="post">
+        <div class="row form-group">
+            <div class="col-sm-5">
+                {{ form_row(emailForm.email) }}
+            </div>
+        </div>
+        {{ form_rest(emailForm) }}
+
+        <button type="submit" name="save_email" value="account" class="btn btn-sm btn-default">SAVE</button>
+    </form>
+
+</div>
+<!--/END ACCOUNT TAB -->

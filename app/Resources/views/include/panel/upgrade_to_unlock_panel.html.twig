@@ -1,0 +1,19 @@
+{% extends 'include/panel/popup_panel.html.twig' %}
+{% block classes %}restriction-modal{% endblock %}
+{% block header_left %}UPGRADE {% block upgrade_reason %}TO UNLOCK{% endblock %}{% endblock %}
+{% block header_right %}
+    <img src="{{ asset('images/vocalizr_pro_stamp.svg') }}" alt="PRO" style="width: 44px; margin-right: 3px">
+{% endblock %}
+{% block body %}
+    <div class="body">
+        <ul class="checklist unstyled">
+            {% block benefits_li %}{% endblock %}
+        </ul>
+    </div>
+    <p class="pre-footer-text">
+        And much more...
+    </p>
+{% endblock %}
+{% block footer %}
+    <a href="{% block footer_link %}{% endblock %}" class="btn btn-primary">UPGRADE NOW</a>
+{% endblock %}

@@ -1,0 +1,20 @@
+{% extends 'include/panel/popup_panel.html.twig' %}
+{% block header_left %}PLEASE VERIFY YOUR IDENTITY{% endblock %}
+{% block header_right %}<i class="fas fa-certificate"><i class="fas fa-check"></i></i> {% endblock %}
+{% block note %}<b>stripe</b> Identity Verification{% endblock %}
+{% block body %}
+    <p class="body" style="line-height: 1.29; padding-right: 10px">
+        For your safety & security, we require identity verification before proceeding. We do not retain ID documents on our servers.
+    </p>
+{% endblock %}
+{% block footer %}
+    {% if not app.user.isVerified and app.user.isRequestedVerificationRecently %}
+        <p style="line-height: 1.29; padding-right: 10px;">
+            Verification can take up to 10 minutes. Please come back later.
+        </p>
+    {% else %}
+        <a href="{{ path('stripe_identity_intents') }}" class="btn btn-primary" id="identity-intents">
+            VERIFY IDENTITY NOW
+        </a>
+    {% endif %}
+{% endblock %}

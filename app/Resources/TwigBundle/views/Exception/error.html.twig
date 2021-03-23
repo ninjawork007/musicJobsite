@@ -1,0 +1,15 @@
+{% extends '::app.html.twig' %}
+
+{% block title %}Oops! An Error Occurred{% endblock %}
+
+{% block body %}
+
+    <div class="row">
+        <div class="col-xs-12">
+            <h1>Oops! An Error Occurred</h1>
+            <p>The server returned a "{{ status_code }} {{ status_text }}".</p>
+            
+            <p>Please <a href="mailto:help@vocalizr.com">email us</a> to report the error explaining what steps you took for this to happen so we can fix this for you!</p>
+        </div>
+    </div>
+{% endblock %}
