@@ -10,7 +10,9 @@ else
   exit 1
 fi
 
+composer self-update --2
 composer dump-autoload
+composer require doctrine/annotations
 php app/console cache:clear --env="${APP_ENV}"
 
 php app/console assetic:dump --env=dev

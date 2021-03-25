@@ -5,6 +5,8 @@ services:
         build:
             context: ./docker/php
             target: vocalizr_php
+            args:
+            - SOMETHING=demo
         depends_on:
             - mysql
             - mongodb
@@ -14,7 +16,7 @@ services:
             - .:/srv/vocalizr
             - ./docker/php/config:/srv/vocalizr/app/config
             - php-sessions:/srv/vocalizr/app/sessions
-        command: [dev]
+        
 
     mysql:
         image: percona:5.7
@@ -27,7 +29,7 @@ services:
         volumes:
             - mysql-data:/var/lib/mysql
         ports:
-            - "127.0.0.1:3308:3306"
+            - "3308:3306"
 
     mongodb:
         image: mvertes/alpine-mongo:latest
@@ -42,7 +44,7 @@ services:
         depends_on:
             - php
         ports:
-            - "127.0.0.1:11011:80"
+            - "11011:80"
         volumes:
             - .:/srv/vocalizr
 

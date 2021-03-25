@@ -30,7 +30,8 @@
         "ext-json": "*",
         "ext-zip": "*",
         "ext-exif": "*",
-        "ext-imagick": "*"
+        "ext-imagick": "*",
+        "doctrine/annotations": "^1.4"
     },
     "scripts": {
         "post-install-cmd": [
