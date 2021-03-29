@@ -14,14 +14,12 @@ framework:
     form:            true
     csrf_protection: true
     validation:      { enable_annotations: true }
+    templating:      { engines: ['twig'], assets_version: v5.1 } #assets_version: SomeVersionScheme
     default_locale:  "%locale%"
-    templating:
-        engines: ['twig']
-        assets_version: v5.2.1
-        assets_base_urls: '%assets_base_urls%'
-    trust_proxy_headers: false # Whether or not the Request object should trust proxy headers (X_FORWARDED_FOR/HTTP_CLIENT_IP)
+    trusted_proxies: false # Whether or not the Request object should trust proxy headers (X_FORWARDED_FOR/HTTP_CLIENT_IP)
     session:
-        handler_id: ~
+        handler_id: session.handler.native_file
+        save_path: "%kernel.root_dir%/sessions"
 
 # Twig Configuration
 twig:
@@ -76,23 +74,17 @@ doctrine:
     orm:
         auto_generate_proxy_classes: "%kernel.debug%"
         auto_mapping: true
-        default_entity_manager: default
-        metadata_cache_driver: apc
-        result_cache_driver: apc
-        query_cache_driver: apc
-        connection: default
         dql:
             string_functions:
                 ifelse: Vocalizr\AppBundle\DQL\IfElse
                 date_format: Vocalizr\AppBundle\DQL\DateFormat
-#                date_add: Vocalizr\AppBundle\DQL\DateAdd
-            numeric_functions:
+            numeric_functions: 
                 rand: Vocalizr\AppBundle\DQL\Rand
                 
 doctrine_mongodb:
     connections:
         default:
-            server: '%mongodb_dsn%'
+            server: mongodb://mongodb:27017/vocalizr
             options: {}
     default_database: vocalizr
     document_managers:

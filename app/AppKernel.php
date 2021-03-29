@@ -3,8 +3,6 @@
 use Symfony\Component\HttpKernel\Kernel;
 use Symfony\Component\Config\Loader\LoaderInterface;
 
-require_once __DIR__ . '/../vendor/google/apiclient/vendor/autoload.php';
-
 class AppKernel extends Kernel
 {
     public function registerBundles()
