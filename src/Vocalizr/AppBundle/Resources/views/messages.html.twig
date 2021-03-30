@@ -9,14 +9,14 @@
     </div>
 {% endif %}
 
-{% if app.session.hasFlash('notice') %}
+{% if app.session.flashbag.has('notice') %}
     <div class="alert alert-success">
         {{ app.session.flash('notice') }}
     </div>
     {{ app.session.removeFlash('notice') }}
 {% endif %}
 
-{% if app.session.hasFlash('error') %}
+{% if app.session.flashbag.has('error') %}
     <div class="alert alert-error">
         {{ app.session.flash('error') }}
     </div>
