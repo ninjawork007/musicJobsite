@@ -31,7 +31,6 @@
         "google/apiclient": "^2.0",
         "mpdf/mpdf": "^5.7.0",
         "claviska/simpleimage": "2.*",
-
         "ext-json": "*",
         "ext-zip": "*",
         "ext-exif": "*",

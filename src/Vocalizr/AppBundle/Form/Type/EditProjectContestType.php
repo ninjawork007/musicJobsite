@@ -145,7 +145,7 @@ class EditProjectContestType extends AbstractType
                     'choices' => [
                         '1' => 'Vocalist to provide lyrics',
                         '0' => 'I will provide lyrics', ],
-                    'property_path' => false,
+                    'mapped' => false,
                     'multiple'      => false,
                     'expanded'      => true,
                 ]);

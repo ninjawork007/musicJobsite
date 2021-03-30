@@ -87,7 +87,7 @@ class UserInfoType extends AbstractType
                 'placeholder' => 'e.g. Beyonce or Justin Timberlake',
             ],
             'label' => 'Ask your friends - who do you sound similar to? (choose 3 or 4 only)',
-            'property_path' => false,
+            'mapped' => false,
         ]);
 
         $builder->add('genres', null, [
