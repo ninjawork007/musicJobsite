@@ -16,7 +16,7 @@ framework:
     validation:      { enable_annotations: true }
     templating:      { engines: ['twig'], assets_version: v5.1 } #assets_version: SomeVersionScheme
     default_locale:  "%locale%"
-    trust_proxy_headers: false # Whether or not the Request object should trust proxy headers (X_FORWARDED_FOR/HTTP_CLIENT_IP)
+    trusted_proxies: false # Whether or not the Request object should trust proxy headers (X_FORWARDED_FOR/HTTP_CLIENT_IP)
     session:
         handler_id: session.handler.native_file
         save_path: "%kernel.root_dir%/sessions"

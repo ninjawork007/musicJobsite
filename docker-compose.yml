@@ -1,45 +1,55 @@
-version: "3.8"
+version: '3.4'
 
 services:
   php:
-    build: ./docker/php/
-    container_name: php
-    ports:
-      - 9999:80
-    volumes:
-      - ./:/var/www/html:rw
-  db:
-    image: mysql:5.7
-    container_name: db
-    environment:
-        MYSQL_ROOT_PASSWORD: root
-        MYSQL_DATABASE: db
-    volumes:
-      - data:/var/lib/mysql
-    ports:
-      - 3307:3307
-
-  phpmyadmin:
-    image: library/phpmyadmin:5.0-apache
+    build:
+      context: ./docker/php
+      target: vocalizr_php
+      args:
+        - SOMETHING=demo
     depends_on:
-      - db
+      - mysql
+      - mongodb
     environment:
-      - PMA_HOST=db
+      PHP_DATE_TIMEZONE: UTC
+    volumes:
+      - .:/srv/vocalizr
+      - ./docker/php/config:/srv/vocalizr/app/config
+      - php-sessions:/srv/vocalizr/app/sessions
     ports:
-      - 8080:80
+      - '9998:80'
 
-  node:
-    build: ./docker/node/
-    container_name: node
-    command: sh -c "yarn watch"
+
+  mysql:
+    image: percona:5.7
+    command: --sql_mode=''
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD:-nopassword}
+      - MYSQL_DATABASE=vocalizr
+      - MYSQL_USER=vocalizr
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD:-nopassword}
+    volumes:
+      - mysql-data:/var/lib/mysql
+    ports:
+      - "3309:3306"
+
+  mongodb:
+    image: mvertes/alpine-mongo:latest
+    volumes:
+      - ./docker/mongo/data:/data/db
+  nginx:
+    build:
+      context: ./docker/nginx
+      target: vocalizr_nginx
+      args:
+        CFG_FILE: conf.d/dev.conf
     depends_on:
       - php
-    volumes:
-      - ./app/:/var/www/html:rw
     ports:
-      - 8081:8081
-    working_dir: /var/www/html
+      - "11012:80"
+    volumes:
+      - .:/srv/vocalizr
 
 volumes:
-  data:
-    driver: local
+  mysql-data:
+  php-sessions:

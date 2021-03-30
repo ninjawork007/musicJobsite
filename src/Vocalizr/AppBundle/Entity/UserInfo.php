@@ -2,7 +2,6 @@
 
 namespace Vocalizr\AppBundle\Entity;
 
-require_once __DIR__ . '/../../../../vendor/simpleimage/lib/SimpleImage.php';
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -11,6 +10,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 use Vocalizr\AppBundle\Validator\Constraints\CustomRegex;
+use abeautifulsite\SimpleImage;
 
 /**
  * @ORM\Entity(repositoryClass="Vocalizr\AppBundle\Repository\UserInfoRepository")
