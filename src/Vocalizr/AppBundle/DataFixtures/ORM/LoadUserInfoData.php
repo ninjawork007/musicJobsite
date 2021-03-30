@@ -10,6 +10,7 @@ use Doctrine\Common\Persistence\ObjectManager;
 
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\Security\Core\Encoder\MessageDigestPasswordEncoder;
 use Vocalizr\AppBundle\Entity\UserInfo;
 use Vocalizr\AppBundle\Model\CountryModel;
 
@@ -28,6 +29,30 @@ class LoadUserInfoData extends AbstractFixture implements OrderedFixtureInterfac
      */
     public function load(ObjectManager $manager)
     {
+        $robertUser = new UserInfo();
+        $robertUser->setCity('Melbourne');
+        $robertUser->setCountry($this->countryModel->byCode('au'));
+        $robertUser->setEmail('amine@vocalizr.com');
+        $robertUser->setEmailConfirmed(true);
+        $robertUser->setFirstName('Robert');
+        $robertUser->setLastName('Homewood');
+        $robertUser->setGender('m');
+        $robertUser->setIsActive(true);
+        $robertUser->setIsProducer(true);
+        $robertUser->setIsSongwriter(false);
+        $robertUser->setIsVocalist(true);
+
+        $encoder  = new MessageDigestPasswordEncoder('sha1', false, 1);
+        $password = $encoder->encodePassword("test", "95d76cdfcef0c9af572ab5d67d396da5");
+
+        $robertUser->setPassword($password);
+        $robertUser->setSalt('95d76cdfcef0c9af572ab5d67d396da5');
+        $robertUser->setUniqueStr('50b07da72772aeb5d40822d95c7fa1aeb791d3b4');
+        $robertUser->setStudioAccess(true);
+        $robertUser->setUsername('robert79');
+        $manager->persist($robertUser);
+        $this->addReference('user-amine', $robertUser);
+
         $robertUser = new UserInfo();
         $robertUser->setCity('Melbourne');
         $robertUser->setCountry($this->countryModel->byCode('au'));
