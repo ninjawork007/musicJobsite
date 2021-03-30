@@ -28,7 +28,7 @@
         "paypal/rest-api-sdk-php": "^1.13.0",
         "james-heinrich/getid3": "1.9.*",
         "stripe/stripe-php": "^6.43",
-
+        "google/apiclient": "^2.0",
         "mpdf/mpdf": "^5.7.0",
         "claviska/simpleimage": "2.*",
 
