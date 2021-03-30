@@ -36,7 +36,8 @@
         "ext-zip": "*",
         "ext-exif": "*",
         "ext-imagick": "*",
-        "doctrine/annotations": "^1.2"
+        "doctrine/annotations": "^1.2",
+        "guzzlehttp/guzzle" : "6.5.5"
     },
     "scripts": {
         "post-install-cmd": [

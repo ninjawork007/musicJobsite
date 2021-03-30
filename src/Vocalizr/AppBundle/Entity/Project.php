@@ -289,7 +289,7 @@ class Project
 
     /**
      * @ORM\Column(type="string", length=11, nullable=true)
-     * @Assert\Min(limit = "0", invalidMessage = "Error")
+     * @Assert\Range (min = "0", invalidMessage = "Error")
      */
     protected $bpm = null;
 

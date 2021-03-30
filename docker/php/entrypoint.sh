@@ -32,7 +32,7 @@ done
 php app/console doctrine:schema:update --force --env="${APP_ENV}"
 php app/console doctrine:mongodb:schema:update --env="${APP_ENV}"
 
-setfacl -R -m u:www-data:rwX -m u:"$(whoami)":rwX app/cache app/sessions app/logs uploads tmp web/uploads
+setfacl -R -m u:www-data:rwX -m u:"$(whoami)":rwX app/cache app/sessions app/logs
 
 crond -f -d 4 &
 
