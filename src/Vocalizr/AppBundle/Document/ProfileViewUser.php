@@ -15,23 +15,27 @@ class ProfileViewUser
     protected $id;
 
     /**
-     * @MongoDB\String
+     * @MongoDB\Field(type="string")
+
      */
     protected $date;
 
     /**
-     * @MongoDB\String
+     * @MongoDB\Field(type="string")
+
      */
     protected $created_at;
 
     /**
-     * @MongoDB\Int
+     * @MongoDB\Field(type="int")
+
      * @MongoDB\Index
      */
     protected $user_id;
 
     /**
-     * @MongoDB\Int
+     * @MongoDB\Field(type="int")
+
      */
     protected $from_user_id;
 

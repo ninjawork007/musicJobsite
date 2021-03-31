@@ -15,25 +15,29 @@ class AudioPlay
     protected $id;
 
     /**
-     * @MongoDB\Int
+     * @MongoDB\Field(type="int")
+
      * @MongoDB\Index
      */
     protected $user_id;
 
     /**
-     * @MongoDB\Int
+     * @MongoDB\Field(type="int")
+
      * @MongoDB\Index
      */
     protected $audio_id;
 
     /**
-     * @MongoDB\String
+     * @MongoDB\Field(type="string")
+
      * @MongoDB\Index
      */
     protected $date;
 
     /**
-     * @MongoDB\Int
+     * @MongoDB\Field(type="int")
+
      */
     protected $count;
 

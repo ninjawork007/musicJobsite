@@ -15,24 +15,28 @@ class AudioLike
     protected $id;
 
     /**
-     * @MongoDB\Int
+     * @MongoDB\Field(type="int")
+
      */
     protected $user_id;
 
     /**
-     * @MongoDB\Int
+     * @MongoDB\Field(type="int")
+
      * @MongoDB\Index
      */
     protected $from_user_id;
 
     /**
-     * @MongoDB\Int
+     * @MongoDB\Field(type="int")
+
      * @MongoDB\Index
      */
     protected $audio_id;
 
     /**
-     * @MongoDB\String
+     * @MongoDB\Field(type="string")
+
      */
     protected $date;
 

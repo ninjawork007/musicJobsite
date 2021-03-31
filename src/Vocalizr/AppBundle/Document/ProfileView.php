@@ -15,13 +15,15 @@ class ProfileView
     protected $id;
 
     /**
-     * @MongoDB\Int
+     * @MongoDB\Field(type="int")
+
      * @MongoDB\Index
      */
     protected $user_id;
 
     /**
-     * @MongoDB\String
+     * @MongoDB\Field(type="string")
+
      * @MongoDB\Index
      */
     protected $date;
@@ -32,7 +34,8 @@ class ProfileView
     protected $unique;
 
     /**
-     * @MongoDB\Int
+     * @MongoDB\Field(type="int")
+
      */
     protected $count;
 

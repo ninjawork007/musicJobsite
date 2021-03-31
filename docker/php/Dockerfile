@@ -1,15 +1,13 @@
-FROM timofeyn/vocalizr-php AS vocalizr_php
+FROM php:7.2-fpm AS vocalizr_php
 
-RUN apk del gnu-libiconv --no-cache --repository http://dl-cdn.alpinelinux.org/alpine/edge/community/ --allow-untrusted
 
 # Dirty hack for iconv
-RUN apk add gnu-libiconv --no-cache --repository http://dl-cdn.alpinelinux.org/alpine/v3.10/community/ --allow-untrusted
-ENV LD_PRELOAD /usr/lib/preloadable_libiconv.so php
+
 
 COPY php.ini /usr/local/etc/php/php.ini
 COPY php-cli.ini /usr/local/etc/php/php-cli.ini
 
-RUN curl -sS https://getcomposer.org/installer | php
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 #RUN sudo mv composer.phar /usr/bin/composer
 RUN composer --version
 
@@ -29,4 +27,33 @@ RUN chmod +x /usr/local/bin/entrypoint.sh && chmod +x /usr/local/bin/watch_asset
 ARG SOMETHING
 RUN echo $SOMETHING
 RUN echo ls
+
+RUN apt-get update && apt-get install -y --fix-missing \
+    apt-utils \
+    gnupg
+
+RUN echo "deb http://packages.dotdeb.org jessie all" >> /etc/apt/sources.list
+RUN echo "deb-src http://packages.dotdeb.org jessie all" >> /etc/apt/sources.list
+RUN curl -sS --insecure https://www.dotdeb.org/dotdeb.gpg | apt-key add -
+
+RUN apt-get update && apt-get install -y \
+    zlib1g-dev \
+    libzip-dev
+RUN apt-get update && apt-get install -y libmagickwand-dev --no-install-recommends && rm -rf /var/lib/apt/lists/*
+RUN pecl install imagick-beta
+RUN apt-get update
+
+RUN yes | apt install zip unzip exif
+RUN yes | apt install wget
+RUN apt-get update
+RUN yes | apt-get install openssl libssl-dev libcurl4-openssl-dev
+RUN pecl install mongodb
+
+RUN wget https://get.symfony.com/cli/installer -O - | bash
+RUN mv /root/.symfony/bin/symfony /usr/local/bin/symfony
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+RUN docker-php-ext-install pdo pdo_mysql zip exif
+RUN docker-php-ext-enable imagick mongodb
+
+
 ENTRYPOINT /usr/local/bin/entrypoint.sh "dev"

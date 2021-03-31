@@ -7,11 +7,15 @@
             "PayPal": "vendor/paypal/rest-api-sdk-php/lib"
         }
     },
+    "provide" : {
+        "ext-mongo": "*"
+    },
     "require": {
-        "php": ">=5.5.9",
-        "symfony/symfony": "2.3.*",
+        "php": "7.2",
+        "alcaeus/mongo-php-adapter" : "*",
+        "symfony/symfony": "2.7.*",
         "doctrine/orm": ">=2.2.3,<2.4-dev",
-        "doctrine/mongodb-odm-bundle": "3.0.*",
+        "doctrine/mongodb-odm-bundle": "3.2.1",
         "doctrine/doctrine-bundle": "1.2.*",
         "twig/extensions": "1.0.*",
         "symfony/assetic-bundle": "^2.8.0",
@@ -23,7 +27,7 @@
         "jms/di-extra-bundle": "1.4.*",
         "nelmio/solarium-bundle": "1.*", 
         "doctrine/doctrine-fixtures-bundle": "2.2.*",
-        "knplabs/knp-paginator-bundle": "2.4.0",
+        "knplabs/knp-paginator-bundle": "3.0.0",
         "hipaway-travel/mandrill-bundle": "1.0.*",
         "paypal/rest-api-sdk-php": "^1.13.0",
         "james-heinrich/getid3": "1.9.*",
@@ -59,7 +63,7 @@
     },
     "config": {
         "platform": {
-            "php": "5.5.9"
+            "php": "7.2"
         }
     }
 }

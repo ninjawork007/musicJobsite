@@ -20,6 +20,7 @@ RUN apt-get update && apt-get install -y \
 RUN apt-get update && apt-get install -y libmagickwand-dev --no-install-recommends && rm -rf /var/lib/apt/lists/*
 RUN pecl install imagick-beta
 RUN apt-get update
+
 RUN yes | apt install zip unzip exif
 RUN yes | apt install wget
 RUN apt-get update
