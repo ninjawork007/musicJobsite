@@ -18,7 +18,7 @@ services:
       - php-sessions:/srv/vocalizr/app/sessions
     ports:
       - '9998:80'
-
+    container_name: "php_vocalizr"
 
   mysql:
     image: percona:5.7
