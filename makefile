@@ -1,4 +1,4 @@
-TARGET=origin/dev
+TARGET=origin/mayur_docker_run
 DC_PARAMETERS=-f docker-compose.yml -f docker-compose.demo.yml
 APP_ENV=demo
 PROJECT_NAME=$(APP_ENV)_vocalizr
