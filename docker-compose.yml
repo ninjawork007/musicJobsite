@@ -33,6 +33,16 @@ services:
     ports:
       - "3309:3306"
 
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin:5.0.1
+    restart: always
+    environment:
+      PMA_HOST: mysql
+      PMA_USER: vocalizr
+      PMA_PASSWORD: ${MYSQL_PASSWORD:-nopassword}
+    ports:
+      - "3310:80"
+
   mongodb:
     image: mvertes/alpine-mongo:latest
     volumes:
