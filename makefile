@@ -6,17 +6,17 @@ APP_CONTAINER=php_1
 APP_SHELL=docker exec -it $(PROJECT_NAME)_$(APP_CONTAINER) /bin/sh -c
 APP_BIN=app/console
 
-update: force-pull
-	make post-update
+#update: force-pull
+#	make post-update
 
 post-update: build restart
 
-pull:
-	git pull --ff-only
+#pull:
+#	git pull --ff-only
 
-force-pull:
-	git fetch --all
-	git checkout --force "$(TARGET)"
+#force-pull:
+#	git fetch --all
+#	git checkout --force "$(TARGET)"
 
 restart: stop start
 
