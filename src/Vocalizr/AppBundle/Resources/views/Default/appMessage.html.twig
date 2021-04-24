@@ -1,7 +1,0 @@
-
-<div id="app-message">
-    <div class="container">
-        <span class="new-feature">{{message.messageType}}!</span> {{ message.message }} {% if message.learnMoreLink %}<a href="{{ message.learnMoreLink}}" target="_blank" >Learn more{% endif %}</a>
-        <a href="{{ path('app_message_read', {id: message.id}) }}" id="close-app-message"><i class="fa fa-times"></i></a>
-    </div>
-</div>

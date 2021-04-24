@@ -1,9 +1,0 @@
-<p>Congratulations {{ projectBid.userInfo.getFirstName }}!</p>
-
-<p>Your entry on <strong>{{ project.title }}</strong> won.<br>
-
-    Once work has been completed, the amount of <strong>${{ amount|number_format(2) }} USD</strong> will be sent to your Vocalizr Wallet.</p>
-
-<p>Please visit the studio to sign the agreement and begin work.</p>
-
-<p><a href="{{ url('project_studio', {uuid: project.uuid} ) }}" tyle="text-decoration:none;padding: 5px 10px;background:#14b9d6;color:#fff;display: inline-block;">Enter Studio</a></p>

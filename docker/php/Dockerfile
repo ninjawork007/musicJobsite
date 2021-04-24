@@ -1,9 +1,9 @@
-#FROM timofeyn/vocalizr-php AS vocalizr_php
-FROM php:8.0-fpm-buster AS vocalizr_php
-
-RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
-
-FROM alpine:3.7
+FROM timofeyn/vocalizr-php AS vocalizr_php
+#FROM php:8.0-fpm-buster AS vocalizr_php
+#
+#RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+#
+#FROM alpine:3.7
 
 RUN apk del gnu-libiconv --no-cache --repository http://dl-cdn.alpinelinux.org/alpine/edge/community/ --allow-untrusted
 

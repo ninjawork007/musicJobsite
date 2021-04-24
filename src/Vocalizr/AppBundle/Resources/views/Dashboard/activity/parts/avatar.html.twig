@@ -1,7 +1,0 @@
-<a href="{{ path('user_view', {username: user.username} ) }}">
-    {% if not user or user.path is not defined or user.path is empty %}
-        <img src="{{ asset('images/default_avatar.svg') }}" width="42" height="42" class="img-circle avatar-sm-{{ activityItem.actioned_user_info.username }}">
-    {% else %}
-        <img src="{{ asset('uploads/avatar/small/' ~ user.path ) }}" width="42" height="42" class="img-circle avatar-sm-{{ activityItem.actioned_user_info.username }}">
-    {% endif %}
-</a>
