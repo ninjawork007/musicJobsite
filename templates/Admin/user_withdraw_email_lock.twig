@@ -1,0 +1,20 @@
+{% extends 'Admin/layout.html.twig' %}
+{% block admin_scripts %}
+    <script>
+        VocalizrAdmin.initWithdrawEmail();
+    </script>
+{% endblock %}
+{% block admin_content %}
+    <h1>Change Withdraw Email</h1>
+    <div class="light-content">
+        <form id="admin-user-search-form" class="admin-search-form" action="{{ path('admin_withdraw_email_lock_list') }}">
+            <div class="form-group">
+                <label for="search-term">Search email/username/display name: </label>
+                <input type="text" id="search-term" name="search-term" class="form-control">
+            </div>
+            <button type="submit" class="btn btn-default" id="user-search-btn">Search</button>
+        </form>
+    </div>
+    <div class="results-container">
+    </div>
+{% endblock %}

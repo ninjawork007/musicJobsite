@@ -1,0 +1,7 @@
+<div class="track-list-item">
+    <div class="ui360 track-play"><a href="{{ scTrack.stream_url }}?client_id={{ soundcloud_client_id }}&r={{ random() }}" data-href="{{ scTrack.stream_url }}?client_id={{ soundcloud_client_id }}" type="audio/mp3"><span>PLAY</span></a></div>
+    <span class="track-title">{{ scTrack.title }}</span>
+    <span class="track-length">({{ scTrack.duration_string }})</span>
+    <a href="{{ scTrack.permalink_url }}" target="_blank" class="badge badge-soundcloud"><i class="vocalizr-icon icon-soundcloud"></i></a>
+    <a href="" class="btn btn-sm btn-default sc-select-track{% if app.request.get('task') %}-task{% endif %}" data-id="{{ scTrack.sc_id }}">SELECT</a>
+</div>

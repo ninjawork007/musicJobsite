@@ -1,0 +1,54 @@
+{% extends 'include/panel/popup_panel.html.twig' %}
+{% block classes %}more-requests-modal{% endblock %}
+{% block header_left %}ADD MORE REQUESTS{% endblock %}
+{% block header_right %}
+    {# green circle with fas.fa-users icon in it. #}
+    <svg width="23" height="23" viewBox="0 0 23 23" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="11.5" cy="11.5" r="11.5" fill="#00A187"/>
+        <path d="M11.5217 5.73914C12.9085 5.73914 14.0326 6.91013 14.0326 8.35462C14.0326 9.79912 12.9085 10.9701 11.5217 10.9701C10.135 10.9701 9.01087 9.79912 9.01087 8.35462C9.01087 6.91013 10.135 5.73914 11.5217 5.73914ZM14.235 11.1536L13.2789 10.9046C12.1031 11.7855 10.678 11.5889 9.76461 10.9046L8.80852 11.1536C8.04204 11.3532 7.50435 12.0705 7.50435 12.8935V14.4076C7.50435 14.9029 7.88978 15.3044 8.36522 15.3044H14.6783C15.1537 15.3044 15.5391 14.9029 15.5391 14.4076V12.8935C15.5391 12.0705 15.0014 11.3532 14.235 11.1536ZM16.4957 11.6178C17.4201 11.6178 18.1696 10.8371 18.1696 9.8741C18.1696 8.9111 17.4201 8.13044 16.4957 8.13044C15.5712 8.13044 14.8217 8.9111 14.8217 9.8741C14.8217 10.8371 15.5712 11.6178 16.4957 11.6178ZM6.54783 11.6178C7.47231 11.6178 8.22174 10.8371 8.22174 9.8741C8.22174 8.9111 7.47231 8.13044 6.54783 8.13044C5.62335 8.13044 4.87392 8.9111 4.87392 9.8741C4.87392 10.8371 5.62335 11.6178 6.54783 11.6178ZM7.12174 14.4076V12.8935C7.12174 12.4812 7.23157 12.0913 7.42551 11.7577C6.70841 12.1243 5.91095 11.9746 5.3764 11.5741L4.739 11.7401C4.22802 11.8731 3.86957 12.3514 3.86957 12.9V13.9094C3.86957 14.2396 4.12651 14.5073 4.44348 14.5073H7.12578C7.12322 14.4741 7.12187 14.4409 7.12174 14.4076ZM18.3045 11.7401L17.6671 11.5741C16.9993 12.0744 16.211 12.0532 15.6157 11.7539C15.811 12.0884 15.9217 12.4796 15.9217 12.8935V14.4076C15.9217 14.4412 15.9201 14.4743 15.9177 14.5073H18.6C18.917 14.5073 19.1739 14.2396 19.1739 13.9094V12.9C19.1739 12.3514 18.8155 11.8731 18.3045 11.7401Z" fill="white"/>
+    </svg>
+{% endblock %}
+{% block main %}
+    <div class="body">
+        Connection requests are limited to 60 per month. You can add more by purchasing here, with any unused purchashed requests rolling over to the next month.
+    </div>
+{% endblock %}
+{% block footer %}
+    <form id="connection-limit" action="{{ path('stripe_session_user_upgrade') }}" method="get" style="width: 100%;">
+        <input type="hidden" name="key" value="extend_connections_limit">
+        <label for="extend_option" class="field-label"></label>
+        <select name="option" id="extend_option" class="form-control select2">
+            {% for option, price in options %}
+                <option value="{{ option }}">Add {{ option }} more requests for ${{ price }}</option>
+            {% endfor %}
+        </select>
+        <br>
+        <button role="button" type="submit" class="btn btn-primary btn-block">PAY & INCREASE LIMIT NOW</button>
+    </form>
+{% endblock %}
+{% block after_modal %}
+    <script src="https://js.stripe.com/v3/"></script>
+    <script>
+        setTimeout(function () {
+            var stripe = Stripe("{{ stripe_checkout_key }}");
+
+
+            $('#connection-limit').on('submit', function (e) {
+                e.preventDefault();
+                App.showLoading();
+                var $form = $(this);
+                var formData = $form.serialize();
+                $.ajax({
+                    url: $form.attr('action'),
+                    method: 'GET',
+                    data: formData,
+                    success: function (data) {
+                        if (data.success) {
+                            stripe.redirectToCheckout({ sessionId: data.ssid })
+                        }
+                    }
+                });
+            });
+        }, 1000);
+    </script>
+{% endblock %}

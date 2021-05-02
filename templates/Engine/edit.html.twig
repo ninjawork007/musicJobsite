@@ -1,0 +1,268 @@
+{% extends 'app.html.twig' %}
+
+{% block title %}{% if engineOrder.id > 0 %}View Order ({{ engineOrder.uid }}){% else %}Submit your order{% endif %} - Engine Room{% endblock %}
+
+{% block description %}Get all your tracks profressional mixed & mastered by Vocalizr's in-house expert audio engineers{% endblock %}
+
+{% block javascript %}
+
+    <script type="text/javascript" src="{{ asset('js/uploader/plupload.full.min.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('js/asset-uploader.js') }}"></script>
+
+
+    <script>
+        AssetUploader.init('upload-asset-container', 'upload-asset-btn');
+        
+        $('#paynow').on('click', function (e) {
+            e.preventDefault();
+            $('#payment-submit').click();
+        })
+    </script>
+
+    <script type="text/javascript" src="https://www.dropbox.com/static/api/2/dropins.js" id="dropboxjs" data-app-key="lwlg3v5wizqu8f2"></script>
+
+{% endblock %}
+
+{% block stylesheet %}
+    <link rel="stylesheet" href="{{ asset('/css/engine.css') }}" />
+{% endblock %}
+
+{% block body %}
+    <div class="row">
+        <div class="col-sm-8">
+            <h1>Engine Room Order</h1>
+
+            {% include 'messages.html.twig' %}
+
+            <div class="row">
+                <div class="col-sm-12">
+
+                    <div class="light-content view-order">
+                        {% if engineOrder.id %}
+                            <form action="{{ path('engine_order', {uid: app.request.get('uid') }) }}" method="post" novalidate>
+                        {% else %}
+                            <form action="{{ path('engine_create', {code: app.request.get('code') }) }}" method="post" novalidate>
+                        {% endif %}
+                        {{ form_row(form._token) }}
+
+                            <div class="form-group">
+                                <div class="engine-price">
+                                    ${{ product.amount / 100 }} <sup>USD</sup>
+                                    {% if app.user.isSubscribed %}
+                                    <div class="badge badge-pro">PRO DISCOUNT PRICE</div>
+                                    {% endif %}
+                                    </div>
+                                <strong class="white-highlight engine-title">{{ product.title }}</strong><br>
+                                {{ product.description }}<br><br>
+                                
+                                {% if proProduct %}
+                                    <span class="white-highlight"><small>Only pay ${{ proProduct.amount / 100 }} if you are a PRO Member. <a href="{{ path('user_upgrade', {source: 'direct'}) }}" class="btn btn-default btn-sm">UPGRADE NOW</a></small></span>
+                                {% endif %}
+                            </div>
+                                
+                                <hr>
+                                <br>
+                            <div id="assets" class="tab-pane tab-assets active">
+
+                                <div class="assets-upload-wrap">
+
+                                    <div class="row form-group">
+                                        <div class="col-sm-7">
+                                            <label for="studio-upload-audio-container">UPLOAD ASSETS:</label>  <span class="help-note">(SUPPORTED FILES: .mp3 .aif .wav)</span>
+                                            <div>
+                                            <a id="upload-asset-btn" href="" class="btn btn-sm btn-default">SELECT ASSETS</a>
+                                            <a href="" class="btn btn-default btn-sm attach-dropbox"><i class="fa fa-dropbox"></i> ATTACH FROM DROPBOX</a>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row form-group">
+                                        <div class="col-sm-12">
+                                            <div id="upload-asset-container" data-url="{{ path('upload_audio') }}" data-extensions="{{ upload_audio_allowed }}" data-form="upload-asset-form">
+
+                                                <div id="asset-filelist"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+
+                                <div class="form-group">
+                                    {{ form_label(form.title)}} <span class="help-note">To identify order (ie track names etc)</span>
+                                    {{ form_widget(form.title) }}
+                                </div>
+                                        
+                                <div class="form-group">
+                                    {{ form_label(form.email)}} <span class="help-note">For our engineers to ask questions and send finished files</span>
+                                    {{ form_widget(form.email) }}
+                                </div>
+                                            
+                                <div class="form-group">
+                                    {{ form_label(form.notes)}} <span class="help-note">Please enter additional notes for our engineers</span>
+                                    {{ form_widget(form.notes) }}
+                                </div>
+                                
+                                    {% if assets|length > 0 %}
+                                        <div class="row form-group">
+                                            <div class="col-sm-12">
+                                                <label>SAVED ASSETS</label>
+                                                {% for asset in assets %}
+                                                    <div class="track-list-item">
+                                                        {% if asset.dropboxLink %}
+                                                            <i class="fa fa-dropbox" style="font-size: 16px;color: #00b9d7;"></i>
+                                                            <span style="font-size: 10px;margin-right: 14px;vertical-align: 1px;color: #00b9d7;font-weight: 600;">DROPBOX</span>
+                                                            <span class="track-title">{{ asset.title }}</span>
+                                                            {% if asset.UserInfo.id == app.user.id %}
+                                                            <a href="{{ path('engine_order_asset_delete', {uid: engineOrder.uuid, slug: asset.slug} ) }}" class="btn btn-default btn-sm roll-alt">REMOVE</a>
+                                                            {% endif %}
+                                                        {% else %}
+                                                            <span class="track-title">{{ asset.title }}</span>
+                                                            <span class="track-length">({{ asset.durationString }})</span>
+                                                            <a href="{{ path('engine_order_asset_delete', {uid: engineOrder.uid, slug: asset.slug} ) }}" class="btn btn-default btn-sm roll-alt">REMOVE</a>
+                                                        {% endif %}
+                                                </div>
+
+                                                {% endfor %}
+                                                    <br>
+                                            </div>
+                                        </div>
+                                    {% endif %}
+
+                                <div class="form-group text-right">
+                                    {% if engineOrder.id and engineOrder.status == "DRAFT" %}
+                                        
+                                         
+                                        <h3 class="white-highlight" style="font-size: 16px;">Amount payable: ${{ ((engineOrder.EngineProduct.amount) / 100)|addPricePercent(3.6, true) + 0.30 }} US<br>
+                                            <small class="white-highlight" style="font-size: 11px">Includes transaction fee of ${{ ( ((engineOrder.EngineProduct.amount / 100) * 3.6)/100)|number_format(2) + 0.30 }}</small>
+                                        </h3>
+                                        
+                                        {% if not assets|length %}
+                                            <div class="note"><small>Before you can place the order, you need to upload at least one asset.</small></div>
+                                            <input type="submit" class="btn btn-sm btn-default" value="SAVE">
+                                        {% endif %}
+                                        {% if assets|length %}
+                                            <input type="submit" class="btn btn-sm btn-default" value="SAVE">
+                                            <input type="button" class="btn btn-sm btn-primary" id="paynow" value="PAY & PLACE ORDER">
+                                            <div class="note"><small><br>Note: if you make any more changes, please save before paying</small></div>
+                                        {% endif %}
+                                    {% else %}
+                                        <input type="submit" class="btn btn-sm btn-default" value="{% if engineOrder.status != "DRAFT" and engineOrder.status != "" %}SAVE{% else %}CONTINUE{% endif %}">
+                                    {% endif %}
+                                </div>
+                                
+                                
+
+                            </div>
+                        </form>
+                                
+                                
+                        {% if engineOrder.id %}        
+                        <form id="payment-form" action="{{ paypal.url }}" method="post" target="_top" style="display:inline">
+                            <input type="hidden" name="cmd" value="_xclick">
+                            <input type="hidden" name="item_name" value="Engine Room: {{ product.title }}" />
+                            <input type="hidden" name="custom" value="ENGINE{{ engineOrder.uid }}">
+                            <input type="hidden" name="no_shipping" value="1" />
+                            <input type="hidden" name="return" value="{{ url('user_engine') }}?success=1" />
+                            <input type="hidden" name="cancel_return" value="{{ path('engine_order', {uid: engineOrder.uid}) }}?cancel=1" />
+                            <input type="hidden" name="business" value="accounts@vocalizr.com">
+                            <input type="hidden" name="lc" value="US">
+                            <input type="hidden" name="currency_code" value="{{ paypal.currency }}">
+                            <input type="hidden" name="no_note" value="0">
+                            <input type="hidden" name="notify_url" value="{{ paypal.notifyUrl }}" />
+                            <input type="hidden" name="amount" value="{{ ((engineOrder.EngineProduct.amount) / 100)|addPricePercent(3.6, true) + 0.30 }}" />
+                            <input id="payment-submit" type="submit" name="submit" value="submit" style="display:none" />
+                        </form>
+                        {% endif %}        
+                    </div>
+
+                </div>
+
+
+
+            </div>
+
+
+        </div>
+        <div class="col-sm-4">
+            {% if engineOrder.status == "PAID" %} 
+            <div class="gig-view-panel panel panel-green">
+                <div class="panel-heading lg">
+                    PAID
+                </div>
+                <div class="panel-body">
+                    <div class="panel-row">
+                        <p>Your order has been paid for. An engineer will start work soon.</p>
+                        
+                        <p>Order was submitted on: <strong>{{ engineOrder.createdAt|date(default_date_format) }}</strong></p>
+                        
+                        <p><a href="{{ path('website_faq') }}" target="_blank">Read our FAQ</a></p>
+                    </div>
+                </div>
+            </div> 
+            {% elseif engineOrder.status == "IN PROCESS" %}
+            <div class="gig-view-panel panel panel-green">
+                <div class="panel-heading lg">
+                    IN PROCESS
+                </div>
+                <div class="panel-body">
+                    <div class="panel-row">
+                        <p>Your order is in the hands of our engineers and being worked on now.</p>
+                        
+                        <p>Order was submitted on: <strong>{{ engineOrder.createdAt|date(default_date_format) }}</strong></p>
+                        
+                        <p><a href="{{ path('website_faq') }}" target="_blank">Read our FAQ</a></p>
+                    </div>
+                </div>
+            </div> 
+            {% elseif engineOrder.status == "COMPLETED" %}
+            <div class="gig-view-panel panel panel-jade">
+                <div class="panel-heading lg">
+                    COMPLETED
+                </div>
+                <div class="panel-body">
+                    <div class="panel-row">
+                        <p>Engineers have completed the work for you and will send your files via email.</p>
+                        
+                        <p><a href="{{ path('website_faq') }}" target="_blank">Read our FAQ</a></p>
+                    </div>
+                </div>
+            </div> 
+            {% elseif engineOrder.status == "DRAFT" %}
+                <div class="gig-view-panel panel panel-orange">
+                    <div class="panel-heading lg">
+                        DRAFT
+                    </div>
+                    <div class="panel-body">
+                        <div class="panel-row">
+                            <p>Your order is in draft mode. To submit your order and have our engineers get started, please make payment.</p>
+                            <p><a href="{{ path('website_faq') }}" target="_blank">Read our FAQ</a></p>
+                        </div>
+                    </div>
+                </div> 
+                {% if proProduct %}
+                    <p>Upgrade to PRO Membership to get 20% off the price. Only pay ${{ proProduct.amount / 100 }}.</p> <a href="{{ path('membership') }}" class="btn btn-default">UPGRADE NOW</a>
+                {% endif %}
+            {% else %}
+                <div class="panel panel-default welcome-panel">
+                    <div class="panel-heading">
+                        INSTRUCTIONS
+                    </div>
+                    <div class="panel-body">
+                        <p>Please upload all your assets (all the files) needed for the engineer to do the work required. Please add any instructions in the notes section.</p>
+                        <p>Once the order is paid for, one of our engineers will be contact with you.</p>
+
+                        <p><a href="{{ path('website_faq') }}" target="_blank">Read our FAQ</a></p>
+                    </div>
+                </div>
+                {% if proProduct %}
+                    <p>Upgrade to PRO Membership to get 20% off the price. Only pay ${{ proProduct.amount / 100 }}.</p> <a href="{{ path('user_upgrade', {source: 'direct'}) }}" class="btn btn-default">UPGRADE NOW</a>
+                {% endif %}
+            {% endif %}
+            
+
+        </div>
+        
+    </div>
+
+
+{% endblock %}

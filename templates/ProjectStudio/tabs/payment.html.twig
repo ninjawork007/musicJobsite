@@ -1,0 +1,134 @@
+<!-- PAYMENT TAB -->
+<div id="payment" class="tab-pane">
+    <div class="row">
+        <div class="col-sm-6">
+            {% if project.ProjectEscrow %}
+                {% if project.ProjectEscrow.releasedDate is null %}
+                    <div id="dispute-container" class="form-group"{% if projectDisputeForm.amount.vars.errors|length %}style="display:block"{% endif %}>
+                        {% if projectDisputes|length == 0 %}
+                            <p>If you are not happy with the quality of work you can negotiate a price.</p>
+                        {% endif %}
+                        <form action="{{ path('project_studio', {uuid: project.uuid} ) }}#payment" method="post">
+                            <div class="form-group">
+                                {{ form_label(projectDisputeForm.amount) }}
+                                <div class="input-group">
+                                    <span class="input-group-addon">USD$</span>
+                                    <input id="project_dispute_amount" type="text" name="{{ projectDisputeForm.amount.vars.full_name }}" value="" placeholder="Enter the amount you would be happy with" class="form-control">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                {{ form_row(projectDisputeForm.reason) }}
+                            </div>
+                            {{ form_row(projectDisputeForm._token) }}
+                            <div class="form-group">
+                                <button type="submit" name="dispute" value="Dispute" class="btn btn-sm btn-default">SEND</button>
+                            </div>
+                        </form>
+                        <hr>
+                    </div>
+
+                    <span class="white-highlight">${{ project.ProjectEscrow.amountDollars }}</span> is on hold in Vocalizr Payment Protection.
+                    {% if project.royalty %}
+                        <br>This gig includes an agreement of <span class="white-highlight">{{ project.royalty }}% royalties share</span>
+                        {% if project.royaltyMechanical %}
+                            <span class="icon-royalty-mechanical" data-text="Mechanical royalties offered">M</span>
+                        {% endif %}
+                        {% if project.royaltyPerformance %}
+                            <span class="icon-royalty-performance" data-text="Performance royalties offered">P</span>
+                        {% endif %}
+                    {% endif %}
+                    {% if project.isOwner(app.user) %}
+                        <br>
+                        <p>&nbsp;</p>
+                        <form action="{{ path('project_studio', {uuid: project.uuid}) }}" method="post" style="display:inline" onsubmit="return confirm('Are you sure you want to release the full payment?');">
+                            <p>
+                                {% if projectAssets|length > 0 %}
+                            <p class="white-highlight">Release payment once you are completely happy with assets uploaded by other party. This cannot be reversed.</p>
+                            <button class="btn btn-default btn-sm release-escrow" value="release_escrow">RELEASE PAYMENT</button>
+                            {% else %}
+                                <p class="white-highlight">Payment can only be released once other party has uploaded asset(s).</p>
+                                <button type="button" class="btn btn-default btn-sm release-escrow" value="" disabled>RELEASE PAYMENT</button>
+                            {% endif %}
+                            {% if disputeActive %}
+                                {% include 'ProjectStudio/include/disputeWarning.html.twig' %}
+                            {% else %}
+                                <a id="dispute-show" href="">Negotiate</a>
+                            {% endif %}
+                            </p>
+                        </form>
+                    {% else %}
+                        <p></p>
+                        {% if not disputeActive %}
+                            <a id="dispute-show" href="" class="btn btn-sm btn-default">NEGOTIATE</a>
+                        {% else %}
+                            {% include '/ProjectStudio/include/disputeWarning.html.twig' %}
+                        {% endif %}
+                    {% endif %}
+
+                {% elseif disputeAccepted is null or disputeAccepted.amount != 0 %}
+                    <span class="white-highlight">${{ project.ProjectEscrow.amountDollars }}</span> has been released to
+                    <a href="{{ path('user_view', {username: project.projectBid.UserInfo.username} ) }}">{{ project.projectBid.UserInfo.displayName }}</a>.
+                {% endif %}
+            {% endif %}
+        </div>
+        <div class="col-sm-6">
+            {% if projectDisputes|length %}
+                {% for dispute in projectDisputes %}
+                    {% if dispute.FromUserInfo.id == app.user.id %}
+                        <div class="dispute-row">
+                            {% if project.ProjectEscrow.releasedDate is null and not dispute.accepted is sameas(false) %}
+                                <a href="{{ path('project_dispute_del', {uuid: project.uuid, id: dispute.id} ) }}" class="pull-right btn btn-sm btn-default">REMOVE</a>
+                            {% endif %}
+
+                            {% if dispute.accepted is null %}
+                                <span class="badge badge-yellow">WAITING</span>
+                            {% elseif dispute.accepted is sameas(true) %}
+                                <span class="badge badge-green">ACCEPTED</span>
+                            {% else %}
+                                <span class="badge badge-red">DECLINED</span>
+                            {% endif %}
+
+                            {% if dispute.UserInfo.id == project.UserInfo.id %}
+                                You have asked for <span class="white-highlight">${{ dispute.amountDollars }}</span>.
+                            {% else %}
+                                You are willing to pay <span class="white-highlight">${{ dispute.amountDollars }}</span>.
+                            {% endif %}
+
+                            {% if not dispute.reason is empty %}
+                                <div class="reason">"{{ dispute.reason|nl2br }}"</div>
+                            {% endif %}
+                            <small>Created {{ dispute.createdAt|timeAgoString }} ago</small>
+                        </div>
+                    {% else %}
+                        <div class="dispute-row">
+                            {% if dispute.accepted is sameas(false) %}
+                                <span class="badge badge-red">DECLINED</span>
+                            {% elseif dispute.accepted is sameas(true) %}
+                                <span class="badge badge-green">ACCEPTED</span>
+                            {% else %}
+                                <span class="badge badge-blue">NEGO</span>
+                            {% endif %}
+
+                            {% if dispute.UserInfo.id == project.UserInfo.id %}
+                                {{ dispute.FromUserInfo.displayName }} has asked for <span class="white-highlight">${{ dispute.amountDollars }}</span>.
+                            {% else %}
+                                {{ dispute.FromUserInfo.displayName }} is wanting to pay <span class="white-highlight">${{ dispute.amountDollars }}</span>.
+                            {% endif %}
+                            {% if not dispute.reason is empty %}
+                                <div class="reason">"{{ dispute.reason|nl2br }}"</div>
+                            {% endif %}
+                            <small>Created {{ dispute.createdAt|timeAgoString }} ago</small>
+                            {% if dispute.accepted is null and project.ProjectEscrow.releasedDate is null %}
+                                <form action="{{ path('project_studio', {uuid: project.uuid} ) }}" method="post">
+                                    <input type="hidden" name="dispute_id" value="{{ dispute.id }}">
+                                    <button name="dispute_response" class="btn btn-sm btn-default accept" value="accept">ACCEPT</button> <button name="dispute_response" class="btn btn-sm btn-default roll-alt" value="decline">DECLINE</button>
+                                </form>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+        </div>
+    </div>
+</div>
+<!-- //PAYMENT TAB -->

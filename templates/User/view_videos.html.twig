@@ -1,0 +1,10 @@
+<div class="row form-group video-item">
+    {% for video in userVideos %}
+        <div class="col-sm-6">
+            <div data-role="video-player" data-id="{{ video.id }}" data-plyr-provider="{{ video.provider }}" data-plyr-embed-id="{{ video.link }}"></div>
+        </div>
+        {% if loop.index % 2 == 0 %}
+            </div><div class="row form-group video-item">
+        {% endif %}
+    {% endfor %}
+</div>

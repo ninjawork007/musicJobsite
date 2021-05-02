@@ -1,0 +1,114 @@
+{% extends 'app.html.twig' %}
+
+{% block title %}Connections{% endblock %}
+
+{% block javascript %}
+    <script type="text/javascript" src="{{ ('js/connect.js') }}"></script>
+{% endblock %}
+
+{% block stylesheet %}
+    <link rel="stylesheet" href="{{ asset('css/connections.css') }}" />
+{% endblock %}
+
+{% block body %}
+    {% include 'messages.html.twig' %}
+    <h1>Connections</h1>
+    <div class="row">
+        <div class="col-sm-8">
+            {% if pendingRequests %}
+            <h4>Pending Requests</h4>
+            <div class="connection-list-pending">
+            {% for connect in pendingRequests %}
+                {% set connectUser = connect.getConnectedUser(app.user) %}
+                <div class="connect-row">
+                    <div class="user-connection user-list-item">
+                        <div class="avatar">
+                            <a href="{{ path('user_view', {username: connectUser.username}) }}" class="user-list-avatar">
+                                {% if connectUser.path is empty %}
+                                    <img src="{{ asset('images/default_avatar.svg') }}" alt="{{ connectUser.username }}" class="img-circle" width="58" height="58" />
+                                {% else %}
+                                    <img src="{{ asset('uploads/avatar/small/' ~ connectUser.path ) }}" alt="{{ connectUser.username }}" width="58" height="58" class="img-circle" />
+                                {% endif %}
+                                {% if connectUser.isSubscribed %}
+                                    <img class="svg-stamp-pro" src="{{ asset('images/vocalizr_pro_stamp.svg') }}" alt="pro" data-text="<div class='tip-header'>This Vocalizr user is an <a href='{{ path('membership') }}' class=stamp-pro-hover>Access Pass</a> member</div>">
+                                {% endif %}
+                            </a>
+                        </div>
+                        <div class="user-info">
+                            <div class="user-list-name">
+                                <a href="{{ path('user_view', {username: connectUser.username}) }}">{{ connectUser.displayName }}</a>
+                                {% if connectUser.isCertified %}
+                                    <img class="vocalizr-certified-stamp-clipped" src="{{ asset('images/certified_pro_stamp_clipped.svg') }}" alt="" data-text="<div class='tip-header'>Vocalizr Certified Professional</div>A 'Certified Professional’ is deemed a professional by the experts at Vocalizr. The stamp is based on ability, experience, and skill level.<br><a href='{{ path('get_certified') }}' class='get-certified-now' style='color: #01c2e5;'>Get Certified Now</a>">
+                                {% endif %}
+                            </div>
+                            <div class="user-list-type">
+                                {% if connectUser.isVocalist and connectUser.isProducer %}
+                                    Producer &amp; Vocalist
+                                {% elseif connectUser.isVocalist %}
+                                    Vocalist
+                                {% elseif connectUser.isProducer %}
+                                    Producer
+                                {% endif %}
+                            </div>
+                            {{ connect.message }}
+                            <div class="connect-actions">
+                                <a href="{{ path('user_connect_accept', {username: connectUser.username} ) }}" class="btn btn-default btn-action btn-sm connection-accept">ACCEPT</a>
+                                <a href="{{ path('user_connect_ignore', {username: connectUser.username}) }}" class="ignore-connection">Ignore</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+            </div>
+            {% endif %}
+
+            <div class="connect-row top-connect-row">
+                <div class="connect-search">
+                    <form action="{{ path('connections') }}" method="get">
+                        <input type="text" name="search" class="form-control" placeholder="Search..." value="{{ app.request.get('search') }}">
+                    </form>
+                </div>
+                <div class="sort">Sort by:
+                    <div class="btn-group">
+                        <a href="" class="dropdown-toggle" data-toggle="dropdown">
+                            {% if app.request.get('filter') is null %}
+                                Recently Connected
+                            {% else %}
+                                {{ app.request.get('filter')|capitalize }}
+                            {% endif %}
+                        <i class="fa fa-angle-down"></i></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="?filter=date&dir={% if app.request.get('filter') == 'date' and app.request.get('dir') == 'desc' %}asc{%else%}desc{%endif%}">Recently Connected</a></li>
+                            <li><a href="?filter=rating&dir={% if app.request.get('filter') == 'rating' and app.request.get('dir') == 'desc' %}asc{%else%}desc{%endif%}">Rating</a></li>
+                        </ul>
+                    </div>
+                </div>
+
+            </div>
+            <div class="connection-list">
+                {{ render(controller('App\\Controller\\ConnectionsController:connectRowsAction')) }}
+            </div>
+
+
+        </div>
+    </div>
+    {% if not can_hire_now() %}
+        <div id="hire_now_modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="vocalizr-modal" aria-hidden="true">
+            {% include 'include/panel/hire_now_panel.html.twig' %}
+        </div>
+    {% endif %}
+{% endblock %}
+{% block body_end_trackers %}
+
+    <script>
+
+        {% if not can_hire_now() %}
+            $('.connection-accept').click(function (e) {
+                showModal(e, '#hire_now_modal')
+            });
+            {% if app.session.flashBag().get('hire_now_modal') %}
+                showModal(null, '#hire_now_modal');
+            {% endif %}
+        {% endif %}
+    </script>
+{% endblock %}

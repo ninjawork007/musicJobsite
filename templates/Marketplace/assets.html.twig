@@ -1,0 +1,140 @@
+{% extends 'app.html.twig' %}
+
+{% block title %}Marketplace{% endblock %}
+
+{% block javascript %}
+
+        <script type="text/javascript" src="{{ asset('js/uploader/plupload.full.min.js') }}"></script>
+        <script type="text/javascript" src="{{ asset('js/asset-uploader.js') }}"></script>
+
+        <script>
+            AssetUploader.init('upload-asset-container', 'upload-asset-btn');
+
+
+            if ($('#form_has_assets_1').is(':checked')) {
+                $('.assets-upload-wrap').show();
+            }
+        </script>
+
+        <script type="text/javascript" src="https://www.dropbox.com/static/api/2/dropins.js" id="dropboxjs" data-app-key="lwlg3v5wizqu8f2"></script>
+
+{% endblock %}
+
+{% block body %}
+<div class="row">
+    <div class="col-sm-8">
+        <h1>Marketplace Sale</h1>
+
+        {% include 'messages.html.twig' %}
+
+        <div class="row">
+            <div class="col-sm-12 manage-marketplace-item">
+
+                <ul class="nav nav-tabs">
+                    <li><a href="{{ path('marketplace_item_edit', {'uuid' : marketplaceItem.uuid }) }}">Details</a></li>
+                    <li class="active"><a href="{{ path('marketplace_assets', {'uuid' : marketplaceItem.uuid }) }}">Assets</a></li>
+                </ul>
+
+                <div class="tab-content">
+
+                        <form id="manage-marketplace-assets-form" action="{{ path('marketplace_assets', {'uuid' : marketplaceItem.uuid }) }}" method="post" novalidate>
+                            {{ form_row(form._token) }}
+
+                            <p>This item has {{ assets|length }} assets.</p>
+
+                            <div id="assets" class="tab-pane tab-assets active">
+
+                                <div class="assets-upload-wrap">
+
+                                    <div class="row form-group">
+                                        <div class="col-sm-7">
+                                            <label for="studio-upload-audio-container">UPLOAD ASSETS:</label>  <span class="help-note">(SUPPORTED FILES: .mp3 .aif .wav)</span>
+                                            <a id="upload-asset-btn" href="" class="btn btn-sm btn-default">SELECT ASSETS</a>
+                                            <a href="" class="btn btn-default btn-sm attach-dropbox"><i class="fa fa-dropbox"></i> ATTACH FROM DROPBOX</a>
+                                        </div>
+                                    </div>
+
+                                    <div class="row form-group">
+                                        <div class="col-sm-12">
+                                            <div id="upload-asset-container" data-url="{{ path('upload_audio') }}" data-extensions="{{ upload_audio_allowed }}" data-form="upload-asset-form">
+
+                                                <div id="asset-filelist"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {% if assets|length > 0 %}
+                                        <div class="row form-group">
+                                            <div class="col-sm-12">
+                                                <h3>Saved Assets</h3>
+                                                {% for asset in assets %}
+                                                    <div class="track-list-item">
+                                                        {% if asset.dropboxLink %}
+                                                            <i class="fa fa-dropbox" style="font-size: 16px;color: #00b9d7;"></i>
+                                                            <span style="font-size: 10px;margin-right: 14px;vertical-align: 1px;color: #00b9d7;font-weight: 600;">DROPBOX</span>
+                                                            <span class="track-title">{{ asset.title }}</span>
+                                                            {% if asset.UserInfo.id == app.user.id %}
+                                                            <a href="{{ path('marketplace_asset_delete', {uuid: marketplaceItem.uuid, slug: asset.slug} ) }}" class="btn btn-default btn-sm roll-alt">REMOVE</a>
+                                                            {% endif %}
+                                                        {% else %}
+                                                            {% if asset.previewPath and asset.previewPath|marketplaceItemAssetExists(marketplaceItem.id) %}
+                                                            <div class="ui360 track-play inline"><a href="{{ path('marketplace_asset_stream', {uuid: marketplaceItem.uuid, slug: asset.slug}) }}" type="audio/mp3"><span>PLAY</span></a></div>
+                                                            {% else %}
+                                                            <div class="no-play">N/A</div>
+                                                            {% endif %}
+                                                            <span class="track-title">{{ asset.title }}</span>
+                                                            <span class="track-length">({{ asset.durationString }})</span>
+                                                            <span class="badge badge-featured">PREVIEW</span>
+                                                            <a href="{{ path('marketplace_asset_delete', {uuid: marketplaceItem.uuid, slug: asset.slug} ) }}" class="btn btn-default btn-sm roll-alt">REMOVE</a>
+                                                        {% endif %}
+                                                </div>
+
+                                                {% endfor %}
+                                            </div>
+                                        </div>
+                                    {% endif %}
+                                </div>
+
+                                <hr>
+
+                                {% if marketplaceItem.status == "published" %}
+                                <p class="white-highlight">Please note: Any changes made to your Marketplace item will be reviewed by Vocalizr. Your item will not be published to Marketplace until the review is completed, and your item is approved.</p>
+                                {% endif %}
+
+                                <div class="form-group text-right">
+                                    <input type="submit" class="btn btn-sm btn-default" value="SAVE">
+                                </div>
+
+                            </div>
+                        </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-sm-4">
+
+        <div class="row">
+            <div id="item-status-widget" class="col-sm-12">
+                {{ controller('App:Marketplace:itemStatusWidget', {
+                    'uuid': marketplaceItem.uuid,
+                    'fromPage' : 'view'
+                }) }}
+            </div>
+        </div>
+
+        <div class="banner-wrapper is-mrec">
+            <!-- /353537636/Vocalizr_MREC1_300x250 -->
+            <div id='div-gpt-ad-1494936661372-5' style='height:250px; width:300px;'>
+                <script>
+                    googletag.cmd.push(function() { googletag.display('div-gpt-ad-1494936661372-5'); });
+                </script>
+            </div>
+        </div>
+
+    </div>
+
+
+
+</div>
+{% endblock %}

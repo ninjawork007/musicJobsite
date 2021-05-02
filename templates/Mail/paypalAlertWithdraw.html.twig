@@ -1,0 +1,17 @@
+Hey,
+
+<p>A user with email from blocklist tried to make withdraw:</p>
+
+<p><b>User Info</b></p>
+<p>
+    <b>Email: </b> {{ user.email }}<br>
+    <b>Username: </b> {{ user.username }}<br>
+    <b>Link to profile: </b> <a href="{{ url('user_view', {'username' : user.username}) }}">{{ url('user_view', {'username' : user.username}) }}</a><br>
+    {% if user.withdrawEmail %}<b>Deposit / Withdraw Email: </b> {{ user.withdrawEmail }}{% endif %}
+</p>
+<hr>
+<p><b>Withdraw Info</b></p>
+<p>
+    <b>Amount: </b> ${{ paymentAmount }}<br>
+    <b>Attempted withdraw paypal email: </b> {{ paymentEmail }}<br>
+</p>

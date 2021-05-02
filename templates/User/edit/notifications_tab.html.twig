@@ -1,0 +1,57 @@
+<!-- EMAIL NOTIFICATIONS TAB -->
+<div class="tab-pane fade in" id="pref">
+    <form action="{{ path('user_edit') }}#pref" method="post">
+        <h3>Email Notifications</h3>
+
+        {% if app.user.isVocalist %}
+            <div class="form-group">
+                <input type="checkbox" name="email_new_projects" value="1"{% if userPref.emailNewProjects %}checked{% endif %}> Notify me of new paid gigs that may be of interest
+            </div>
+            <div class="form-group">
+                <input type="checkbox" name="email_tag_voting" value="1"{% if userPref.emailTagVoting %}checked{% endif %}> Notify me when a member up votes my vocal tags
+            </div>
+        {% endif %}
+        <div class="form-group">
+            <input type="checkbox" name="email_project_invites" value="1"{% if userPref.emailProjectInvites %}checked{% endif %}> Notify me when invited to bid on gig
+        </div>
+
+        <div class="form-group">
+            <input type="checkbox" name="email_messages" value="1"{% if userPref.emailMessages %}checked{% endif %}> Notify me of new / unread messages
+        </div>
+
+        <div class="form-group">
+            <input type="checkbox" name="email_connections" value="1"{% if userPref.emailConnections %}checked{% endif %}> Notify me of new connection requests
+        </div>
+        {% if app.user.isProducer %}
+            <!--
+                        <div class="form-group">
+                            <input type="checkbox" name="email_vocalist_suggestions" value="1"{% if userPref.emailVocalistSuggestions %}checked{% endif %}> Notify me of recommended vocalists for my gigs
+                        </div>
+                        -->
+        {% endif %}
+
+        <hr>
+
+        <h3>Connection Invites</h3>
+
+        <div class="form-group">
+            <input id="connectAccept" type="checkbox" name="connect_accept" value="1"{% if userPref.connectAccept%}checked{% endif %}> Allow connection invites
+        </div>
+
+
+        <div class="connectOptions">
+            <div class="form-group">
+                <input type="checkbox" name="connect_restrict_subscribed" value="1"{% if userPref.connectRestrictSubscribed %}checked{% endif %}> Only members with Pro Membership can send me an invite to connect
+            </div>
+
+            <div class="form-group">
+                <input type="checkbox" name="connect_restrict_certified" value="1"{% if userPref.connectRestrictCertified%}checked{% endif %}> Only Certified members can send me an invite to connect
+            </div>
+        </div>
+
+        <div class="form-group">
+            <button type="submit" name="save_pref" value="Save" class="btn btn-default btn-sm">SAVE</button>
+        </div>
+    </form>
+</div>
+<!--/END NOTIFICATIONS TAB -->

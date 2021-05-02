@@ -1,0 +1,146 @@
+{% extends 'app.html.twig' %}
+
+{% block title %}Singing Jobs, singers wanted from around the world{% endblock %}
+
+{% block description %}Singers wanted for singing jobs around the world. Music producers looking for singers who want to work and collaborate with. Simply just audition online!{% endblock %}
+
+{% block javascript %}
+
+<script type="text/javascript" src="{{ asset('js/jquery.geocomplete.min.js') }}"></script>
+
+    <script>
+        $('#geo-location').geocomplete({
+            details: "#search-form",
+            types: ['(cities)'],
+            blur: true,
+            detailsAttribute: "data-geo"
+        });
+    </script>
+
+{% endblock %}
+
+{% block body %}
+<div class="row">
+    <div class="col-sm-8 page-content">
+        <h1>Singing Jobs Around the World</h1>
+
+        <h2>About Vocalizr and its Benefits</h2>
+        
+        <p>Vocalizr is a platform that was created with the aim to connect vocalists and producers worldwide. It is a wonderful place for music production, as the singers
+            can find talented producers from worldwide in order to develop a collaboration that would help them become well-known for their talents.
+            There are plenty of benefits to enjoy when using vocalizr to find a suitable job for you as a singer:</p>
+        
+        <ul>
+            <li>You have the opportunity to find talented producers to work with, in order to put your talents and qualities in the light</li>
+            <li>Vocalizr is a safe and secure online workspace, where you can find a suitable job for your talents</li>
+            <li>You can start collaboration with producers worldwide in a remote studio</li>
+        </ul>
+        
+        <p>Using vocalizr is simple, as you only need to create your account and start looking for <strong>singing jobs</strong> that suit you.</p>
+
+        <h2>Singers Wanted for Huge Range of Jobs</h2>
+
+        <p>There are a wide range of singing jobs available on vocalizr, so the first step is to create your account and start looking for the 
+            jobs that state singers wanted.When you are looking for singing jobs on vocalizr, you will go to the <a href="/gig-hunter">Gig Hunter</a> page,
+            where you can look for the jobs that are most suitable for you.</p>
+        
+        <p>You can refine your search using the search window located on the page, where you can make your custom search for singing jobs, so that you will
+            only be shown the jobs that are most suitable for you. There, you can choose between a range of options, so that you can get the results 
+            that are most suitable for your needs:</p>
+        
+        <ul>
+            <li>Keywords – add your keywords that you consider most suitable for the job you are interested in</li>
+            <li>Select the budget range</li>
+            <li>Choose the gender that the job is looking to hire</li>
+            <li>Choose the genres</li>
+            <li>Vocal characteristics required by the job</li>
+            <li>Vocal styles required by the job</li>
+        </ul>
+        
+        <p>You will see that there are a variety of singing jobs available, from which you can choose the ones that interest you. Once you find a gig that
+            you are interested in and that suits your talents and your genre, you can place your bid for the gig and then the only thing 
+            left is to wait for the producer to select you! For any gig, you will see there is a period of time left for the bids to be placed.</p>
+        
+
+        <p>There are many <strong>singers wanted</strong> on vocalizr and it does not matter where in the world you are, because with this platform, you can start a collaboration 
+            with producers worldwide, due to the opportunity to work in a remote studio. You only need to get your account 
+            and start looking for the singing jobs available in order to find the one that suits you. However, you might need to place bids
+            on multiple jobs, as the number of singers and of jobs is huge!</p>
+        
+        
+        <p>&nbsp;</p>
+        <p><a href="{{ path('gig_hunter') }}" class="btn btn-primary">Find Work Now!</a></p>
+</div>
+    
+    <div class="col-sm-4">
+        <div class="search-panel panel panel-default">
+            <div class="panel-heading">
+                SINGER JOBS
+            </div>
+            <div class="panel-body padding">
+                <form action="{{ path('gig_hunter', {filter: app.request.get('filter')} ) }}" method="get" novalidate>
+                <div class="row form-group">
+                    <div class="col-sm-12">
+                        {{ form_row(form.keywords) }}
+                    </div>
+                </div>
+                
+                <hr>
+                
+                <div class="row form-group">
+                    <div class="col-sm-12">
+                        {{ form_row(form.budget) }}
+                    </div>
+                </div>
+                    
+                <hr>
+                
+                <div class="row form-group">
+                    <div class="col-sm-12">
+                        {{ form_row(form.gender) }}
+                    </div>
+                </div>
+                
+                <hr>
+                
+                <div class="row form-group">
+                    <div class="col-sm-12">
+                        <input type="checkbox" name="{{ form.studio_access.vars.full_name }}" value="1"{% if form.vars.value.studio_access %} checked{% endif %}> Must have studio access
+                    </div>
+                </div>
+                
+                <hr>
+                
+                <div class="row form-group">
+                    <div class="col-sm-12">
+                        {{ form_row(form.genre) }}
+                    </div>
+                </div>
+                
+                <hr>
+                
+                <div class="row form-group">
+                    <div class="col-sm-12">
+                        {{ form_row(form.vocal_characteristic) }}
+                    </div>
+                </div>
+                
+                <div class="row form-group">
+                    <div class="col-sm-12">
+                        {{ form_row(form.vocal_style) }}
+                    </div>
+                </div>
+                
+                <hr>
+                
+                <div class="form-buttons">
+                    <button type="submit" name="search" value="SEARCH" class="btn btn-sm btn-default">SEARCH</button>
+                    <a href="{{ path('gig_hunter') }}" class="btn btn-sm btn-default reset">RESET</a>
+                </div>
+                {{ form_row(form._token) }}
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+                    {% endblock %}

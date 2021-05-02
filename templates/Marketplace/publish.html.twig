@@ -1,0 +1,33 @@
+{% extends '::app.html.twig' %}
+
+{% block title %}Marketplace{% endblock %}
+
+{% block javascript %}
+
+            <script type="text/javascript" src="{{ asset('js/uploader/plupload.full.min.js') }}"></script>
+            <script type="text/javascript" src="{{ asset('js/audio-uploader.js') }}"></script>
+
+
+        <script>
+            AudioUploader.init('marketplace-upload-audio-container', 'upload-audio-btn');
+        </script>
+{% endblock %}
+
+{% block body %}
+<div class="row">
+    <div class="col-sm-8">
+        <h1>Marketplace Sale</h1>
+
+        {% include 'messages.html.twig' %}
+
+        <div class="row">
+            <div class="col-sm-12 manage-marketplace-item">
+
+                <p>Your item has been submitted for review.</p>
+
+                
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,203 @@
+{% if project.hireUser %}
+    {% set hireUser = project.hireUser %}
+    {% embed 'Project/include/hireNowWidget.html.twig' %}
+        {% block panel_title %}Hire Now Gig For{% endblock %}
+    {% endembed %}
+{% endif %}
+
+{% if project.publishedAt is not null %}
+    {% if projectAwarded %}
+    <div class="gig-view-panel panel panel-jade">
+        <div class="panel-heading lg">
+            AWARDED
+        </div>
+        <div class="panel-body">
+            <div class="panel-row">
+                {% if project.projectType == 'paid' %}
+                <span class="orange-highlight">Final bid:</span> <span class="white-highlight">${{ projectAwarded.amount / 100}} USD</span><br>
+                {% endif %}
+                {% if project.royalty %}
+                <span class="orange-highlight">
+                    Royalty:</span> <span class="white-highlight">{{ project.royalty }}%</span>
+                    {% if project.royaltyMechanical %}
+                        <span class="icon-royalty-mechanical" data-text="Mechanical royalties offered">M</span>
+                    {% endif %}
+                    {% if project.royaltyPerformance %}
+                        <span class="icon-royalty-performance" data-text="Performance royalties offered">P</span>
+                    {% endif %}
+                    <br>
+                {% endif %}
+                <span class="orange-highlight">Bid Winner:</span> <a href="{{ path('user_view', {username: projectAwarded.userInfo.username}) }}">{{ projectAwarded.userInfo.displayName }}</a>
+            </div>
+            <div class="panel-row">
+                Bids made: <span class="highlight">{{ bidStats.totalBids }}</span>
+                {% if project.projectType == 'paid' %}<br>
+                    Average bid: <span class="highlight">
+                    {% if bidStats.avgBidAmount is empty %}$0{% else %}${{ bidStats.avgBidAmount|number_format(0) }}{% endif %} USD
+                    </span>
+                {% endif %}
+            </div>
+            {% if project.userInfo == app.user or project.projectBid.userInfo == app.user %}
+                {% if fromPage != 'agreement' %}
+                <div class="panel-row">
+                    <a href="{{ path('project_studio', {uuid: project.uuid}) }}" class="btn btn-primary">Enter the studio</a>
+                </div>
+                {% endif %}
+            {% endif %}
+        </div>
+    </div>
+    {% elseif project.bidsDue|timeLeftString is empty %}
+    <div class="gig-view-panel panel panel-red">
+        <div class="panel-heading lg">
+            CLOSED
+        </div>
+        <div class="panel-body">
+            <div class="panel-row">
+                Bids made: <span class="highlight">{{ bidStats.totalBids }}</span>
+                {% if project.projectType == 'paid' %}<br>
+                    Average bid: <span class="highlight">
+                    {% if bidStats.avgBidAmount is empty %}$0{% else %}${{ bidStats.avgBidAmount|number_format(0) }}{% endif %} USD
+                    </span>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% else %}
+        <div class="gig-view-panel panel panel-green">
+            <div class="panel-heading lg">
+                OPEN
+            </div>
+            <div class="panel-body">
+                {% set timeLeft = project.bidsDue|timeLeftSingle %}
+                <div class="panel-row time-left">
+                    <span class="icon icon-time"></span>
+                    <span class="num">{{ timeLeft.num }}</span> <small>{{ timeLeft.text|upper }}<br> LEFT</small>
+                </div>
+                {% if not project.hireUser %}
+                    {% if project.projectType == 'paid' %}
+                        <div class="panel-row">
+                            Current highest bid: <span class="highlight">{% if bidStats.highest is empty %}$0{% else %}${{ bidStats.highest / 100 }}{% endif %} USD</span>
+                        </div>
+                    {% endif %}
+                    <div class="panel-row">
+                        Bids made: <span class="highlight">{{ bidStats.totalBids }}</span>
+                        {% if project.projectType == 'paid' %}<br>
+                            Average bid: <span class="highlight">
+                                {% if bidStats.avgBidAmount is empty %}$0{% else %}${{ bidStats.avgBidAmount|number_format(0) }}{% endif %} USD
+                            </span>
+                        {% endif %}
+                    </div>
+                {% endif %}
+                {% if project.publishType == 'public' %}
+                <div class="panel-row">
+                    Share:
+                    <div class="gig-share">
+                        {% if app.user and project.userInfo.id == app.user.id %}
+                        {% set message = "Check out my Gig on vocalizr! #vocalizr #gig"|url_encode() %}
+                        {% else %}
+                        {% set message = "Check out this Gig on vocalizr! #vocalizr #gig"|url_encode() %}
+                        {% endif %}
+                        <a target="_blank" href="http://www.facebook.com/sharer/sharer.php?u={{ url('project_view', {uuid: project.uuid}) }}"><i class="fab fa-facebook-square"></i></a>
+                        <a target="_blank" href="http://twitter.com/intent/tweet?text={{ message }} {{ url('project_view', {uuid: project.uuid}) }}"><i class="fab fa-twitter-square"></i></a>
+                    </div>
+                </div>
+                {% endif %}
+                {% if project.userInfo == app.user %}
+                <div class="panel-row">
+                    {% if fromPage == 'edit' %}
+                    <a href="{{ path('project_view', {uuid: project.uuid}) }}" class="btn btn-primary">View your gig</a>
+                    {% else %}
+                    <a href="{{ path('project_edit', {uuid: project.uuid}) }}" class="btn btn-primary">Edit your gig</a>
+                    {% endif %}
+                </div>
+                {% if not project.hireUser %}
+                <div class="panel-row">
+                    <div class="publish-instruct">
+                        PUBLISH SETTINGS
+                    </div>
+                    Publish type: <span class="highlight">{{ project.publishType|upper }}</span><br>
+                    {% if project.publishType == 'public' and project.projectType == "paid" %}
+                        Announce gig in news: <span class="highlight">{% if project.showInNews %}YES{% else %}NO{% endif %}</span><br>
+                    {% endif %}
+                    Invited favorites: <span class="highlight">{% if project.toFavorites %}YES{% else %}NO{% endif %}</span><br>
+                    Restricted to preferences: <span class="highlight">{% if project.restrictToPreferences %}YES{% else %}NO{% endif %}</span><br>
+                    Messaging: <span class="highlight">{% if project.messaging %}YES{% else %}NO{% endif %}</span><br>
+                    Lock to Certified Professionals: <span class="highlight">{% if project.proRequired %}YES{% else %}NO{% endif %}</span>
+                </div>
+                {% endif %}
+                <div class="panel-row">
+                    <p><a href="{{ path('project_agreement', {uuid: project.uuid}) }}" class="btn btn-sm btn-default">DOWNLOAD AGREEMENT TEMPLATE</a></p>
+                </div>
+                {% else %}
+                    {% if app.user %}
+                         {% if not project.isOwner(app.user) and not userBid %}
+                             {% if restrictBid %}
+                                 <div class="panel-row bidding-restricted">
+                                     <p class="white-highlight">
+                                         {% if project.restrictToPreferences %}
+                                             Bidding on this gig is restricted
+                                         {% else %}
+                                             Unable to bid on this gig
+                                         {% endif %}
+                                     </p>
+                                     <p>Missing requirements:</p>
+                                     <ul>
+                                         {% if userMatchesPreferences.gender is defined and not userMatchesPreferences.gender %}
+                                            <li>Gender - {% if project.gender == 'm' or project.gender == 'male' %}male{% else %}female{% endif %} required</li>
+                                         {% endif %}
+                                         {% if userMatchesPreferences.studioAccess is defined and not userMatchesPreferences.studioAccess %}
+                                            <li>Studio access is required</li>
+                                         {% endif %}
+                                         {% if userMatchesPreferences.lookingFor is defined and not userMatchesPreferences.lookingFor %}
+                                            <li>You are not a {% if project.lookingFor == 'producer' %}producer{% else %}vocalist{% endif %}</li>
+                                         {% endif %}
+                                         {% if userMatchesPreferences.vocalStyle is defined and not userMatchesPreferences.vocalStyle %}
+                                            <li>You have none of the specified vocal styles</li>
+                                         {% endif %}
+                                         {% if userMatchesPreferences.certified is defined and not userMatchesPreferences.certified %}
+                                             <li>You are not a Vocalizr Certified Pro <img class="vocalizr-certified-stamp-clipped" style="width: 25px; margin-left: 0; margin-bottom: 1px" src="{{ asset('images/certified_pro_stamp_clipped.svg') }}" alt="" data-text="<div class='tip-header'>Vocalizr Certified Professional</div>A 'Certified Professional’ is deemed a professional by the experts at Vocalizr. The stamp is based on ability, experience, and skill level.<br><a href='{{ path('get_certified') }}' class='get-certified-now' style='color: #01c2e5;'>Get Certified Now</a>"></li>
+                                         {% endif %}
+                                     </ul>
+                                 </div>
+                             {% else %}
+                             <div class="panel-row quick-bid">
+                                 {% if defaultAudio %}
+                                 <h3>Place your bid</h3>
+                                 <form id="bid-form2" action="{{ path('project_bid', {uuid: project.uuid} ) }}" method="post">
+                                     {{ form_row(bidForm._token) }}
+                                     <div class="input-group">
+                                         <span class="input-group-addon">USD$</span>
+                                         <input id="bid2-amount" type="text" name="{{ bidForm.amount.vars.full_name }}" value="" class="form-control">
+                                     </div>
+                                     <div class="note">
+                                         Your <a href="{{ path('user_edit') }}#audio">Showreel Audio</a> is used for Quick Bids<br>
+                                         Please read the <a href="{{ path('project_agreement', {uuid: project.uuid, type: 'gig'}) }}">agreement</a> before placing your bid.
+                                     </div>
+                                     <button type="submit" name="submit" class="btn btn-primary" value="Submit"><i class="vocalizr-icon icon-white-thumb"></i> Submit</button>
+                                     <span class="advanced-bid"><a data-toggle="vmodal" href="{{ path('project_bid', {uuid: project.uuid}) }}">Advanced Bid</a></span>
+                                 </form>
+                                 <div class="help-bid">
+                                    <i class="fa fa-question-circle"></i> <a href="https://support.vocalizr.com/hc/en-us/sections/115001907707-Bids-Bidding"  target="_blank">How does bidding work?</a>
+                                 </div>
+                                 {% else %}
+                                 <a id="place-bid" data-toggle="vmodal" href="{{ path('project_bid', {uuid: project.uuid}) }}" class="btn btn-primary"><i class="vocalizr-icon icon-white-thumb"></i> Place your bid</a>
+                                 <div class="help-bid">
+                                    <i class="fa fa-question-circle"></i> <a href="https://support.vocalizr.com/hc/en-us/sections/115001907707-Bids-Bidding"  target="_blank">How does bidding work?</a>
+                                 </div>
+                                 {% endif %}
+                             </div>
+                             {% endif %}
+                         {% endif %}
+                     {% else %}
+                         <div class="panel-row">
+                             <a href="{{ path('login') }}" class="btn btn-primary"><i class="vocalizr-icon icon-white-thumb"></i> Place your bid</a>
+                             <div class="help-bid">
+                                <i class="fa fa-question-circle"></i> <a href="https://support.vocalizr.com/hc/en-us/sections/115001907707-Bids-Bidding" target="_blank">How does bidding work?</a>
+                             </diV>
+                         </div>
+                     {% endif %}
+                {% endif %}
+            </div>
+        </div>
+    {% endif %}
+{% endif %}

@@ -1,0 +1,214 @@
+{% extends 'website.html.twig' %}
+
+{% block title %}Frequently Asked Questions{% endblock %}
+
+{% block body %}
+<div class="nav-wrapper">
+    <nav id="nav" class="navbar navbar-default" role="navigation">
+      <div class="container">
+          <a href="{{ path('home') }}"><img src="/images/logo_dark.png" alt="vocalizr" title="vocalizr logo" width="108" height="32"></a>
+          {% if app.user %}
+              <a href="{{ path('dashboard') }}" class="btn btn-login pull-right">Dashboard</a>
+          {% else %}
+          <a href="{{ path('login') }}" class="btn btn-login pull-right">Login</a><a href="{{ path('register') }}" class="btn btn-signup pull-right">Sign up</a>
+          {% endif %}
+      </div>
+    </nav>
+</div>
+<div class="std-content sub-page">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12 content-wrapper text-left faqs">
+                <h1>Frequently asked questions</h1>
+                <h2>About Vocalizr</h2>
+                <h3>What is Vocalizr?</h3>
+                <p>Vocalizr.com is a two way talent discovery marketplace (between vocalists and producers) which includes an online collaborative workspace. Designed to streamline the process of connecting vocalists and producers, while also providing a safe and secure web space to complete projects with others from around the world.</p>
+                <h3>How do I sign up?</h3>
+                <p>
+                    Sign up to Voclizr is free, fast and simple. <a href="{{ path('register') }}">Click here</a> to start the sign up process.
+                </p>
+                <hr>
+                <a name="gigs"></a>
+                <h2>Gigs</h2>
+                <h3>What is a Gig?</h3>
+                <p>In Vocalizr, we refer to projects as 'Gigs'. A Gig is a project a user has created to either work with a vocalist, or a producer. You can find Gig's to work on by visiting our <a href="{{ path('gig_hunter') }}">Gig Hunter / Contests</a> page.</p>
+                <h3>How do I create a Gig?</h3>
+                <p>Click on the always visible blue 'Create a new Gig' button towards the top right of the page.</p>
+                <p>Fill in your Gigs initial details, and click 'Next'.</p>
+                <p>You will then be taken to an advanced Gig Brief section where you can fine-tune the details of the Gig, including preferred location of the vocalist, and whether they need studio access.</p>
+                <p>It is important to provide as much information as possible when creating your Gig to ensure you get bids most relevant to what you are looking for.</p>
+                <h3>What is a public Gig?</h3>
+                <p>Public gigs can be seen by users within <a href="{{ path('gig_hunter') }}">Gig Hunter</a>. All users can bid on public Gigs unless the bidding is restricted to gig preferences.</p>
+                <h3>What is a private Gig?</h3>
+                <p>Private gigs are not visible to users unless they are invited to bid on that gig. Private gigs to not appear within <a href="{{ path('gig_hunter') }}">Gig Hunter / Contests</a> page.</p>
+                <h3>What is "Restrict to Gig preferences"?</h3>
+                <p>Gig creators have the option to restrict bidding on their Gigs to only users who satisfy certain criteria for that gig. Users that do not satisfy gig preferences will not be able to bid.</p>
+                
+                <hr>
+                
+                <a name="contests"></a>
+                <h2>Contests</h2>
+                
+                <h3>What is a Contest?</h3>
+                <p>A Contest is similar to a Gig, however payment to Vocalizr Escrow is made upfront, and Contest entrants provide demos of their ideas over the Contest creators track or song. This way artists can get a clear idea of what an entrant may sound like over their record before they award.</p>
+                
+                <h3>How do I create a Contest?</h3>
+                <ol>
+                    <li>To create a Contest, click on the always visible 'Create Gig or Contest' button.</li>
+                    <li>Choose 'Create Contest'.</li>
+                    <li>Fill in the Contest description page, and upload your track in mp3 format.</li>
+                    <li>Click 'Next'.</li>
+                    <li>Choose your Contest listing upgrade options.</li>
+                    <li>Pay for your Contest & upgrades.</li>
+                    <li>Publish your Contest.</li>
+                    <li>Listen to entries from Vocalizr artists.</li>
+                    <li>Award the Contest to your favourite entry.</li>
+                </ol>
+                
+                <h3>Why do I have to upload my music or song to publish a Contest?</h3>
+                <p>By uploading your track or song, entrants will be able to their ideas/demo over your track.</p>
+                
+                <h3>Is my music or song safe if i upload it?</h3>
+                <p>Yes. Just as with the existing Gigs system, a Contest creator's music or song will be converted to 112kbps mp3
+                    ensuring that it can’t be duplicated, recorded or ripped off in any way. Once the Contest is posted, all 
+                    the demo entries will also be converted to 112kbps mp3, providing protection for both artist and collaborators.
+                    Additionally, Contest creators must agree to Terms & Conditions, which prohibit unlawful use of entrants’ IP prior to 
+                    publishing their Contest. This system protects against anyone utilizing our users’ IP unlawfully. In the interest of artistic
+                    integrity, all demo entries are only audible to the Contest creator, not any other Vocalizr artists.</p>
+                
+                <h3>How do I submit an entry?</h3>
+                <p>Anyone wishing to enter a Contest must download the 112kbps sample, put their ideas over it, then upload their demo.</p>
+                
+                <h3>Is my entry private, or can anyone on Vocalizr hear it?</h3>
+                <p>Your entry is only audible to the Contest creator. Everyone else can only see 'who' has entered.</p>
+                
+                
+                <h3>What is a private Contest?</h3>
+                <p>Private Contests are not visible to users unless they are invited to bid on that Contest. Private Contests to not appear within the Gig Hunter / Contests page.</p>
+                
+                <h3>What is "Restrict to preferences"?</h3>
+                <p>Contest creators have the option to restrict bidding on their Contest to only users who satisfy certain criteria for that Contest. 
+                    Users that do not satisfy the preferences will not be able to submit an entry.</p>
+                
+                <hr>
+                <a name="royaties"></a>
+                <h2>Royalties</h2>
+                <h3>Who pays the royalties?</h3>
+                <p>It is duty of the collaborating parties to inform their respective Royalty associations in their country, along with the record label that signs the composition.</p>
+                <h3>When bidding on a Gig or Contest, what does the M & P stand for?</h3>
+                <p>Mechanical & Performance royalties may be offered by the employer (Gig creator).</p>
+                <h3>What is a Performance royalty?</h3>
+                <p>A Performance royalty relates to 'performance' or 'play' of a composition through various formats including (but not limited to) TV, Radio, Web, and live performance.</p>
+                <h3>What is a Mechanical royalty?</h3>
+                <p>Mechanical royalties generally refer to 'sales' of a composition. </p>
+                <hr>
+                <a name="bids"></a>
+                <h2>Bidding</h2>
+                <h3>What is a bid?</h3>
+                <p>A bid is an offer to work on a Gig. A bid will have a fee attached by the bidder as well as an audition or sample audio.
+                <h3>How do I bid on a Gig?</h3>
+                <p>
+                    Users can place a bid on a Gig by clicking the ‘Place A Bid’ button wherever it appears on the site. When placing a bid you must provide your fee and attach audio. You can either record an audition or just choose a featured track from your profile.
+                </p>
+                <h3>Why can't I bid on some Gigs?</h3>
+                <p>
+                    When creating a Gig, an employer can choose to restrict bidding to only users who satisfy the criteria for their gig. If you do not meet these criteria, you will be unable to place a bid for that Gig.
+                </p>
+                <h3>What happens when I bid on a Gig?</h3>
+                <p>The Gig creator will be notified of your bid, which includes your offered fee, and your audition audio if you recorded it. A bid is only an offer to work on the Gig. If you bid on a Gig, you are not legally bound to the Bid, until you are Awarded the Gig.</p>
+                <h3>Who chooses the winning bidder?</h3>
+                <p>The creator of the Gig aka the employer, chooses the winning bidder. It is bases solely on their personal preference, not on price.</p>
+                <h3>Who pays the winning bidder?</h3>
+                <p>The creator of the Gig (employer) pays the winning bidder.</p>
+                <h3>If I win a bid, do I get paid instantly?</h3>
+                <p>Payment for a winning a bid will not be received instantly.</p>
+                <p>The payment from the Gig creator will be made instantly to the Vocalizr Escrow Payment System. At this point, contracts are signed, and work begins on the Gig in the Vocalizr Studio.</p>
+                <p>Once the work has been satisfactorily completed, the employer releases the payment from the Vocalizr Escrow Payment System, and the money will be deposited into your Vocalizr Wallet.</p>
+                <hr>
+                <a name="profile"></a>
+                <h2>Profiles</h2>
+                <h3>How do I upload audio to my profile?</h3>
+                <p>Upload audio via the Edit Profile link next to your profile picture and username found on every page.</p>
+                <p>Go to the Showreel Audio tab, and choose either Upload Audio (from your computer), Soundcloud Audio (from your Soundcloud sounds), or Record Audio using your computer's microphone.</p>
+                <h3>How do I record a demo from my computer?</h3>
+                <p>Using the Edit Profile link, and clicking the Showreel Audio tab, you will find a record button to record a demo directly from your computer's microphone.</p>
+                <h3>How do I upload a profile picture?</h3>
+                <p>Upload a profile picture via the Edit Profile link next to your profile picture and username found on every page.</p>
+                <p>Once on the Edit Profile page, on the right of the screen you can change your image.</p>
+                <h3>Who can view my profile</h3>
+                <p>Your profile is visible to all Vocalizr users. A user does not have to be subscribed to Vocalizr to be able to view your profile.</p>
+                <hr>
+                <a name="financials"></a>
+                <h2>Financials</h2>
+                <h3>What fees do Vocalizr charge?</h3>
+                <p>
+                    Subscription to Vocalizr is free. Vocalizr does have fees and charges relating to transactions and gig payment. <a href="{{ path('website_fees') }}">Click here</a> for more details on Vocalizr Fees and Charges.
+                </p>
+                <h3>What is the Vocalizr Payment System Escrow?</h3>
+                <p>The Vocalizr Escrow Payment System offers, safe and secure two way protection for producers and vocalists.</p>
+                <p>Project payment is paid by the employer at the start of the gig and is not released to the employee until the gig is completed successfully.</p>
+                <p>Project assets are not downloadable by the employer until funds have been released from escrow to the employee.</p>
+                <h3>What is the Wallet?</h3>
+                <p>The wallet is where your funds are kept while working in Vocalizr. You can either deposit funds, or withdraw funds via your Paypal account.</p>
+                <h3>How do I deposit money into my Wallet?</h3>
+                <p>On every page you can see the amount of funds in your Wallet. Click on the amount and you are taken to the Finances page where you can deposit money via the Deposit Funds button.</p>
+                <h3>How do I withdraw money from my Wallet?</h3>
+                <p>When in the Finances page, click the blue Withdraw Funds button to the right.</p>
+                <hr>
+                
+                <a name="disputes"></a>
+                <h2>Disputes</h2>
+                <h3>How do I file a dispute against a user?</h3>
+                <p>Any vocalizr user can file a Dispute against another user they are in a Gig with.</p>
+                
+                <p>To lodge a dispute over a payment, go into the studio of the Gig you are working on and select the "Payment" tab. Select the "Negotiate" link. You then need to describe your issue in detail.</p>
+
+                <p>Finally, you should enter the amount you are prepared to pay for the project (if an Employer) or wish to receive for the project (if a Employee).
+                    The amount could be between 0 and the total amount of Gig in question.</p>
+
+                <p>The other party has a number of days (4 if the other party is a Employee, 7 if the other party is an Employer) to respond to the claim made by the complainant. 
+                    If the party does not respond within the given days, the Dispute closes in your favor.</p>
+                
+                <hr>
+                
+                <a name="account"></a>
+                <h2>Accounts</h2>
+                <h3>How do I close my account?</h3>
+                <p>At this point in time you can't. You are locked in forever because we are evil, and also our coders can't be bothered with this kind of ludicrous functionality.</p>
+                <p>Just kidding, we're working on it. If you wish for your account to be closed <a href="{{ path('website_contact') }}">click here</a> and and let us know through our contact form.</p>
+                <h3>How do I change my username?</h3>
+                <p>You can't change your Username, but you can change your Display Name.</p>
+                <p>You can change your display name via the Edit Profile link near your profile picture.</p>
+                <hr>
+                <h2>Feedback and Complaints</h2>
+                <h3>I want to make a complaint, where can I do this?</h3>
+                <p>If you wish to make a complaint, <a href="{{ path('website_contact') }}">click here</a> and complete our contact form</p>
+                <h3>How can I provide feedback or suggestions?</h3>
+                <p>User feedback and suggestions can be entered via the blue User Voice 'Feedback & Support' tab on the bottom right of every page.</p>
+                <p>Alternatively, <a href="{{ path('website_contact') }}">click here</a> and let us know through our contact form.</p>
+                <p>We are listening to every bit of feedback we get, so feel free to share your ideas or suggestions!</p>
+            </div>
+        </div>
+    </div>
+</div>
+<nav class="footer" role="navigation">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12">
+                © Copyright Vocalizr {{ "now"|date('Y') }}
+
+                <ul id="footer-nav">
+                    <li class="share"><a href="https://www.facebook.com/Vocalizr"><i class="fab fa-facebook-square"></i></a></li>
+                    <li class="share"><a href="https://twitter.com/vocalizr"><i class="fab fa-twitter-square"></i></a></li>
+                    <li><a href="{{ path('website_contact') }}">Contact Us</a></li>
+                    <li><a href="{{ path('website_faq') }}">FAQs</a></li>
+                    <li><a href="http://blog.vocalizr.com/" target="_blank">Blog</a></li>
+                    <li><a href="{{ path('website_fees') }}">Fees & Charges</a></li>
+                    <li><a href="{{ path('website_terms') }}">Terms</a></li>
+                    <li><a href="{{ path('website_privacy') }}">Privacy</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</nav>
+{% endblock %}

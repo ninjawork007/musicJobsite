@@ -1,0 +1,12 @@
+{% extends '::email.txt.twig' %}
+
+{% block body %}
+Hello {{ user.getFirstName }}!
+
+Today you requested your email address be changed from {{ user.getEmail }} to {{ emailRequest.getEmail }}.
+
+Please visit this link to confirm your new email address.
+{{ url('confirm_email', {'key': emailRequest.getUniqueKey }) }}
+
+
+{% endblock %}

@@ -1,0 +1,455 @@
+.left-block > h1 {
+    font-size: 24px;
+    font-weight: 400;
+    color: white;
+    line-height: 28px;
+    letter-spacing: 0.13px;
+}
+.heading-flex {
+    display: flex;
+}
+.heading-flex > .left-block {
+    width: 360px;
+}
+.heading-flex > .right-block > img {
+    margin-top: 4px;
+    margin-left: -3px;
+    width: 41px;
+    height: 20px;
+    margin-right: 27px;
+}
+.description-certified {
+    padding-left: 2px;
+    padding-right: 1px;
+    line-height: 14.4px;
+    font-size: 12px;
+    margin-top: 12px;
+    margin-bottom: 17px;
+    font-weight: 300;
+    /*letter-spacing: 0.13px;*/
+}
+
+.certified-footer {
+    padding: 24px 23px;
+    color: #e5e5e5;
+    font-weight: 100;
+    font-size: 12px;
+    line-height: 14px;
+}
+
+.right-block-footer {
+    font-family: 'Museo';
+    font-size: 16px;
+    font-weight: 300;
+    margin-top: 24px;
+    line-height: 20px;
+    margin-bottom: 50px;
+    width: 340px;
+}
+.right-block-footer a {
+    color: #fff;
+    font-weight: 700;
+}
+.stamp-item {
+    margin-top: 12px;
+    font-size: 22px;
+    line-height: 26px;
+}
+
+.stamp-item-text {
+    width: 340px;
+    margin-top: 26px;
+    font-size: 22px;
+    line-height: 26px;
+}
+.stamp-item-text b {
+    font-weight: 600;
+    letter-spacing: -0.38px;
+}
+
+.text-description {
+    width: 400px;
+    margin-left: 40px;
+}
+
+.btn-pay {
+    width: 98%;
+    margin-top: 32px;
+    margin-left: 5px;
+    font-weight: 500;
+    font-size: 16px;
+    line-height: 19px;
+    border-radius: 0;
+    letter-spacing: 0.6px;
+}
+.heading-certified {
+    padding: 10px 0;
+}
+
+.main-w-side-layout > .left-block-sertified {
+    flex-basis: 48.3%;
+}
+
+.main-w-side-layout > .right-block-sertified {
+    flex-basis: 51.8%;
+    padding-left: 91px;
+    padding-top: 240px;
+}
+
+.hint .hint-title {
+    font-weight: bold;
+    font-size: 18px;
+    line-height: 21.6px;
+    letter-spacing: -0.2px;
+
+}
+
+.logo-header {
+    margin-top: 90px;
+    padding: 0;
+}
+
+.payment-page .section-header {
+    padding-bottom: 20px;
+    padding-top: 41px;
+}
+
+.section-header {
+    padding-top: 41px;
+    padding-bottom: 22px;
+}
+
+.voc-panel.plan > .heading {
+    padding: 16px 17px 11px 21px;
+    font-style: normal;
+    font-weight: 300;
+    font-size: 18px;
+    line-height: 22px;
+    letter-spacing: 0.13px;
+
+}
+
+.main-w-side-layout > .right-block-sertified {
+    padding-top: 278px;
+}
+
+.field-label {
+    margin-top: 0;
+    margin-left: 2px;
+    margin-bottom: 0;
+    font-family: 'Museo Sans';
+    font-weight: 300;
+    font-size: 14px;
+    line-height: 30px;
+    color: #fff;
+}
+
+label[for=certifiedUser_spotifyOrAppleMusicLink] {
+    margin-top: 15px;
+}
+
+label[for=certifiedUser_soundcloudLink] {
+    margin-top: 19px;
+}
+
+label[for=certifiedUser_facebookPage] {
+    margin-top: 20px;
+    margin-left: 4px;
+}
+
+.btn {
+    padding: 0;
+    padding-right: 3px;
+}
+
+.main-w-side-layout > .left-block > .vertical-container {
+    padding-left: 62px;
+}
+
+.form-control {
+    width: 99%;
+    margin-top: 0;
+    margin-left: 3px;
+    border-radius: 0;
+}
+
+.payment-page .voc-panel.plan > .content {
+    padding-right: 24px;
+}
+.after-pay-section-header {
+    padding-bottom: 25px;
+}
+.register-success .btn {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0 4px 0 0;
+    margin-top: 12px;
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 17px;
+}
+.after-pay-section-header h1{
+    font-size: 24px;
+}
+.after-pay-section-header b {
+    letter-spacing: 0.7px;
+}
+.register-success .after-pay-section-header > h1 {
+    width: 600px;
+    line-height: 30px;
+
+}
+.register-success .after-pay-section-header {
+    padding-top: 53px;
+}
+.signup-page .left-block > .vertical-container {
+    margin-right: 92px;
+}
+.voc-panel > .heading {
+    line-height: 22px;
+    padding-right: 140px;
+    letter-spacing: 0.1px;
+}
+.voc-panel .content {
+    padding: 10px 23px 23px 19px;
+}
+.signup-page .voc-panel > .content .main {
+    padding-bottom: 2px;
+}
+@media (min-width : 320px) and (max-width : 768px) {
+    .payment-page .voc-panel.plan {
+        width: 100% !important;
+    }
+}
+
+@media screen and (max-width: 1000px) {
+    .main-w-side-layout > .right-block-sertified  {
+        padding-left: 60px;
+    }
+    .main-w-side-layout > .right-block-sertified {
+        padding-top: 90px;
+    }
+}
+
+@media screen and (max-width: 1000px) {
+    .certified-footer {
+        margin-top: 0;
+    }
+}
+
+@media screen and (max-width: 700px) {
+    .main-w-side-layout > .left-block > .vertical-container {
+        padding: 0;
+        margin: 0;
+    }
+    .payment-page .logo-header {
+        margin-left: 20px;
+        margin-top: 22px;
+    }
+    .logo-header > img {
+        width: 95px;
+        height: 28px;
+    }
+    .main-w-side-layout > .right-block-sertified  {
+        padding-left: 10px;
+        padding-top: 0;
+        margin-top: -5px;
+        text-align: left;
+    }
+    .right-block b {
+        font-family: "Museo Sans";
+        font-weight: bold;
+        font-size: 12px;
+        line-height: 14px;
+        letter-spacing: 0.25px;
+    }
+    .stamp-item-text > b {
+        font-weight: bold;
+        font-size: 12px;
+        line-height: 14px;
+        letter-spacing: 0.8px;
+    }
+    .heading-flex > .left-block {
+        width: 200px;
+    }
+    .left-block > h1 {
+        width: 200px;
+        font-size: 13.9px;
+        line-height: 17px;
+        margin: 0;
+        padding: 0;
+    }
+    .payment-page .section-header {
+        margin-left: 20px;
+        margin-top: 0;
+        padding-top: 13px !important;
+        padding-bottom: 14px;
+    }
+    .heading-flex > .right-block > img {
+        margin-left: 12px;
+        width: 32px;
+        height: 24px;
+    }
+    .heading-flex > .right-block > img {
+        margin-top: -5px;
+    }
+    .payment-page .left-block > .vertical-container > .horizontal-container {
+        max-width: 282px !important;
+        margin-left: 10px;
+        align-self: normal;
+    }
+    .payment-page .voc-panel.plan {
+    }
+    .payment-page .voc-panel {
+        margin-left: 10px;
+        /*width: 422px !important;*/
+    }
+    .payment-page .voc-panel.plan > .heading {
+        padding-top: 25px;
+        padding-bottom: 27px;
+        padding-left: 15px;
+        /*letter-spacing: 0.9px;*/
+    }
+    .voc-panel.plan > .heading {
+        font-size: 16px;
+        line-height: 19px;
+    }
+    .description-certified {
+        max-width: 252px;
+        font-weight: 300;
+        font-size: 11px;
+        line-height: 13.8px;
+        margin-bottom: 7px;
+        margin-top: 0px;
+    }
+    .payment-page .voc-panel.plan > .content {
+        padding-top: 1px;
+        padding-left: 12px;
+        padding-bottom: 9px;
+    }
+    .field-label {
+        font-weight: 300;
+        font-size: 12px;
+        line-height: 14px;
+        margin-left: 2px;
+        margin-top: 6px;
+
+        /*letter-spacing: 0.6px;*/
+    }
+    label[for=certifiedUser_spotifyOrAppleMusicLink] {
+        margin-top: 12px;
+    }
+    label[for=certifiedUser_soundcloudLink] {
+        margin-top: 12px;
+    }
+    label[for=certifiedUser_facebookPage] {
+        margin-top: 12px;
+    }
+    .form-control {
+        margin-left: 2px;
+        margin-top: 4px;
+        height: 28px;
+        width: 100%;
+        margin-bottom: 12px;
+    }
+    .certified-footer {
+        margin-top: 8px;
+        margin-left: 13px;
+        font-weight: 300;
+        font-size: 10px;
+        line-height: 12px;
+        padding: 0;
+        padding-bottom: 15px;
+        /*letter-spacing: -0.09px;*/
+    }
+    .certified-footer a {
+        color: #fff;
+    }
+    .voc-panel .btn {
+        margin-top: 20px;
+        margin-left: 1px;
+        width: 100%;
+        height: 37px;
+        padding: 9px 22px 9px 19px;
+        /*padding-right: 22px;*/
+    }
+    .btn-pay {
+        font-weight: 500;
+        font-size: 15px;
+        line-height: 18px;
+    }
+    .payment-page .right-block > .vertical-container {
+        margin-top: 0 !important;
+        margin-left: 15px;
+        padding-left: 36px;
+    }
+    .payment-page .hint .hint-title {
+        width: 100%;
+        letter-spacing: 0.15px;
+        margin-bottom: 5px;
+    }
+    .vertical-container {
+        /*max-width: 430px;*/
+    }
+    .stamp-item {
+        margin-left: 2px;
+        font-size: 14px;
+        line-height: 17px;
+        margin-top: 10px;
+    }
+    .stamp-item-text {
+        margin-top: 16px;
+        margin-left: 2px;
+        max-width: 220px;
+        font-size: 14px;
+        line-height: 17px;
+    }
+    .last-item {
+        max-width: 240px;
+    }
+    .right-block-footer {
+        max-width: 260px;
+        margin-top: 20px;
+        font-size: 10.1px;
+        line-height: 12px;
+    }
+    .logo-header {
+        margin-top: 21px;
+    }
+    .register-success .after-pay-section-header {
+        padding-top: 50px;
+    }
+    .register-success .after-pay-section-header > h1 {
+        width: auto;
+        font-size: 14px;
+        line-height: 17px;
+    }
+    .after-pay-section-header b {
+        letter-spacing: 0.4px;
+    }
+    .register-success .btn {
+        margin-top: 20px;
+    }
+    .signup-page .voc-panel > .heading {
+        font-size: 16px;
+        height: 55px;
+        line-height: 19px;
+        padding: 11px 47px 8px 12px;
+        letter-spacing: 0.1px;
+    }
+    .signup-page .voc-panel > .content {
+        padding: 16px 15px 19px 14px;
+    }
+    .signup-page .voc-panel > .content .main {
+        padding-bottom: 0;
+    }
+    .signup-page .right-block > .vertical-container {
+        margin-top: 0 !important;
+        margin-left: 37px;
+        width: auto;
+    }
+    .signup-page .left-block > .vertical-container {
+        margin-right: 20px;
+    }
+}

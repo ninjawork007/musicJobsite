@@ -1,0 +1,51 @@
+{% extends 'app.html.twig' %}
+
+{% block title %}VMag Admin{% endblock %}
+
+{% block javascript %}
+
+
+{% endblock %}
+
+
+{% block body %}
+    <div class="row">
+        <div class="col-sm-12">
+            <h1>Vmag Authors</h1>
+            
+            {% if app.session.hasFlash('notice') %}
+                <div class="alert alert-success">
+                    {{ app.session.flash('notice') }}
+                </div>
+                {{ app.session.removeFlash('notice') }}
+            {% endif %}
+            
+            <p class="pull-right"><a href="{{ path('admin_vmag') }}" class="btn btn-sm btn-default">ARTICLES</a></p>
+            <p><a href="{{ path('admin_vmag_author') }}" class="btn btn-sm btn-primary">NEW AUTHOR</a></p>
+            
+            <table cellspacing="0" cellpadding="0" border="0" class="table table-dark" width="100%">
+                <thead>
+                    <tr>
+                        <th width="400">Author Name</th>
+                        <th>Email</th>
+                        <th width="120">Article Count</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for author in pagination %}
+                    {% set count = author.article_count %}
+                    {% set author = author[0] %}
+                    <tr>
+                        <td><a href="{{ path('admin_vmag_author', {id: author.id}) }}">{{ author.name }}</a></td>
+                        <td>{{ author.email }}</td>
+                        <td>{{ count }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+                
+            {{ knp_pagination_render(pagination) }}
+        </div>
+    </div>
+    
+{% endblock %}

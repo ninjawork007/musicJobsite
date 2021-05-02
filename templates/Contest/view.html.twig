@@ -1,0 +1,557 @@
+{% extends 'app.html.twig' %}
+
+{% block title %}
+    {% if project.sfs %}
+        {{ project.title }}
+    {% elseif entryBid %}
+        Upvote {{ entryBid.userInfo.displayName }}'s entry for Search for a Singer Competition
+    {% else %}
+        {% if project.lookingFor == "vocalist" %}
+            Singing contest {{ project.title }} by {{ project.userInfo.username }}, Looking for a {% if not project.gender is null %}{{ project.gender|capitalize }} {% endif %}
+            {% if project.lookingFor == "vocalist" %}Singer{% else %}Producer{% endif %}
+        {% else %}
+           Music Producer contest {{ project.title }} by {{ project.userInfo.username }}
+        {% endif %}
+    {% endif %}
+{% endblock %}
+{% block description %}{{ project.title }} by {{ project.userInfo.username }} - Looking for a {% if not project.gender is null %}{{ project.gender|capitalize }} {% endif %}{% if project.lookingFor == "vocalist" %}Singer{% else %}Producer{% endif %}{% endblock %}
+
+{% block javascript %}
+        <script type="text/javascript" src="{{ asset('js/wavesurfer.min.js') }}"></script>
+        <script type="text/javascript" src="{{ asset('js/uploader/plupload.full.min.js') }}"></script>
+        <script type="text/javascript" src="{{ asset('js/contest-audio-uploader.js') }}"></script>
+        <script type="text/javascript" src="{{ asset('js/project.js') }}"></script>
+        <script type="text/javascript" src="{{ asset('js/hint-popup.js') }}"></script>
+        <script type="text/javascript" src="{{ asset('js/waveforms.js') }}"></script>
+
+    <script src="https://js.stripe.com/v3/"></script>
+    <script>
+        var stripe = Stripe("{{ stripe_checkout_key }}");
+    </script>
+
+    <script>
+        $('.btn-lyrics').on('click', function (e) {
+            e.preventDefault();
+            $('.contest-lyrics').slideToggle();
+        });
+        $(".customScroll").mCustomScrollbar({
+            theme: "dark",
+        });
+
+        $('.btn-instructions').on('click', function (e) {
+            e.preventDefault();
+            $('.contest-instructions').slideToggle('fast');
+        })
+
+        {% if projectAudioDownload %}
+        if ($('#contest-upload-audio-container').length) {
+            ContestAudioUploader.init('contest-upload-audio-container', 'upload-audio-btn');
+        }
+        {% else %}
+            $('#upload-audio-btn').on('click', function (e) {
+               e.preventDefault();
+               App.showModal({title: 'Download audio first', content: $('#uploadInstructions').html()});
+            });
+            {% if not project.sfs %}
+            $('.btn-download-track').on('click', function (e) {
+               $('#upload-audio-btn').off('click');
+               ContestAudioUploader.init('contest-upload-audio-container', 'upload-audio-btn');
+            });
+            {% else %}
+            $('body').on('click', '.btn-agree-download', function (e) {
+               $('#upload-audio-btn').off('click');
+               ContestAudioUploader.init('contest-upload-audio-container', 'upload-audio-btn');
+            });
+            {% endif %}
+        {% endif %}
+        {% if app.session.hasFlash('just_published') %}
+            var html = $('#whatsnext').html();
+            $('#vocalizrModal').html(html);
+            $('#vocalizrModal').modal('show');
+            {{ app.session.removeFlash('just_published') }}
+        {% endif %}
+    </script>
+
+{% endblock %}
+
+
+{% block stylesheet %}
+
+    {% if project.sfs %}
+        <!-- for Facebook -->
+        <meta property="og:image" content="http://vocalizr.com/images/sfs/share-{{ project.uuid }}.jpg?v1" />
+
+        <!-- for Twitter -->
+        <meta name="twitter:image" content="http://vocalizr.com/images/sfs/share-{{ project.uuid }}.jpg?v1" />
+    {% endif %}
+
+    {% stylesheets
+        '@VocalizrAppBundle/Resources/public/css/projects.css'
+    %}<link rel="stylesheet" href="{{ asset_url }}" />{% endstylesheets %}
+
+{% endblock %}
+
+{% block body %}
+
+    {% if project.sfs %}
+
+        <div class="row">
+            <div class="sfs-banner">
+                <img src="/images/sfs/{{ project.uuid }}.jpg" class="img-responsive" />
+            </div>
+        </div>
+    {% endif %}
+
+        <div class="row">
+            <div id="gig-view" class="col-sm-8">
+                <div class="row">
+                   <div class="col-sm-12">
+                        {% include 'messages.html.twig' %}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-12">
+                        {% if project.sfs %}
+                            <span class="badge badge-sfs gig-type">SEARCH FOR A SINGER</span>
+                        {% else %}
+                        <span class="badge badge-orange gig-type">CONTEST</span>
+                        {% endif %}
+                        <h1>{{ project.title }}</h1>
+
+                        <div class="gig-genre">Genre: <span class="white-highlight">
+                        {% if project.genres|length > 0 %}
+                            <ul class="comma-list">
+                            {% for genre in project.genres %}
+                            <li>{{ genre.title }}</li>
+                            {% endfor %}
+                            </ul>
+                        {% endif %}
+                        </span></div>
+                        {% include 'Project/view/include/waveformed_player.html.twig' with {
+                            audioUrl: path('project_audio', {uuid: project.uuid, slug: defaultProjectAudio.slug}),
+                            audio: defaultProjectAudio
+                        } %}
+                        {% if defaultProjectAudio and app.user %}
+                            {% if project.bidsDue|timeLeftString is not empty %}
+                            <div class="contest-download">
+                                {% if project.sfs %}
+                                    <a href="{{ path('sfs_audio_download', {uuid: project.uuid} ) }}" data-toggle='vmodal' data-audioDl="{% if projectAudioDownload %}1{% else %}0{% endif %}" class="btn btn-primary btn-sm btn-download-track" download>DOWNLOAD AUDIO</a>
+                                {% else %}
+                                    <a href="{{ path('contest_audio_download', {uuid: project.uuid} ) }}" data-audioDl="{% if projectAudioDownload %}1{% else %}0{% endif %}" class="btn btn-primary btn-sm btn-download-track" download>DOWNLOAD AUDIO</a>
+                                {% endif %}
+                                {% if project.lyrics %}
+                                <a href="" class="btn btn-default btn-sm btn-lyrics roll-alt">LYRICS</a>
+                                {% endif %}
+                                {% if project.lookingFor == "vocalist" %}
+                                    {% if project.lyrics %}
+                                        <span class="white-highlight">Download & record lyrics over track</span>
+                                    {% else %}
+                                        <span class="white-highlight">Download & use your own lyrics over track</span>
+                                    {% endif %}
+                                {% else %}
+                                    Download & place recording over your audio
+                                {% endif %}
+
+                                {% if project.lyrics %}
+                                    <div class="contest-lyrics">
+                                        <p><strong class="white-highlight">Lyrics</strong></p>
+                                        <div class="lyric-container customScroll">
+                                            {{ project.lyrics|nl2br }}
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            </div>
+                            {% endif %}
+                        {% endif %}
+                    </div>
+                </div>
+
+                <hr>
+
+                <div class="gig-created-by">
+                    <a href="{{ path('user_view', { username: project.userInfo.username }) }}" class="profile-link">
+                    {% if project.userInfo.path is empty %}
+                    <img src="{{ asset('images/default_avatar.svg') }}" width="40" height="40" class="img-circle avatar" alt="{{ project.userInfo.username }}" />
+                    {% else %}
+                    <img src="{{ asset('uploads/avatar/small/' ~ project.userInfo.path ) }}" width="40" height="40" class="img-circle avatar" alt="{{ project.userInfo.username }}" />
+                    {% endif %}
+                    </a>
+
+                    {% if project.userInfo.isSubscribed %}
+                        <img alt="pro" src="{{ asset('images/vocalizr_pro_stamp.svg') }}" class="svg-stamp-pro gig-stamp-pro" data-text="<div class='tip-header'>This Vocalizr user is an <a href='{{ path('membership') }}' class=stamp-pro-hover>Access Pass</a> member</div>">
+                    {% endif %}
+                    <a href="{{ path('user_view', { username: project.userInfo.username }) }}">{{ project.userInfo.displayName }}</a> <span class="white-highlight">created this contest</span> <small>{{ project.publishedAt|timeAgoString }} ago</small>
+
+                    <div class="gig-budget">Payment: <span class="white-highlight">${{ project.budgetTo }}</span></div>
+
+                    {% if project.royalty > 0 %}
+                        <div class="gig-royalty">
+                            Royalty:
+                            <span class="white-highlight">
+                                {{ project.royalty}}%
+                            </span>
+                            {% if project.royaltyMechanical %}
+                                <span class="icon-royalty-mechanical" data-text="Mechanical royalties offered">M</span>
+                            {% endif %}
+                            {% if project.royaltyPerformance %}
+                                <span class="icon-royalty-performance" data-text="Performance royalties offered">P</span>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <hr>
+
+                <div id="gig-key-info">
+                    <span class="key-info gender"><i class="vocalizr-icon icon-gender"></i> Looking for:
+                        <span class="highlight">
+                            {% if not project.gender is null %}{{ project.gender|upper }}{% endif %}
+                            {{ project.lookingFor|upper }}
+                        </span>
+                    </span>
+                    <span class="key-info mic"><i class="vocalizr-icon icon-mic"></i> Studio Access Required:
+                        <span class="highlight">{% if project.studioAccess %}YES{% else %}NO{% endif %}</span>
+                    </span>
+                    {% if project.dueDate %}
+                    <span class="key-info">Completed by:
+                        <span class="highlight">{{ project.dueDate|date(default_date_format) }}</span>
+                    </span>
+                    {% endif %}
+                    {% if project.bpm %}
+                    <span class="key-info">BPM:
+                        <span class="highlight">{{ project.bpm}}</span>
+                    </span>
+                    {% endif %}
+                    <div class="location-info">
+                        <span class="key-info country"><i class="vocalizr-icon icon-country"></i> Country:
+                            <span class="highlight">{% if not project.country is null %}{{ project.country|countryName }}{% else %}ANY{% endif %}</span>
+                        </span>
+                        <span class="key-info">City:
+                            <span class="highlight">{% if not project.city is null %}{{ project.city|upper }}{% else %}ANY{% endif %}</span>
+                        </span>
+                        <span class="key-info">Language:
+                            <span class="highlight">{% if not project.language is null %}{{ project.language.title|upper }}{% else %}ENLGISH{% endif %}</span>
+                        </span>
+                    </div>
+                </div>
+
+
+                {% if project.vocalCharacteristics|length > 0 or project.vocalStyles|length > 0 %}
+                <hr>
+
+                <div id="gig-tags">
+                    {% if project.vocalCharacteristics|length > 0 %}
+                    Vocal Characteristics: <span class="white-highlight">
+                        <ul class="comma-list">
+                        {% for vocalCharacteristic in project.vocalCharacteristics %}
+                            <li>{{ vocalCharacteristic.title }}</li>
+                        {% endfor %}
+                        </ul>
+                    </span><br>
+                    {% endif %}
+                    {% if project.vocalStyles|length > 0 %}
+                    Vocal Styles: <span class="white-highlight">
+                        <ul class="comma-list">
+                        {% for vocalStyle in project.vocalStyles %}
+                            <li>{{ vocalStyle.title }}</li>
+                        {% endfor %}
+                        </ul>
+                    </span>
+                    {% endif %}
+                </div>
+                {% endif %}
+
+                {% if not project.description is null %}
+                <hr>
+
+                <div id="gig-desc">
+                     {% if project.sfs %}
+                         {{ project.description }}
+                     {% else %}
+                     {{ project.description|nl2br }}
+                     {% endif %}
+                     {% if project.audioBrief %}
+                         <div style="height: 20px"></div>
+                         <p><a href="{{ path('project_audiobrief', {uuid: project.uuid}) }}" class="btn btn-sm btn-default roll-alt" target="_blank">LISTEN TO AUDIO BRIEF</a></p>
+                     {% endif %}
+                </div>
+                {% endif %}
+
+                <hr>
+
+                <div id="bids-wrap" class="entries-wrap">
+                    {% if entryBid %}
+                        <div class="well" style="color:#fff;">Vote for {{ entryBid.userInfo.displayName }}'s entry!</div>
+                        <div class="discover-item bid-{{ entryBid.uuid }}">
+                            <div class="media">
+                                <div class="avatar">
+                                    <a href="{{ path('user_view', {username: entryBid.userInfo.username} ) }}">
+                                        {% if entryBid.userInfo.path is empty %}
+                                            <img src="{{ asset('images/default_avatar.svg') }}" width="40" height="40" class="img-circle">
+                                        {% else %}
+                                            <img src="{{ asset('uploads/avatar/medium/' ~ entryBid.userInfo.path ) }}" width="40" height="40" class="img-circle">
+                                        {% endif %}
+                                    </a>
+                                </div>
+                            </div>
+
+                            <div class="info">
+                                <div class="name">
+                                    <a href="{{ path('user_view', {username: entryBid.userInfo.username} ) }}" class="username">{{ entryBid.userInfo.displayName }}</a>
+                                    {% if entryBid.userInfo.subscriptionPlan %}
+                                        <span class="badge badge-pro">PRO</span>
+                                    {% endif %}
+                                    {% if entryBid.userInfo.isCertified %}
+                                        <span class="vocalizr-certified" data-text="<div class='tip-header'>Vocalizr Certified Professional</div>A 'Certified Proâ€™ is deemed a professional by the experts at Vocalizr. The stamp is based on ability, experience, and skill level."></span>
+                                    {% endif %}
+                                </div>
+                                <div class="location">
+                                    {% if not entryBid.userInfo.city is empty %}
+                                        {{ entryBid.userInfo.city }},
+                                    {% endif %}
+                                    {% if entryBid.userInfo.userCountry is not null %}
+                                        {{ entryBid.userInfo.userCountry.title }}
+                                    {% endif %}
+                                </div>
+                                {% if project.publicVoting %}
+                                    <div class="vote-count"><i class="fa fa-arrow-up"></i> <span class="vote-count-num">{{ entryBid.voteCount }} vote{% if entryBid.voteCount != 1 %}s{% endif %}</span></div>
+                                {% endif %}
+                                {% if project.publicVoting and project.isVotingAllowed %}
+                                    <div class="votes-wrap">
+                                        <div class="share-voted-bid{% if not bidVotes[entryBid.uuid] is defined %} hide{% endif %}">
+                                            {% set message = "Vote for " ~ entryBid.userInfo.displayName ~ "'s entry #vocalizr #vocalizrFTW"|url_encode() %}
+                                            {% set shareUrl = (url('contest_view', {uuid: project.uuid}) ~ "?entry=" ~ entryBid.uuid)|url_encode() %}
+                                            <a target="_blank" class="btn btn-sm btn-default tip" data-text="Share entry on Facebook" href="http://www.facebook.com/sharer/sharer.php?u={{ shareUrl }}"><i class="fab fa-facebook-f"></i></a>
+                                            <a target="_blank" class="btn btn-sm btn-default tip" data-text="Share entry on Twitter" href="http://twitter.com/intent/tweet?text={{ message }} {{ shareUrl }}"><i class="fab fa-twitter"></i></a>
+                                        </div>
+                                        {% if not bidVotes[entryBid.uuid] is defined %}
+                                            <a href="{{ path('contest_upvote_bid', {uuid: project.uuid, bidUuid: entryBid.uuid}) }}" data-uuid="{{ entryBid.uuid }}" class="btn btn-sm btn-default btn-upvote"><i class="fa fa-arrow-up"></i> UPVOTE</a>
+                                        {% else %}
+                                            <a href="" class="btn btn-sm btn-default" disabled>UPVOTED</a>
+                                        {% endif %}
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            <div class="user-audio-wrap">
+
+                                <div class="user-list-track">
+                                    <div class="playlist track-waveform small clearfix">
+                                        <a href="{{ cdn_url }}{{ path('bid_audio_stream', {filename: entryBid.path}) }}" type="audio/mp3" class="track" data-user="{{ entryBid.uuid }}">PLAY</a>
+                                        <div class="waveform-wrap">
+                                            {% if entryBid.waveGenerated %}
+                                                <img src="/waveform/{{ entryBid.uuid }}.png" class="waveform-main">
+                                                <img src="/waveform/{{ entryBid.uuid }}-roll.png" class="roll hide">
+                                            {% else %}
+                                                <img src="/images/default-waveform.png" class="waveform-main">
+                                                <img src="/images/default-waveform-roll.png" class="roll hide">
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                    <div class="well">
+                        <div class="bids-made"><span class="white-highlight">Entries</span> ({{ bidStats.totalBids }})</div> {% if bidStats.totalBids > 0 %}<div class="seperator"></div>{% endif %}
+                        {% if bidStats.totalBids > 0 %}
+                        <div class="sort">Sort by:
+                            <div class="btn-group">
+                                <a href="" class="dropdown-toggle" data-toggle="dropdown">
+                                    {% if app.request.get('filter') == 'votes' %}
+                                        Votes
+                                    {% elseif app.request.get('filter') is null %}
+                                        Default
+                                    {% elseif app.request.get('filter') == 'date' %}
+                                        Date
+                                    {% elseif app.request.get('filter') == 'alpha' %}
+                                        Name
+                                    {% else %}
+                                        {{ app.request.get('filter')|capitalize }}
+                                    {% endif %}
+                                <i class="fa fa-angle-down"></i></a>
+                                <ul class="dropdown-menu">
+                                    <li><a href="?filter=default&dir={% if app.request.get('filter') == 'default' and app.request.get('dir') == 'desc' %}asc{%else%}desc{%endif%}#bids">Default</a></li>
+                                    {% if project.sfs %}
+                                    <li><a href="?filter=votes&dir={% if app.request.get('filter') == 'votes' and app.request.get('dir') == 'desc' %}asc{%else%}desc{%endif%}#bids">Votes</a></li>
+                                    {% endif %}
+                                    <li><a href="?filter=date&dir={% if app.request.get('filter') == 'date' and app.request.get('dir') == 'desc' %}asc{%else%}desc{%endif%}#bids">Date</a></li>
+                                    <li><a href="?filter=alpha&dir={% if app.request.get('filter') == 'alpha' and app.request.get('dir') == 'asc' %}desc{%else%}asc{%endif%}#bids">Name</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+
+
+
+                    {% if bidStats.totalBids > 0 %}
+                        {% if app.user and project.isOwner(app.user) %}
+                            {% if not project.sfs %}
+                            <div class="well well-sm">
+                                Entries are demos only, to get an idea of how they would sound over your track.<br />
+                                Once awarded, work together in the Vocalizr Studio to perfect their idea.
+                            </div>
+                            {% endif %}
+
+                            <ul class="nav nav-tabs" role="tablist">
+                                <li class="active"><a href="#all" role="tab" data-toggle="tab">All</a></li>
+                                <li><a href="#shortlist" aria-controls="home" role="tab" data-toggle="tab">Shortlist</a></li>
+                                <li><a href="#hidden" aria-controls="home" role="tab" data-toggle="tab">Hidden</a></li>
+                            </ul>
+                            <div class="tab-content">
+                                <div role="tabpanel" class="tab-pane active" id="all">
+                                    <div class="bids-list">
+                                        {{ render(controller('App:Contest:ownerBids', {uuid: project.uuid, page: 1, filter: app.request.get('filter'), dir: app.request.get('dir')})) }}
+                                    </div>
+                                </div>
+                                <div role="tabpanel" class="tab-pane" id="shortlist">
+                                    {% if shortlistBids %}
+                                        {% for bid in shortlistBids %}
+                                            {% embed '@VocalizrApp/Contest/include/audio.ownerBid.html.twig' %}
+                                            {% endembed %}
+                                        {% endfor %}
+                                    {% endif %}
+                                </div>
+                                <div role="tabpanel" class="tab-pane" id="hidden">
+                                    {% if hiddenBids %}
+                                        {% for bid in hiddenBids %}
+                                            {% embed '@VocalizrApp/Contest/include/audio.ownerBid.html.twig' %}
+                                                {% block actions_right %}
+                                                    <a href="{{ path('project_shortlist_bid', {uuid: project.uuid, bidUuid: bid.uuid}) }}" class="btn btn-sm btn-default btn-shortlist shortlist-{{ bid.uuid }} hide" data-uuid="{{ bid.uuid }}"><i class="fa fa-star" aria-hidden="true"></i></a>
+                                                    <a href="{{ path('project_hide_bid', {uuid: project.uuid, bidUuid: bid.uuid}) }}" data-uuid="{{ bid.uuid }}" class="btn btn-sm btn-default roll-alt btn-unhide-bid hide-{{ bid.uuid }}"><i class="fa fa-reply" aria-hidden="true"></i></a>
+                                                {% endblock %}
+                                            {% endembed %}
+                                        {% endfor %}
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                        {% else %}
+                        <div class="bids-list">
+                            {{ controller('App:Contest:bids', {uuid: project.uuid, page: 1, filter: app.request.get('filter'), dir: app.request.get('dir')}) }}
+                        </div>
+                        {% endif %}
+                    {% endif %}
+                </div>
+
+            </div>
+
+            <div id="project-status-widget" class="col-sm-4">
+                {{ controller('App:Contest:projectStatusWidget', {
+                    'uuid': project.uuid,
+                    'fromPage' : 'view'
+                }) }}
+
+                {% if app.user and (not project.isOwner(app.user) and not app.user.isSubscribed) and not projectAwarded %}
+
+                    <div class="panel panel-default welcome-panel">
+                        <div class="panel-heading">
+                            UPGRADE TO PRO
+                        </div>
+                        <div class="panel-body">
+                            {% if userBid %}
+                                {% set saving = (userBid.amount|getPricePercent(subscriptionPlan.free.paymentPercentTaken, false) / 100) - (userBid.amount|getPricePercent(subscriptionPlan.pro.paymentPercentTaken, false) / 100) %}
+                                <p class="white-highlight">You could earn <strong>${{ saving }} more</strong> on Vocalizr PRO.</p>
+                            {% endif %}
+                            <p>Upgrade to PRO for 10.99 to start working on Vocalizr</p>
+                            <p><a href="{{ path('membership') }}" class="btn btn-sm btn-primary">UPGRADE NOW</a></p>
+                        </div>
+                    </div>
+
+                {% endif %}
+            </div>
+
+            <div id="whatsnext" class="hide">
+                <div id="nextModal" class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                            <h4 class="modal-title">Contest Published!</h4>
+                        </div>
+                        <div class="modal-body" style="font-size: 13px;">
+                            {% if project.lookingFor == "vocalist" %}
+                                <div class="modal-row">
+                                    <strong class="white-highlight">WHAT'S NEXT</strong>
+                                    <ol style="padding-left: 17px; margin-bottom: 0;">
+                                        <li>You will start to receive vocalists entries with their ideas for your track.</li>
+                                        <li>When you find the entry you like, award the contest to the vocalist of your choice.</li>
+                                        <li>You will head into the Vocalizr Collaboration Studio to begin work. Once the work is complete, release the funds to the vocalist.</li>
+                                    </ol>
+                                </div>
+                            {% endif %}
+                            <div class="modal-row">
+                                <strong class="white-highlight">INVITE {{ project.lookingFor|upper }}S</strong>
+                                <p>Visit the '{{ project.lookingFor|capitalize }}s' page and start searching for vocalists you'd like to work with. If you like what you hear, invite them to your contest to submit an entry.</p>
+                                {% if project.lookingFor == "vocalist" %}
+                                    <p><a href="{{ path('vocalists_gig', {project: project.uuid}) }}" class="btn btn-primary">Starting Inviting</a></p>
+                                {% else %}
+                                    <p><a href="{{ path('producers_gig', {project: project.uuid}) }}" class="btn btn-primary">Starting Inviting</a></p>
+                                {% endif %}
+                            </div>
+                            <div class="modal-row">
+                                <strong class="white-highlight">SHARE ON SOCIAL MEDIA</strong>
+                                <p>Sharing your contest will increase it's exposure and increase your chances of finding the perfect {{ project.lookingFor|upper }}!</p>
+                                <p><a href="https://www.facebook.com/dialog/feed?link={{ url('contest_view', {uuid: project.uuid}) }}&redirect_uri={{ url('contest_view', {uuid: project.uuid}) }}" target="_blank" class="btn btn-sm" style="background:#3c599b;color:#fff;font-size:12px;margin-right: 4px;"><i class="fab fa-facebook-f"></i> Share</a>
+                                    <a href="http://www.twitter.com/share?url={{ url('contest_view', {uuid: project.uuid}) }}" class="btn btn-sm" style="background:#55acee;color:#fff;font-size:12px;"><i class="fab fa-twitter"></i> Tweet</a>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="uploadInstructions" class="hide">
+                <div class="instructions-modal-body">
+                 {% if project.sfs %}
+                    {% if project.lookingFor == "vocalist" %}
+                        <p>Before you can upload a demo you must download the track first to record over.</p>
+                        <ol>
+                            <li><a href="{{ path('sfs_audio_download', {uuid: project.uuid} ) }}" data-toggle="vmodal" class="btn-download-track">Download the track</a></li>
+                            {% if project.lyrics is null %}
+                            <li>Write an example chorus or verse</li>
+                            {% else %}
+                            <li>Pick the chorus or verse from lyrics provided</li>
+                            {% endif %}
+                            <li>Record yourself singing over track</li>
+                            <li>Upload your demo to the contest</li>
+                        </ol>
+                    {% else %}
+                        <p>Before you can upload a demo you must download the track first to record your music with it.</p>
+                        <ol>
+                            <li><a href="{{ path('sfs_audio_download', {uuid: project.uuid} ) }}" data-toggle="vmodal" class="btn-download-track">Download the audio</a></li>
+                            <li>Pick a section of the vocals to record with</li>
+                            <li>Place vocals over your beat</li>
+                            <li>Upload your demo to the contest</li>
+                        </ol>
+                    {% endif %}
+                 {% else %}
+                    {% if project.lookingFor == "vocalist" %}
+                        <p>Before you can upload a demo you must download the track first to record over.</p>
+                        <ol>
+                            <li><a href="{{ path('contest_audio_download', {uuid: project.uuid} ) }}" class="btn-download-track">Download the track</a></li>
+                            {% if project.lyrics is null %}
+                            <li>Write an example chorus or verse</li>
+                            {% else %}
+                            <li>Pick the chorus or verse from lyrics provided</li>
+                            {% endif %}
+                            <li>Record yourself singing over track</li>
+                            <li>Upload your demo to the contest</li>
+                        </ol>
+                    {% else %}
+                        <p>Before you can upload a demo you must download the track first to record your music with it.</p>
+                        <ol>
+                            <li><a href="{{ path('contest_audio_download', {uuid: project.uuid} ) }}" class="btn-download-track">Download the audio</a></li>
+                            <li>Pick a section of the vocals to record with</li>
+                            <li>Place vocals over your beat</li>
+                            <li>Upload your demo to the contest</li>
+                        </ol>
+                    {% endif %}
+                 {% endif %}
+                </div>
+            </div>
+        </div>
+
+        {{ controller('App:Hint:show') }}
+
+{% endblock %}

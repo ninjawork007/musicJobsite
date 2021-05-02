@@ -1,0 +1,58 @@
+{% for message in messages%}
+    <div class="message">
+        <hr>
+        <div class="avatar">
+            {% if message.userInfo.id == app.user.id %}
+                {% if app.user.path is null %}
+                    <img src="{{ asset('images/default_avatar.svg') }}" width="28" height="28" class="img-circle">
+                {% else %}
+                    <img src="{{ asset('uploads/avatar/small/' ~ app.user.path ) }}" width="28" height="28" class="img-circle  avatar-sm-{{ app.user.username }}">
+                {% endif %}
+            {% else %}
+                {% if message.userInfo.path is null %}
+                    <img src="{{ asset('images/default_avatar.svg') }}" width="28" height="28" class="img-circle">
+                {% else %}
+                    <img src="{{ asset('uploads/avatar/small/' ~ message.userInfo.path ) }}" width="28" height="28" class="img-circle  avatar-sm-{{ message.userInfo.username }}">
+                {% endif %}
+            {% endif %}
+        </div>
+
+        <div class="info-wrap">
+            <div class="sender">
+                {% if message.userInfo.id == app.user.id %}
+                    You said...
+                {% else %}
+                    {{ message.userInfo.displayName }} said... <span class="label label-red label-sml new-message">NEW</span>
+                {% endif %}
+                <div class="date-sent">{{ message.createdAt|timeAgoString }} ago</div>
+            </div>
+            <div class="content">
+                {{ message.content|nl2br }}
+                {% if message.messageFiles|length > 0 %}
+                    <div class="message-dl-list">
+                        {% for messageFile in message.messageFiles %}
+                        <div class="message-file-dl">
+                            {% if messageFile.dropboxLink %}
+                            <a href="{{ path('message_download', {slug: messageFile.slug}) }}" target="_blank">{{ messageFile.title }} ({{ messageFile.filesize|formatBytes}})</a> 
+                            {% else %}
+                            <a href="{{ path('message_download', {slug: messageFile.slug}) }}" download>{{ messageFile.title }} ({{ messageFile.filesize|formatBytes}})</a> 
+                            {% endif %}
+                            {% if message.userInfo.id == app.user.id %}<a href="{{ path('message_delete', {id: messageFile.id}) }}" title="Delete file" class="message-remove-file pull-right"><i class="fa fa-times"></i></a>{% endif %}
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endfor %}
+        
+{% if messages and messages|length > 0 and thread.project and thread.project.projectBid %}
+    {% if thread.employer == app.user or thread.project.employeeUserInfo == app.user %}
+        <hr>
+        <div class="awarded">This gig has been awarded</div>
+        <div class="chat-closed">
+            Chat is now closed. Continue collaborating in the <a href="{{ path('project_studio', {uuid: thread.project.uuid}) }}">Vocalizr Studio!</a>
+        </div>
+    {% endif %}
+{% endif %}

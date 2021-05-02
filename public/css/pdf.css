@@ -1,0 +1,62 @@
+html, body {
+    color: #000;
+    font-weight: 300;
+    font-family: 'Open Sans', sans-serif;
+    font-size: 14px;
+}
+
+* {
+    box-sizing:border-box;
+    -moz-box-sizing:border-box;
+}
+
+#header {
+    background: #020c16;
+    height: 40px;
+    padding: 15px 50px;
+    color: #fff;
+}
+#header .title {
+    font-size: 25px;
+    font-weight: 300;
+    float: left;
+    width: 80%;
+    padding-top: 12px;
+}
+#header .logo {
+    float: right;
+    width: 120px;
+}
+.page-content {
+    padding: 0 50px;
+}
+.page-content h4 {
+    font-size: 18px;
+    font-family: 'Open Sans', sans-serif;
+    font-weight: 300;
+}
+.and {
+    padding-left: 30px;
+}
+.important {
+    background: #0a131c;
+    color: #fff;
+    padding: 20px;
+}
+.important h4 {
+    margin-top: 0;
+}
+.page-break {
+    display: block; 
+    page-break-before: always;
+}
+.decimal-list {
+    padding-left: 40px;
+}
+.decimal-list td {
+    vertical-align: top;
+}
+.decimal-list .num {
+    font-weight: bold;
+    padding-right: 5px;
+}

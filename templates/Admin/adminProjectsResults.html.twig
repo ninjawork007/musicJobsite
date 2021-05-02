@@ -1,0 +1,59 @@
+
+{% for project in results %}
+    <div class="result clearfix" id="project-result-{{ project.id}}">
+        <div class="info col-sm-6">
+          <ul>
+            <li>Project Title:
+
+              {% if project.projectType == "paid" %}
+                  <a href="{{ path('project_view', {uuid: project.uuid } ) }}" target="_blank">{{ project.title }}</a>
+              {% else %}
+                  <a href="{{ path('contest_view', {uuid: project.uuid } ) }}" target="_blank">{{ project.title }}</a>
+              {% endif %}
+            </li>
+            <li>Creator: <a href="{{ path('user_view', {username: project.UserInfo.username} ) }}" target="_blank">{{ project.UserInfo.displayName }}</a></li>
+            <li>Creator Email: <span>{{ project.userInfo.email }}</span></li>
+            <li>Project Type: <span>{{ project.projectType }}</span></li>
+            <li>Publish Type: <span>{{ project.publishType }}</span></li>
+            <li>Status: <span>
+
+                 {% if project.isComplete %}
+                   Completed
+                 {% elseif project.awardedAt %}
+                   Awarded
+                 {% else %}
+                   {% if project.bidsDue|timeLeftString is empty %}
+                     Bidding Closed
+                   {% else %}
+                     Bidding ends {{ project.bidsDue|date('d/m/Y') }}
+                   {% endif %}
+                 {% endif %}
+            </span></li>
+          </ul>
+        </div>
+        <div class="actions col-sm-6">
+            {% if project.awardedAt is null %}
+                {% if project.isActive %}
+                    <button class="btn btn-danger btn-activate" data-href="{{ path('admin_project_activate', {id : project.id}) }}">Deactivate Project</button>
+                    <div>This will also remove it from the activity feed which cannot be undone</div>
+                {% else %}
+                    <button class="btn btn-success btn-activate" data-href="{{ path('admin_project_activate', {id : project.id}) }}">Activate Project</button>
+                {% endif %}
+            {% endif %}
+            {% if project.isActive %}
+                {% if project.publishType == 'private' %}
+                    <button class="btn btn-success btn-activate" data-href="{{ path('admin_project_make_public', {id : project.id}) }}">Make public</button>
+                {% else %}
+                    <button class="btn btn-danger btn-activate" data-href="{{ path('admin_project_make_private', {id : project.id}) }}">Make private</button>
+                {% endif %}
+            {% endif %}
+            {% if project.isComplete %}
+                <button class="btn btn-warning btn-resend-employer-receipt" data-href="{{ path('admin_project_resend_employer_receipt', {id : project.id}) }}">Resend employer receipt</button>
+                {% if sent_receipt is defined and sent_receipt %}
+                  <br>
+                  Receipt has been resent to the employer
+                {% endif %}
+            {% endif %}
+        </div>
+    </div>
+{% endfor %}

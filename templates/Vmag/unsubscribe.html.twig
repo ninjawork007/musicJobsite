@@ -1,0 +1,23 @@
+{% extends 'vmag.html.twig' %}
+
+{% block title %}Unsubcribed{% endblock %}
+
+
+{% block body %}
+
+    <div class="row">
+        <div class="col-sm-12 col-md-8 main-col">
+            <h1>Unsubscribed</h1>
+            
+            <p>You will no longer recieve updates from VMag.</p>
+
+
+
+        </div>
+
+        <div class="col-sm-12 col-md-4 side-col">
+            {{ controller('App:Vmag:_sidebar') }}
+        </div>
+    </div>
+
+{% endblock %}

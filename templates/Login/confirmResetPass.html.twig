@@ -1,0 +1,34 @@
+{% extends 'anonymous.html.twig' %}
+
+{% block title %}Confirm Reset Password{% endblock %}
+
+{% block description %}Confirm Reset Password{% endblock %}
+
+{% block body %}
+
+<div class="forgot-password-wrap">
+    {% include 'messages.html.twig' %}
+
+    <div class="form-message">Create your new password.</div>
+
+    <div id="reset-form-container" class="row">   
+        <div class="light-content">
+            <form action="{{ path('reset_pass_confirm', {'key': key }) }}" method="post" novalidate>
+                {{ form_row(form._token) }}
+                <div class="row form-group">
+                    <div class="col-sm-12">
+                        {{ form_row(form.password) }}
+                    </div>
+                </div>
+
+                <div class="form-group centered">
+                    <div class="btn-wrap">
+                        <input type="submit" name="submit" class="btn btn-lg btn-default" value="Save" tabindex="3">
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

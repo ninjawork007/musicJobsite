@@ -1,0 +1,81 @@
+parameters:
+    locale: en
+    secret: v0cal1zR*DSJu8DH347s
+
+    domain_base: local.vocalizr.com
+    router.request_context.host: local.vocalizr.com
+    router.request_context.scheme: http
+
+    audio_recorder_key: 820f01581a603e68ad92c87c072d8a58
+
+    facebook_app_id: 270724609723149
+    facebook_app_secret: 4182c17474aabea8cd8b6d226478554f
+    facebook_app_scope: email,user_birthday,user_location
+
+    soundcloud_client_id: 2a742087e2ef470eaf157bca383386d1
+    soundcloud_client_secret: 1a0a41aff336e48dbeb03448b6d486f2
+
+    admin_email: john@smytheweb.com
+
+    mail_from_email: john@smytheweb.com
+    mail_from_name: Vocalizr
+
+    mail_subject_activation: Activate your account
+    mail_subject_change_email: Email change request
+    mail_subject_reset_pass: Reset your password request
+
+    paypal_primary_email: timofey.n-test@zimalab.com
+    paypal_url: https://www.sandbox.paypal.com/cgi-bin/webscr
+    paypal_ipn_simulator_url: http://www.smytheweb.com/vocalizr/ipn.php?request=1
+    paypal_test_mode: 1
+    paypal_test_url: https://www.sandbox.paypal.com/cgi-bin/webscr
+    paypal_currency: USD
+    paypal_notify_url: https://v.pf.ipnta.xyz/app_dev.php/paypal/ipn
+
+    paypal_env: 'dev'
+
+    paypal_client_id: 'AY-N8n5ycph03VwwBX3XgGf2bbUXDFWKlD7iVp5Ep01cD9s6V1SB9mr-6umdBZ4f21tpOr_UOYbVgLid'
+    paypal_client_Secret: 'EOxtaE9cMygeWMzy_3GINDLL2si5ty7h41oCXfnoXFKiPR8MtgIbNhFypzZ4t0pFGrl7Vl1a9CWEmOPs'
+
+    paypal_legacy_api_username: 'timofey.n-test_api1.zimalab.com'
+    paypal_legacy_api_password: 'W2FYCR9F3SUDANPZ'
+    paypal_legacy_signature:    'AxpYDfrZEOWfawzZkLN7tKCy.BvJAOS8a4ZUsuHd6kb4UtHDYBikuud9'
+
+
+    default_currency: USD
+
+    upload_audio_allowed: mp3
+    upload_assets_allowed: mp3, wav
+    upload_audio_allowed_extended: mp3,aac,m4a
+
+
+    default_date_format: M d, Y
+
+    cdn_url:
+
+    connect_default_msg: "I'd like to add you to my professional network on Vocalizr."
+
+    stripe_api_key: sk_test_9meu3hZp96wFN6VCvGpqCj5N
+    stripe_checkout_key: pk_test_Y9zYhfkN1kx8TOJjP1UBlyFM
+
+    statistics_google_sheet_id: 1NWi-MhGrxztg6uKmxsMgkWvwzT9dHxXXJk-WUiaC1DQ
+    statistics_google_list_name: local
+#    paypal_primary_email_subscriptions:       'timofey.n-test@zimalab.com'
+#    paypal_button_id:                         'JFP4WPAJB9H44'
+#    paypal_legacy_api_username_subscriptions: 'timofey.n-test_api1.zimalab.com'
+#    paypal_legacy_api_password_subscriptions: 'W2FYCR9F3SUDANPZ'
+#    paypal_legacy_signature_subscriptions:    'AxpYDfrZEOWfawzZkLN7tKCy.BvJAOS8a4ZUsuHd6kb4UtHDYBikuud9'
+#    paypal_stayhome_button_id:                'P7H5BNC7ES6VG'
+
+    paypal_primary_email_subscriptions:       'timofey.n-test@zimalab.com'
+    paypal_button_id:                         'JFP4WPAJB9H44'
+    paypal_legacy_api_username_subscriptions: 'timofey.n-test_api1.zimalab.com'
+    paypal_legacy_api_password_subscriptions: 'W2FYCR9F3SUDANPZ'
+    paypal_legacy_signature_subscriptions:    'AxpYDfrZEOWfawzZkLN7tKCy.BvJAOS8a4ZUsuHd6kb4UtHDYBikuud9'
+    paypal_stayhome_button_id:                'P7H5BNC7ES6VG'
+
+    pro_profile_enabled: false
+
+    database_driver: oci8
+
+    stripe_baseUrl: 'https://api.stripe.com/v1'

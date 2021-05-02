@@ -1,0 +1,31 @@
+<script>
+    function stopEvent(e) {
+        e.stopPropagation();
+        e.preventDefault();
+    }
+    function showEmailModal() {
+        $('#email_not_confirmed_modal').modal('show');
+    }
+    document.addEventListener("DOMContentLoaded", function(event) {
+        {% if open_delay is defined %}
+        setTimeout(function() {$(function () {
+            showEmailModal();
+        })}, {{ open_delay }});
+        {% endif %}
+        try {
+            $('#bid-form2').submit(function (e) {
+                stopEvent(e);
+                showEmailModal();
+                return false;
+            });
+            $('.message-alert').click(function (e) {
+                stopEvent(e);
+                showEmailModal();
+                return false;
+            });
+        } catch ($e) {}
+    });
+</script>
+<div id="email_not_confirmed_modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="vocalizr-modal" aria-hidden="true">
+    {% include 'include/panel/verify_email_panel.html.twig' %}
+</div>

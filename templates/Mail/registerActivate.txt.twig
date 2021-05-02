@@ -1,0 +1,8 @@
+{% extends 'email.txt.twig' %}
+
+{% block body %}
+Thank you for registering with Vocalizr!
+
+Please visit the link below to activate your account and start creating your profile
+{{ url('register_activate', {'unique_str': userInfo.uniqueStr }) }}
+{% endblock %}

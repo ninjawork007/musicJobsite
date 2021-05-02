@@ -1,0 +1,32 @@
+{% extends 'app.html.twig' %}
+
+{% block title %}Admin - Accounting Report{% endblock %}
+
+
+{% block body %}
+    <div class="row">
+        <div class="col-sm-2">
+            <ul class="nav">
+                {% include 'Admin/include/menu.html.twig' %}
+            </ul>
+        </div>
+        <div class="col-sm-10 admin-report">
+            <h1>Accounting Report</h1>
+            <p>Select the dates you wish to generate the report for below and then click on "Submit".</p>
+            {% if error %}
+                <div class="error">{{ error }}</div>
+            {% endif %}
+            <div>
+                <form id="create-gig-form" action="{{ path('admin_accounting_report') }}" method="post" novalidate>
+                    {{ form_row(form._token) }}
+                    From:
+                    {{ form_widget(form.startDate) }}
+                    to:
+                    {{ form_widget(form.endDate) }}
+                    <button id="stat-update-btn" class="btn btn-primary">Submit</button>
+                </form>
+            </div>
+
+        </div>
+    </div>
+{% endblock %}

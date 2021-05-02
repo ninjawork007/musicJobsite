@@ -1,0 +1,18 @@
+twig:
+    default_path: '%kernel.project_dir%/templates'
+    globals:
+        domain_base: '%domain_base%'
+        facebook_app_id: '%facebook_app_id%'
+        facebook_app_secret: '%facebook_app_secret%'
+        facebook_app_scope: '%facebook_app_scope%'
+        soundcloud_client_id: '%soundcloud_client_id%'
+        audio_recorder_key: '%audio_recorder_key%'
+        upload_audio_allowed: '%upload_audio_allowed%'
+        upload_audio_allowed_extended: '%upload_audio_allowed_extended%'
+        upload_assets_allowed: '%upload_assets_allowed%'
+        default_date_format: '%default_date_format%'
+        cdn_url: '%cdn_url%'
+        stripe_api_key: '%stripe_api_key%'
+        stripe_checkout_key: '%stripe_checkout_key%'
+        paypal_url: '%paypal_url%'
+        paypal_button_id: '%paypal_button_id%'

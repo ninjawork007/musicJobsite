@@ -1,0 +1,15 @@
+<p>Hey <strong style="color:#000;">{{ user.displayName }}</strong>,</p>
+
+
+<p>You forgot to review <strong style="color:#000;">{{ otherUser.displayName }}</strong> after working with them on <a href="{{ url('project_studio', {uuid: project.uuid} ) }}#rating"  style="color:#14b9d6;">{{ project.title }}</a>.<br>
+    This helps other members see the accuracy of profiles and who are really great to work with.</p>
+
+<p>It will only take 30 seconds and will help the vocalizr community a lot!</p>
+
+<div style="height:10px;"></div>
+
+<p><a href="{{ url('project_studio', {uuid: project.uuid} ) }}#rating" style="color: #fff; font-size: 14px; background-color: #14b9d6; text-decoration: none; border-radius: 3px; padding: 8px 16px; border-width: 1px; border-style: solid; border-color: #1aadc7;">Review {{ otherUser.displayName }}</a></p>
+
+<div style="height:10px;"></div>
+
+<p>Cheers,<br>vocalizr</p>

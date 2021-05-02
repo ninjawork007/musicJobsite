@@ -1,0 +1,14 @@
+{% extends 'Dashboard/activity/activityItem.html.twig' %}
+{% block avatar %}
+    {{ parent() }}
+    {% include 'Dashboard/activity/parts/avatar.html.twig' with {user: activityItem.project.employee_user_info} %}
+{% endblock %}
+{% block badge %}<span class="badge badge-green">GIG COMPLETED</span>{% endblock %}
+{% block activity_info %}
+    {% set employee = project.employee_user_info %}
+    <a href="{{ path('user_view', {'username' : activityItem.actioned_user_info.username }) }}">
+        {{ actionedDisplayName }}
+    </a> and <a href="{{ path('user_view', {'username' : employee.username }) }}">
+        {{ employee.display_name ? employee.display_name : employee.username  }}
+    </a> have completed the gig <a href="{{ path('project_view', {'uuid' : project.uuid }) }}">{{ project.title }}</a>.
+{% endblock %}

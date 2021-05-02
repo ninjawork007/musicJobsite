@@ -1,0 +1,41 @@
+{% if totalReviewsCount > 0 %}
+    <div class="reviews-pills">
+        {% set reviewCategories = 0 %}
+        {% for category in reviewsByType %}
+            {% if category.totalItemCount %}
+                {% set reviewCategories = reviewCategories + 1 %}
+            {% endif %}
+        {% endfor %}
+        {% for type in reviewsByType|keys %}
+            {% if reviewsByType[type].totalItemCount and (reviewCategories > 1) %}
+            <a href="#{{ type }}_reviews" class="btn btn-sm btn-default {{ loop.first ? 'active' : '' }}" aria-controls="{{ type }}_reviews" role="tab" data-toggle="pill">{{ type|upper }} REVIEWS</a>
+            {% endif %}
+        {% endfor %}
+
+        {% if reviewCategories == 1 and reviewsByType['employer'].totalItemCount > 0 %}
+            <span style="color: #8698a3; font-family: 'Museo Sans'; font-size: 18px; font-weight: 500;">Employer Reviews</span>
+        {% endif %}
+    </div>
+
+    {% for type, reviewsPagination in reviewsByType %}
+        {% if reviewsPagination.totalItemCount %}
+        <div id="{{ type }}_reviews" role="tabpanel" class="tab-pane fade {{ loop.first ? 'in active' : '' }}" style="{{ not loop.first ? 'display: none'}}">
+            <div data-role="review-container">
+                {% include 'User:view_reviews.html.twig' with {reviews: reviewsPagination} %}
+            </div>
+            {% if reviewsPagination.totalItemCount > 10 %}
+                <div class="form-group row col-md-12">
+                    <button
+                            data-path="{{ path('user_view_load_more_review') }}"
+                            data-id="{{ userInfo.id }}" class="btn btn-sm btn-default"
+                            data-type="{{ type }}"
+                            data-role="load-move-review-button"
+                    >LOAD MORE</button>
+                </div>
+            {% endif %}
+        </div>
+        {% endif %}
+    {% endfor %}
+{% else %}
+    <p>{{ userInfo.username }} has no reviews.</p>
+{% endif %}

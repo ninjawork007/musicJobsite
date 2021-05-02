@@ -1,0 +1,42 @@
+<div class="modal-dialog">
+    <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <h4 class="modal-title">Upload studio audio</h4>
+        </div>
+        <div class="modal-body padding">
+            <form id="upload-studio-audio" method="post" action="{{ path('project_studio_upload', {uuid: project.uuid, type: app.request.get('type') }) }}">
+                <div class="row form-group">
+                    <div class="col-sm-7">
+                        <label for="studio-upload-audio-container">UPLOAD AUDIO:</label>  <span class="help-note">MP3,AAC,M4A FILES ONLY</span><br>
+                        <a id="upload-audio-btn" href="" class="btn btn-sm btn-default">SELECT FILE</a>
+                    </div>
+                </div>
+
+                <div id="studio-upload-audio-container" data-url="{{ path('upload_audio') }}" data-extensions="{{ upload_audio_allowed_extended }}" data-form="upload-studio-audio">
+                    <div class="upload-audio-error hide"></div>
+                    <div class="upload-audio-bar-container">
+                        Uploading...
+                        <div class="progress"><div class="upload-audio-bar progress-bar" style="width: 0;"></div></div>
+                    </div>
+                    <div class="audio-upload-preview">
+                        <hr>
+                        <div class="track-list-item">
+                            <div class="track-play inline"><a href=""><span>PLAY</span></a></div>
+                            <span class="track-title"></span>
+                            <span class="track-length"></span>
+                            <span class="badge badge-featured">PREVIEW</span>
+                            <a href="" class="btn btn-sm btn-default remove">CANCEL</a>
+                        </div>
+                        <hr>
+                        <button type="submit" name="save" value="audio" class="btn btn-primary">Save</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div><!-- /.modal-content -->
+</div><!-- /.modal-dialog -->
+
+<script>
+    AudioUploader.init('studio-upload-audio-container', 'upload-audio-btn');
+</script>

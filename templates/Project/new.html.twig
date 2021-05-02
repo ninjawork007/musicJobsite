@@ -1,0 +1,294 @@
+{% extends 'app.html.twig' %}
+
+{% block title %}Create your gig{% endblock %}
+
+{% block javascript %}
+
+        <script type="text/javascript" src="{{ asset('js/uploader/plupload.full.min.js') }}"></script>
+        <script type="text/javascript" src="{{ asset('js/audio-uploader.js') }}"></script>
+
+        <script type="text/javascript" src="{{ asset('jquery.geocomplete.min.js') }}"></script>
+
+
+    <script>
+        AudioUploader.init('gig-upload-audio-container', 'upload-audio-btn');
+
+        $('#geo-location').geocomplete({
+            details: "#create-gig-form",
+            types: ['(cities)'],
+            blur: true,
+            detailsAttribute: "data-geo"
+        });
+
+        var budget = $("#project_budget").val();
+        $('#' + budget).show();
+
+        var lookingFor = $("#form_looking_for").val();
+        if (lookingFor == "producer") {
+            $('.budget-desc').hide();
+        }
+    </script>
+
+{% endblock %}
+
+{% block body %}
+<div id="create-gig-container" class="row">
+    <div class="col-sm-8">
+        <h1>Create a New Gig</h1>
+        
+        {% include 'messages_app.html.twig' %}
+        
+        <div class="light-content">
+            {% if project.id %}
+                <form id="create-gig-form" action="{{ path('project_new', {uuid: project.uuid}) }}" method="post" novalidate>
+            {% else %}
+                <form id="create-gig-form" action="{{ path('project_new') }}" method="post" novalidate>
+            {% endif %}
+                {{ form_row(form._token) }}
+                    
+                {{ form_errors(form) }}
+
+                <div class="row form-group">
+                    <div class="col-sm-12">
+                        {{ form_row(form.title) }}
+                    </div>
+                </div>
+
+                <hr>
+
+                <div class="row form-group">
+                    <div class="col-sm-5">
+                        {{ form_row(form.looking_for) }}
+                    </div>
+                    <div class="col-sm-5">
+                        {{ form_row(form.gender) }}
+                    </div>
+                </div>
+
+                <hr>
+
+                {% if defaultProjectAudio %}
+                <div class="row form-group">
+                    <div class="col-sm-12">
+                        <label>AUDIO <span class="help-note">DOWNLOADABLE BY ENTRANT</span></label>
+                        <div class="track-list-item">
+                            <div class="ui360 track-play inline"><a href="{{ path('project_audio', {uuid: project.uuid, slug: defaultProjectAudio.slug}) }}?1" type="audio/mp3"><span>PLAY</span></a></div>
+                            <span class="track-title">{{ defaultProjectAudio.title }}</span>
+                            <span class="track-length">({{ defaultProjectAudio.durationString }})</span>
+                            <span class="badge badge-featured">FEATURED</span>
+                        </div>
+                    </div>
+                </div>
+                            
+                <div style="height: 10px;"></div>
+                {% else %}
+                <div class="row form-group">
+                    <div class="col-sm-12">
+                        <label for="gig-upload-audio-container">UPLOAD AUDIO *:</label> <span class="help-note">MP3,AAC,M4A FILES ONLY</span>
+                    </div>
+                </div>
+                {% endif %}
+                    
+                
+                <div id="gig-upload-audio-container" data-url="{{ path('upload_audio') }}" data-extensions="{{ upload_audio_allowed_extended }}" data-form="create-gig-form">
+                    <div class="upload-mobile-msg">Open site on desktop to upload audio</div>
+                    <div class="upload-audio-actions">
+                        {% if defaultProjectAudio %}
+                            <a id="upload-audio-btn" href="" class="btn btn-sm btn-default">CHANGE AUDIO</a><br>
+                        {% else %}
+                        <a id="upload-audio-btn" href="" class="btn btn-sm btn-default">SELECT FILE</a><br>
+                        {% endif %}
+                    </div>
+                    <div class="upload-audio-error hide"></div>
+                    <div class="upload-audio-bar-container">
+                        Uploading...
+                        <div class="progress"><div class="upload-audio-bar progress-bar" style="width: 0;"></div></div>
+                    </div>
+                    {% if app.request.get('audio_file') %}
+                    <input class="hidden-audio" type="hidden" name="audio_file" value="{{ app.request.get('audio_file') }}" />
+                    <input class="hidden-audio" type="hidden" name="audio_title" value="{{ app.request.get('audio_title') }}" />
+                    <div class="audio-upload-preview" style="display:block">
+                        <hr>
+                        <div class="track-list-item">
+                            <div class="ui360 track-play inline"><a href="/upload/audio/tmp?f={{ app.request.get('audio_file') }}"><span>PLAY</span></a></div>
+                            <span class="track-title">{{ app.request.get('audio_title') }}</span>
+                            <span class="track-length"></span>
+                            <span class="badge badge-featured">PREVIEW</span>
+                            <a href="" class="btn btn-sm btn-default remove">CANCEL</a>
+                        </div>
+                    </div>
+                    {% else %}
+                    <div class="audio-upload-preview">
+                        <hr>
+                        <div class="track-list-item">
+                            <div class="track-play inline"><a href=""><span>PLAY</span></a></div>
+                            <span class="track-title"></span>
+                            <span class="track-length"></span>
+                            <span class="badge badge-featured">PREVIEW</span>
+                            <a href="" class="btn btn-sm btn-default remove">CANCEL</a>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+                
+                <div class="row form-group">
+                    <div class="col-sm-4 budget-wrap">
+                        {{ form_row(form.budget) }}
+                    </div>
+                    <div class="col-sm-8 budget-desc">
+                        <label>BUDGET DESCRIPTION</label>
+                        <div id="20-100">Just a few words sung by a vocalist (under 10 words), or some ad-libs.</div>
+                        <div id="100-300">For a couple of sentences sung that have already been written, or for some singing and songwriting needed.</div>
+                        <div id="300-500">For a couple of sentences sung that have already been written, or for some singing and songwriting needed.</div>
+                        <div id="500-800">Seeking a professional topline vocal, lyrics/song written, and performed.</div>
+                        <div id="800-1000">Seeking a professional topline vocal, lyrics/song written, and performed.</div>
+                        <div id="1000-0">For high quality, experienced and professional vocalists with a track record in songwriting, toplines, and session singing.</div>
+                    </div>  
+                </div>  
+                 
+
+                <hr>
+                    
+                <div class="row form-group">
+                    <div class="col-sm-5 form-royalty-type-group">
+                        <div class="">
+                            <label class="field-label required">
+                                Royalties<i class="fa fa-question-circle"></i>{{ form_errors(form.royalty) }}
+                            </label>
+                            <br>
+                            {{ form_widget(form.royalty_mechanical) }}
+                            {{ form_label(form.royalty_mechanical) }}&nbsp;
+                            {{ form_widget(form.royalty_performance) }}
+                            {{ form_label(form.royalty_performance) }}
+                        </div>
+                    </div>
+                    <div class="col-sm-5 form-royalty-group">
+                        {{ form_widget(form.royalty, {'attr': {'data-slider-value': form.vars.value.royalty}}) }}
+                        {{ form_label(form.royalty) }}
+                        <div class="royalty-num"><span>{{ form.vars.value.royalty }}</span>%</div>
+                    </div>
+                    <div id="royalty-tip">
+                        Set the percentage of royalties you agree to share with the employee
+                    </div>
+                </div>
+
+                <hr>
+
+                <div class="row form-group">
+                    {% set location = '' %}
+                    {% if project.city %}
+                        {% set location = project.city ~ ', ' ~ project.state ~ ', ' ~ project.country|countryName %}
+                    {% endif %}
+                    <div class="col-sm-5">
+                        <label class="field-label" for="location">LOCATION {{ form_errors(locationForm.city) }}</label>
+                        <input id="geo-location" type="text" name="location" class="form-control" value="" placeholder="Start typing your city...">
+                        {{ form_widget(locationForm.city) }}
+                        {{ form_widget(locationForm.state) }}
+                        {{ form_widget(locationForm.location_lat) }}
+                        {{ form_widget(locationForm.location_lng) }}
+                        {{ form_widget(locationForm.country) }}
+                        {{ form_row(locationForm._token) }}
+                    </div>
+                    <div class="col-sm-7">
+                        {% if location %}
+                            <div class="current-location">
+                                <div class="icon-wrap"><i class="fa fa-map-marker"></i></div>
+                                <div class="location-text">SET LOCATION<br><span class="white-highlight">{{ location }}</span>
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <hr>
+                    
+                <div class="row form-group">
+                    <div class="col-sm-5">
+                        {{ form_row(form.language) }}
+                    </div>
+                    <div class="col-sm-5 checkboxes">
+                        <br>
+                        {{ form_widget(form.studio_access) }}
+                        {{ form_label(form.studio_access) }}
+                    </div>
+                </div>
+                    
+                <hr>
+                    
+                <div class="row form-group">
+                    <div class="col-sm-5">
+                        {{ form_row(form.vocalCharacteristics) }}
+                    </div>
+                    <div class="col-sm-5">
+                        {{ form_row(form.vocalStyles) }}
+                    </div>
+                </div>
+
+                    
+                <hr>
+
+                <div class="row form-group">
+                    <div class="col-sm-12">
+                        {{ form_row(form.audio_brief) }}
+                    </div>
+                </div>
+                    
+                <hr>
+                    
+                <div class="row form-group">
+                    <div class="col-sm-12">
+                        {{ form_row(form.genres) }}
+                    </div>
+                </div>
+                    
+                <hr>
+
+                <div class="row form-group">
+                    <div class="col-sm-12">
+                        {{ form_row(form.description) }}
+                    </div>
+                </div>
+
+                <hr>
+
+                <div class="form-group text-right">
+                    {% if project.id > 0 %}
+                    <a href="{{ path('project_new_cancel', {uuid: project.uuid}) }}" class="link-cancel" onclick="return confirm('Are you sure? All data for this gig will be lost so far.');">Cancel</a> 
+                    {% endif %}<button name="next" class="btn btn-sm btn-default" value="NEXT">NEXT</button>
+                </div>
+
+            </form>
+        </div>
+    </div>
+    <div class="col-sm-4">
+        <div class="panel panel-default welcome-panel">
+            <div class="panel-heading">
+                NO RISK!
+            </div>
+            <div class="panel-body">
+                <p>Pay the vocalist/producer when you're <strong>100%</strong> satisfied. If the vocal/audio isn't what you're after, hit the "Negotiate" button (in the studio under payment), and explain why and your money will be refunded within a week.</p>
+                <p><a href="{{ path('website_faq') }}#disputes" target="_blank">Read our FAQ</a></p>
+            </div>
+        </div>
+        <div class="panel panel-default welcome-panel">
+            <div class="panel-heading">
+                TIPS
+            </div>
+            <div class="panel-body">
+                <p><strong class="white-highlight">Attach Audio</strong><br> It is important that you 
+upload music and/or vocals to ensure interest in your gig and so that potential bidders know 
+what you are after. The music file needs to be MP3 format.</p>
+                <p><strong class="white-highlight">Gig Description</strong><br>Fill in the information about your Gig, the intended audience, the 
+feel you are after, the sound you are after. Also include any notes about whether you are after 
+ideas about lyrics or changes to the sound.</p>
+            </div>
+        </div>
+        <div class="protected-vocalizr">
+            <i class="fa fa-shield"></i>
+            Protected by the Vocalizr Agreement<br>
+            <a href="{{ path('project_agreement', {uuid: '1', type: 'gig'}) }}">Download Template</a>
+        </div>
+    </div>
+</div>
+        
+{% endblock %}

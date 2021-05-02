@@ -1,0 +1,32 @@
+{% extends 'anonymous.html.twig' %}
+
+{% block title %}Activate your account{% endblock %}
+
+{% block description %}Activate your account{% endblock %}
+
+{% block body %}
+
+    <div class="container">
+        <h1 class="span12">Activate your account</h1>
+
+
+        {% include 'messages.html.twig' %}
+
+        <p>You need to confirm your email.<br> Please enter your email below you resend your activation email.</p>
+
+        <div class="form-wrap span7">
+            <form action="{{ path('resend_activation') }}" method="post">
+                <fieldset>
+                    <div class="field-wrap">
+                        <label for="email">Email</label>
+                        <input type="text" name="email" value="{{ email }}" />
+                    </div>
+                    <div class="btn-wrap margin-left-minus-10">
+                        <input type="submit" name="submit" class="btn btn-submit" value="Resend Activation Email" />
+                    </div>
+                </fieldset>
+            </form>
+        </div>
+    </div>
+
+{% endblock %}

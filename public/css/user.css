@@ -1,0 +1,63 @@
+.reviews-pills {
+    margin-bottom: 15px;
+}
+
+.user-audio-wrap.is-profile-audio .audio-nav .audio-prev {
+    right: 35px;
+}
+.user-audio-wrap.is-profile-audio .audio-nav .audio-next {
+    right: 0;
+}
+
+.player-container .vocalizr-player .track-time {
+    bottom: 6px;
+}
+
+.iframe-block-follow{
+    margin-top: 15px;
+    padding-left: 15px;
+    margin-bottom: 0;
+}
+
+.btn.edit-profile {
+    margin-bottom: 10px;
+}
+
+.mobile-user-base-info .username {
+    display: flex;
+}
+
+.mobile-user-base-info .occupation {
+    font-size: 24px;
+    color: #68767f;
+    font-weight: 100;
+}
+
+.vocalizr-certified-stamp.in-profile.mobile {
+    margin-left: 5px;
+    margin-top: 5px;
+}
+
+@media only screen and (min-width: 481px) and (orientation: portrait), only screen and (min-height: 481px) and (orientation: landscape) {
+    .avatar .svg-stamp-pro.in-profile {
+        height: 20%;
+        top: 75%;
+        left: 78%;
+        bottom: -1%;
+    }
+}
+
+@media (max-width: 768px) {
+    .row.form-group.video-item :first-child {
+        margin-bottom: 15px;
+    }
+}
+
+@media only screen and (max-width: 480px) and (orientation: portrait), only screen and (max-height: 480px) and (orientation: landscape) {
+    .btn.edit-profile {
+        margin-top: 14px;
+    }
+    .profile-share {
+        margin-top: 12px;
+    }
+}

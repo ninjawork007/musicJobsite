@@ -1,0 +1,51 @@
+{% if audioUrl is not defined or not audioUrl %}
+    {% set audioUrl = path('bid_audio_stream', {filename: audio.path}) %}
+{% endif %}
+{% if waveformHeight is not defined %}
+    {% set waveformHeight = 60 %}
+{% endif %}
+{% set heightModification = noHeightModification is defined and noHeightModification ? 0 : '-' ~ (waveformHeight * 0.25)  %}
+{% if wide is not defined %}
+    {% set wide = false %}
+{% endif %}
+{% if useCdnUrl is not defined %}
+    {% if (userAudio is defined and userAudio.scId) or (audio.scId is defined and audio.scId) or (audio.sc_id is defined and audio.sc_id) %}
+        {% set useCdnUrl = false %}
+    {% else %}
+        {% set useCdnUrl = true %}
+    {% endif %}
+{% endif %}
+
+<div class="vocalizr-player-container{{ wide ? ' wide' : '' }}">
+    {% block caption_block %}
+    {% if caption is defined %}
+        <div class="track-label-container">
+            <div class="track-label">
+                {{ caption ? caption : '<i class="fa fa-microphone" aria-hidden="true"></i> AUDITION' }}
+            </div>
+        </div>
+    {% endif %}
+    {% endblock %}
+
+    <div class="vocalizr-player" style="--height-modification: {{ heightModification }}; --waveform-height: {{ waveformHeight }}px">
+        <div class="js-play-btn play-btn" style="margin-bottom: {{ -heightModification - 1 }}px">
+            <div class="play-shape"></div>
+        </div>
+        <div class="js-waveform-wrap waveform"
+             data-waveform="{{ audio|waveform_json|escape('html_attr') }}"
+             data-audio="{{ useCdnUrl ? cdn_url : '' }}{{ audioUrl }}"
+             data-played-url="{{ played_callback_url is defined ? played_callback_url }}"
+             data-played-counter="{{ played_counter is defined ? played_counter }}"
+             data-height="{{ waveformHeight }}"
+             {% if data_attrs is defined %}
+                 {% for attr, value in data_attrs %}
+                     data-{{ attr }}="{{ value|e('html_attr') }}"
+                 {% endfor %}
+             {% endif %}
+        >
+            <div class="loading-gradient"><br></div>
+            <div class="track-time track-current hidden">0:00</div>
+            <div class="track-time track-duration hidden">0:00</div>
+        </div>
+    </div>
+</div>

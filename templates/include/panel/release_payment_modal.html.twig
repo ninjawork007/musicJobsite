@@ -1,0 +1,21 @@
+{% extends 'include/panel/popup_panel.html.twig' %}
+{% block header_left %}Are you sure?{% endblock %}
+{% block header_right %}{% endblock %}
+{% block note %}{% endblock %}
+{% block body %}
+    <div class="body option body-question">
+        <p class="question-text">Have you checked the files in the assets area, and are they correct? - Never release funds before ALL the assets are uploaded, checked and correct.</p>
+        <div id="question-first" class="question-false">Please listen to all assets, confirm they are all there, all correct, and you are 100% happy with them before releasing funds.</div>
+        <label class="question"><div class="icheckbox_polaris" style="position: relative;"><input id="question-radio-first" type="checkbox" name="question-first" value="1" style="position: absolute; opacity: 0;"></div>Yes</label>
+        <label class="question"><div class="icheckbox_polaris" style="position: relative;"><input type="checkbox" name="question-first" value="0" style="position: absolute; opacity: 0;"></div>No</label>
+        <p class="question-text">Did the employee ask for the funds to be released before the assets have been uploaded, and ok'd?</p>
+        <div id="question-second" class="question-false">Please ask the employee to upload all the assets, and  confirm they are correct before releasing funds. Never release funds before the assets are uploaded and correct.</div>
+        <label class="question"><div class="icheckbox_polaris" style="position: relative;"><input type="radio" name="question-second" value="1" style="position: absolute; opacity: 0;"></div>Yes</label>
+        <label class="question"><div class="icheckbox_polaris" style="position: relative;"><input id="question-radio-second" type="radio" name="question-second" value="0" style="position: absolute; opacity: 0;"></div>No</label>
+    </div>
+{% endblock %}
+{% block footer %}
+    <form action="{{ path('project_studio', {uuid: project.uuid}) }}" method="post" style="display:inline; width: 100%" onsubmit="return confirm('Are you sure you want to release the full payment?');">
+        <button name="release_escrow" class="btn btn-primary" value="release_escrow" disabled>RELEASE PAYMENT</button>
+    </form>
+{% endblock %}

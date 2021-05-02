@@ -1,0 +1,12 @@
+{% extends 'email.html.twig' %}
+
+{% block body %}
+
+
+    <p>Hello {{ user.getFirstName }},</p>
+    
+    <p>{{ project.UserInfo.username }} as asked for you to upload your assets for {{ project.title }}.</p>
+    
+    
+
+{% endblock %}

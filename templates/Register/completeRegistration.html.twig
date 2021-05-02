@@ -1,0 +1,123 @@
+{% extends 'anonymous.html.twig' %}
+
+{% block title %}Register{% endblock %}
+
+{% block description %}Register{% endblock %}
+
+{% block javascript %}
+        <script type="text/javascript" src="{{ asset('js/jquery.geocomplete.min.js') }}"></script>
+        <script type="text/javascript" src="{{ asset('js/360player.js') }}"></script>
+        <script type="text/javascript" src="{{ asset('js/register.js') }}"></script>
+    <script>
+            Register.init();
+    </script>
+            
+{% endblock %}
+
+{% block body %}
+<div class="container">
+<div class="register-wrap">
+    <div class="form-message">Thanks for confirming your email <br>You're almost done.</div>
+
+    {% include 'messages_app.html.twig' %}
+    <div id="registration-form-container">   
+        {% if soundcloud %}
+        <div class="soundcloud-register-header"><i class="vocalizr-icon icon-soundcloud"></i> SOUNDCLOUD ACCOUNT: {{ soundcloud.username|upper }}</div>
+        <div class="light-content soundcloud-register">
+            <div class="avatar">
+                {% if soundcloud.avatar_url is defined %}
+                <img src="{{ soundcloud.avatar_url }}" class="img-circle" width="58" height="58">
+                {% else %}
+                <img src="{{ asset('images/default_avatar.svg') }}" class="img-circle" width="58" height="58">
+                {% endif %}
+            </div>
+            {% if selectedTrack %}
+            <div class="track-list-item audio-preview">
+                <div class="ui360 track-play inline"><a href="{{ selectedTrack.stream_url }}?client_id={{ soundcloud_client_id }}" type="audio/mp3"><span>PLAY</span></a></div>
+                <span class="track-title">{{ selectedTrack.title }}</span>
+            </div>
+            <div class="change-audio">
+                <a class="btn btn-sm btn-default" data-toggle="modal" href="#soundcloudModal">CHANGE AUDIO</a>
+            </div>
+            {% else %}
+            <div class="soundcloud-no-tracks">
+                You have no tracks uploaded to SoundCloud
+            </div>
+            {% endif %}
+            <div class="clearfix"></div>
+        </div>
+        {% endif %}
+        <div class="light-content">
+            <form id="register-form" class="form register-form clearfix" action="{{ path('register_complete', {'unique_str' : app.request.get('unique_str')}) }}" method="post" novalidate>
+                {% if selectedTrack %}
+                <input class="hidden-audio sc-track-id" type="hidden" name="sc_track_id" value="{{ selectedTrack.id }}">
+                <input class="hidden-audio sc-track-id" type="hidden" name="sc_track_title" value="{{ selectedTrack.title }}">
+                {% endif %}
+                <div class="row form-group">
+                    <div class="col-sm-12">
+                        <label for="user[username]">USERNAME {{ form_errors(form.username) }} <span class="help-note">(This cannot be changed)</span></label>
+                        {{ form_widget(form.username) }}
+                    </div>
+                </div>
+                <div class="row form-group">
+                    <div class="col-sm-12">
+                        {{ form_row(form.password) }}
+                    </div>
+                </div>
+                <div class="row form-group">
+                    <div class="col-sm-12">
+                        <label class="field-label required">COUNTRY {{ form_errors(form.country) }}</label>
+                        {{ form_widget(form.country) }}
+                    </div>
+                </div>
+                <div class="row form-group">
+                    <div class="col-sm-12">
+                        {{ form_row(form.gender) }}
+                    </div>
+                </div>
+                <div class="row form-group">
+                    <div class="col-sm-12 checkboxes">
+                        <label>I AM A:</label>
+                        {{ form_widget(form.is_producer) }}
+                        {{ form_label(form.is_producer) }}&nbsp;&nbsp;&nbsp;
+                        {{ form_widget(form.is_vocalist) }}
+                        {{ form_label(form.is_vocalist) }}&nbsp;
+                        <div>{{ form_errors(form.is_producer) }}</div>
+                    </div>
+                </div>
+                <div class="form-group centered">
+                    {{ form_row(form._token) }}
+                    <div class="btn-wrap">
+                        <input type="submit" name="register_submit" value="Complete your registration" class="btn btn-lg btn-default">
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+</div>
+    {% if soundcloudTracks %}
+    <div class="modal fade" id="soundcloudModal" tabindex="-1" role="dialog" aria-labelledby="vocalizr-modal" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">Your SoundCloud Tracks</h4>
+                </div>
+                <div id="soundcloud-tracks" class="modal-body">
+                    <div class="modal-row">
+                        {% for scTrack in soundcloudTracks %}
+                        <div class="track-list-item">
+                            <div class="ui360 track-play"><a href="{{ scTrack.stream_url }}?client_id={{ soundcloud_client_id }}&r={{ random() }}" data-href="{{ scTrack.stream_url }}?client_id={{ soundcloud_client_id }}" type="audio/mp3"><span>PLAY</span></a></div>
+                            <span class="track-title">{{ scTrack.title }}</span>
+                            <a href="{{ scTrack.permalink_url }}" target="_blank" class="badge badge-soundcloud"><i class="vocalizr-icon icon-soundcloud"></i></a>
+                            <a href="" class="btn btn-sm btn-default sc-select-track" data-id="{{ scTrack.id }}">SELECT</a>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div>
+    {% endif %}
+{% endblock %}

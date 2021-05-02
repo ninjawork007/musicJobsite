@@ -1,0 +1,39 @@
+<!-- Navigation -->
+<div class="main-nav main-nav_logged">
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <div class="main-nav__wrp">
+                    <div class="main-nav__logo">
+                        <a href="{{ path('dashboard') }}">
+                            <img src="{{ asset('bundles/vocalizrapp/bootstrap4/img/logo.svg') }}" alt="Vocalizr">
+                        </a>
+                    </div>
+                    <div class="main-nav__links">
+                        <div class="main-nav__menu">
+                            <ul class="main-nav__menu-ul">
+                                <li><a href="{{ path('dashboard') }}">Activity</a></li>
+                                <li><a href="{{ path('vocalists') }}">Artists</a></li>
+                                <li><a href="{{ path('project_center') }}">Gig Center</a></li>
+                                <li><a href="{{ path('gig_hunter') }}">Jobs</a></li>
+                            </ul>
+                        </div>
+                        <div>
+                            {% if app.user %}
+                                {# TODO: show something! #}
+                            {% else %}
+                                <div class="main-nav__links">
+                                    <a href="{{ path('login') }}" class="main-nav__link
+                main-nav__login">Login</a>
+                                    <a href="{{ path('register') }}" class="main-nav__link
+                main-nav__signup">Signup</a>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- END Navigation -->

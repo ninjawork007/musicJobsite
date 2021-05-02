@@ -1,0 +1,83 @@
+<!-- ASSETS TAB -->
+<div id="assets" class="tab-pane">
+    <div class="row">
+        {% if project.isOwner(app.user) and projectAssets|length > 0 and project.completedAt is null %}
+            <div class="col-sm-12">
+                <div class="assets-quality-note">
+                    <div class="note-title">
+                        PLEASE NOTE:
+                    </div>
+                    <div class="note-body">
+                        Asset previews are downsampled to low quality mp3s for protection.
+                        Once payment is released, you can download the full studio quality files.
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+        <div class="col-sm-12">
+            {% if not project.isOwner(app.user) %}
+                <p>Please upload your assets below. The other party will not be able to download them until they have released payment.</p>
+
+                <p><a data-toggle="vmodal" href="{{ path('project_studio_assets_upload', {uuid: project.uuid}) }}" class="btn btn-default btn-sm">UPLOAD ASSETS</a></p>
+            {% else %}
+                {% if projectAssets|length > 0 %}
+                    {% if projectAssets|length > 0 and project.completedAt is null %}
+                        <form action="{{ path('project_studio', {uuid: project.uuid}) }}" method="post" onsubmit="return confirm('Are you sure you want to release this full payment?');">
+                            <p>
+                                <button name="release_escrow" class="btn btn-primary btn-sm release-payment" value="release_escrow">
+                                    RELEASE PAYMENT TO DOWNLOAD ASSETS
+                                </button>
+                            </p>
+                        </form>
+                    {% endif %}
+                {% else %}
+                    <p>The other party has yet to upload their assets.</p>
+                {% endif %}
+            {% endif %}
+            {% if projectAssets|length > 0 %}
+                {% for projectAsset in projectAssets %}
+                    <div class="track-list-item">
+                        {% if projectAsset.dropboxLink %}
+                            <i class="fa fa-dropbox" style="font-size: 16px;color: #00b9d7;"></i>
+                            <span style="font-size: 10px;margin-right: 14px;vertical-align: 1px;color: #00b9d7;font-weight: 600;">DROPBOX</span>
+                            <span class="track-title">{{ projectAsset.title }}</span>
+                            {% if projectAsset.UserInfo.id == app.user.id %}
+                                <a href="{{ path('project_studio_asset_delete', {uuid: project.uuid, assetDeleteSlug: projectAsset.slug} ) }}#assets" class="btn btn-default btn-sm roll-alt">REMOVE</a>
+                            {% endif %}
+                            {% if project.isComplete or project.ProjectBid.UserInfo.id == app.user.id %}
+                                <a href="{{ path('project_studio_asset', {uuid: project.uuid, assetSlug: projectAsset.slug} ) }}#assets" class="btn btn-default btn-sm" target="_blank">DOWNLOAD</a>
+                            {% endif %}
+                        {% else %}
+                            {% if projectAsset.previewPath and projectAsset.previewPath|projectAssetExists(project.id) %}
+                                <div class="playlist asset-audio middle-player-container">
+                                    {% include '@VocalizrApp/Project/view/include/waveformed_player.html.twig' with {
+                                        audio: projectAsset,
+                                        audioUrl: path('gig_asset_stream', {uuid: project.uuid, slug: projectAsset.slug}),
+                                        useCdnUrl: false,
+                                    } %}
+                                </div>
+                            {% else %}
+                                <div class="no-play">N/A</div>
+                            {% endif %}
+                            <span class="track-title">{{ projectAsset.title }}</span>
+                            <span class="track-length">({{ projectAsset.durationString }})</span>
+                            <span class="asset-action-buttons">
+                                {% if projectAsset.UserInfo.id == app.user.id %}
+                                    <a href="{{ path('project_studio_asset_delete', {uuid: project.uuid, assetDeleteSlug: projectAsset.slug} ) }}#assets" class="btn btn-default btn-sm roll-alt">REMOVE</a>
+                                {% endif %}
+                                {% if project.isComplete or project.ProjectBid.UserInfo.id == app.user.id %}
+                                    <a href="{{ path('project_studio_asset', {uuid: project.uuid, assetSlug: projectAsset.slug} ) }}#assets" class="btn btn-default btn-sm">DOWNLOAD</a>
+                                {% endif %}
+                            </span>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+                {% if project.isComplete or project.ProjectBid.UserInfo.id == app.user.id %}
+                    <a href="{{ path('project_studio_download_all_assets', {uuid: project.uuid} ) }}" class="btn btn-default btn-sm" target="_blank">DOWNLOAD ALL</a>
+                {% endif %}
+            {% endif %}
+        </div>
+    </div>
+
+</div>
+<!-- //ASSETS TAB -->

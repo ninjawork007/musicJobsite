@@ -1,0 +1,15 @@
+{% extends 'email.html.twig' %}
+
+{% block body %}
+
+<p>Hello {{ result.userInfo.usernameOrFirstName }},</p>
+
+<p>After no action from you on this dispute on project <a href="{{ url('project_studio', {uuid: result.project.uuid} ) }}">{{ result.project.title }}</a> has been closed in the favor of {{ result.fromUserInfo.displayName }}.</p>
+{% if result.amount > 0 %}
+    <p>They negotiated the amount of ${{ result.amountDollars }} which will be paid to them. Any remaining amount will be refunded to you.</p>
+{% else %}
+    <p>They agreed to refund the total amount back to you. It has been refunded into your Vocalizr Wallet.</p>
+{% endif %}
+
+
+{% endblock %}

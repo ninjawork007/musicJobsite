@@ -1,0 +1,25 @@
+<p>Hey <strong style="color:#000;">{{ userInfo.usernameOrFirstName }}</strong>!</p>
+
+<p>I noticed you downloaded the audio for my contest <a href="{{ url('contest_view', {uuid: project.uuid}) }}" style="color:#14b9d6">{{ project.title }}</a>
+    but you haven't submitted your entry yet.<br />
+
+There is <strong style="font-size: 15px;">${{ project.budgetFrom }} US</strong> up for grabs!</p>
+
+<p>Don't forget to submit your demo before it's too late! Only <strong style="font-size: 15px;">a few days left</strong> before the contest is closed.</p>
+
+<p>All you need to do is a record a short sample then upload to enter.</p>
+
+<div style="margin-top: 20px;">
+    <p>Hope to HEAR your entry soon :)</p>
+
+    <table cellspacing="0" cellpadding="0" border="0">
+        <tr>
+            <td width="80"><img src="{{ url('circle_avatar', {path: project.userInfo.path}) }}" width="65" style="display: inline-block;"></td>
+            <td style="vertical-align: middle;font-family: sans-serif; font-size: 14px;">{{ project.userInfo.displayName }}<br>
+                <strong>{% if project.userInfo.isVocalist and project.userInfo.isProducer %}Producer, Vocalist{% else %}{% if project.userInfo.isVocalist %}Vocalist{% endif %}{% if project.userInfo.isProducer %}Producer{% endif %}{% endif %}</strong><br>
+                from {% if project.userInfo.city %}{{ project.userInfo.city }}, {% endif %}{{ project.userInfo.country|countryName }}</td>
+        </tr>
+    </table>
+</div>
+
+

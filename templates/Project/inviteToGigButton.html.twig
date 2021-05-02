@@ -1,0 +1,29 @@
+{% if projects|length %}
+<a type="button" class="btn btn-sm btn-default invite roll-alt" data-id="{{ userInfo.id}}">
+    <i class="fa fa-chevron-down"></i>
+    INVITE
+    <div></div>
+</a>
+<div id="gigs-dropdown-{{ userInfo.id }}" class="hide">
+    <ul class="gigs-tip-list">
+        {% if projects|length %}
+            {% for project in projects %}
+                {% if project.project_invites|length or project.project_bids|length %}
+                    <li>
+                        <a href="{{ path('project_invite', {uuid: project.uuid, username: userInfo.username} ) }}">
+                            <i class="fa fa-check"></i>
+                            {{ project.title }}
+                        </a>
+                    </li>
+                {% else %}
+                    <li>
+                        <a href="{{ path('project_invite', {uuid: project.uuid, username: userInfo.username} ) }}">
+                            {{ project.title }}
+                        </a>
+                    </li>
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+    </ul>
+</div>
+{% endif %}

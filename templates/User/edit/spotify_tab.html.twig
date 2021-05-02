@@ -1,0 +1,53 @@
+<!-- Spotify TAB -->
+<div class="tab-pane fade in" id="spotify">
+    {% if app.user.isSubscribed %}
+        <div class="row form-group">
+            <div data-role="spotify-artist-container" class="col-sm-6">
+                <div class="">
+                    <label class="field-label required" for="user_spotify_id">
+                        Your artist id
+                    </label>
+                    <input type="text" placeholder="Example: spotify:artist:1vCWHaC5f2uS3yhpwWbIA6"  id="user_spotify_id" required="required" class="form-control input" value="{% if user.userSpotifyId|length > 0  %}spotify:artist:{{ user.userSpotifyId }}{% endif %}">
+                </div>
+
+                <div class="form-group">
+                    <button type="submit" {{ user.userSpotifyId|length > 0 ? '' : 'style="display:none;"' }} data-path="{{ path('user_edit_update_spotify_user_id') }}" data-value="" class="btn btn-sm btn-default" data-role="spotify.artist.remove">UNLINK SPOTIFY ACCOUNT</button>
+                    <button type="submit" data-path="{{ path('user_edit_update_spotify_user_id') }}" class="btn btn-sm btn-default">SAVE</button>
+                </div>
+            </div>
+
+            <div class="col-sm-6">
+                <div class="">
+                    <label class="field-label required" for="spotify_playlist">
+                        Playlist, Track or Album link
+                    </label>
+                    <input type="text" id="spotify_playlist" required="required" class="form-control input">
+                </div>
+
+                <div class="form-group">
+                    <button type="submit" data-id="{{ user.id }}" data-edit="1" data-path="{{ path('user_edit_add_spotify_playlist') }}" data-role="add-spotify-playlist" class="btn btn-sm btn-default">SAVE</button>
+                </div>
+            </div>
+        </div>
+
+        <hr/>
+        <div class="track-list-item col-md-12" data-role="spotify-playlist-container">
+            {% if userSpotifyPlaylists|length > 0 %}
+                {% include 'User:user_spotify_playlists.html.twig' with {edit: true} %}
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <button  data-edit="1" data-path="{{ path('user_edit_add_spotify_playlist') }}" data-id="{{ user.id }}" class="{% if user.UserSpotifyPlaylistsCount <= userSpotifyPlaylists|length %} hidden {% endif %} btn btn-sm btn-default" data-role="add-more-spotify-playlists">LOAD MORE</button>
+        </div>
+    {% else %}
+        <div class="row">
+            <div class="col-xs-12">
+                <p>To add your spotify follow button, your albums and playlists, you must upgrade to Vocalizr <b>Access Pass</b>.</p>
+                <p><a href="{{ path('membership') }}" class="btn btn-sm btn-primary">Upgrade to <b>Access Pass</b></a></p>
+            </div>
+        </div>
+    {% endif %}
+
+</div>
+<!-- END Spotify TAB -->

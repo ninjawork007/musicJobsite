@@ -1,0 +1,302 @@
+{% extends 'app.html.twig' %}
+
+{% block title %}Male Singers For Hire{% endblock %}
+
+{% block description %}Sometimes you just know that your track needs a male sound. With members from all corners of the globe, we have male singers for hire on every continent.{% endblock %}
+
+{% block javascript %}
+
+<script type="text/javascript" src="{{ asset('js/jquery.geocomplete.min.js') }}"></script>
+
+    <script>
+        $('#geo-location').geocomplete({
+            details: "#search-form",
+            types: ['(cities)'],
+            blur: true,
+            detailsAttribute: "data-geo"
+        });
+    </script>
+
+{% endblock %}
+
+{% block body %}
+<div class="row">
+    <div class="col-sm-8 page-content">
+        <h1>Male Singers For Hire</h1>
+
+        <p>Community, collaboration, convenience – that's what Vocalizr is all about. We know that, for producers, finding that amazing vocal to complete your track is crucial. Whether you're looking for a male or a <a href="{{ path('female_vocalists') }}">female vocalist</a>,
+            we are here to help – to connect you to the ideal person for the job.</p>
+
+        <p>Sometimes you just know that your track needs a male sound. With members from all corners of the globe, we have male singers for hire on every continent. You may want to meet face-to-face with your
+            vocalist, so from New York to Dublin, Melbourne to Paris, we can help you find someone in your back yard. Alternatively, you may be happy to work with a singer from any part of the world, as long as they nail the sound you're after!</p>
+
+        <p>So whether the sound you're looking for is deep and masculine, soulful and moving, or powerful and impactful we can help you find the right guy in your area or anywhere in the world.</p>
+
+        <p>Vocalizr is here to connect the right producers with the right singers for any project. We'll help you find male singers for hire that sound like Kanye, Drake, Mike Posner, Chris Martin, John Legend, Justin Timberlake, Michael
+            Buble or anyone else you can think of. The possibilities are endless.</p>
+
+        <p>Finding the best man for your track is easy because of our user-friendly filtering features, just like this 'sounds like' feature. Once you've narrowed down what you're after in a singer, it's easy to look through the
+            available artist. Just scroll through their profiles to get a sense of their style, experience, studio set up and location. All that's left to do is pick one and make musical magic!</p>
+
+        {% if pagination|length > 0 %}
+            {% for result in pagination %}
+                <div class="discover-item">
+                    {% if userConnects[result.id] is defined %}
+                        {% set userConnect = userConnects[result.id] %}
+                    {% else %}
+                        {% set userConnect = null %}
+                    {% endif %}
+                    <div class="media">
+                        <div class="avatar">
+                            <a href="{{ path('user_view', {username: result.username} ) }}">
+                            {% if result.path is empty %}
+                                <img src="{{ asset('images/default_avatar.svg') }}" width="58" height="58" class="img-circle">
+                            {% else %}
+                                <img src="{{ asset('uploads/avatar/medium/' ~ result.path ) }}" width="58" height="58" class="img-circle">
+                            {% endif %}
+
+                            </a>
+                        </div>
+                        <div class="connection-count">
+                            <i class="fa fa-users"></i> <a href="{{ path('user_view', {username: result.username}) }}#connections">{{ result.connectCount }} Connection{% if result.connectCount != 1 %}s{% endif %}</a>
+                        </div>
+                        <div class="connect-status">
+                        {{ controller('App:User:connectButton', {userInfo: result, userConnect: userConnect} ) }}
+                        </div>
+                    </div>
+
+                    <div class="info">
+                        <div class="name">
+                            <a href="{{ path('user_view', {username: result.username} ) }}" class="username">{{ result.displayName }}</a>
+                            {% if result.isSubscribed %}
+                            <span class="badge badge-pro">PRO</span>
+                            {% endif %}
+                            {% if result.isCertified %}
+                                <span class="vocalizr-certified" data-text="<div class='tip-header'>Vocalizr Certified Professional</div>A 'Certified Professional’ is deemed a professional by the experts at Vocalizr. The stamp is based on ability, experience, and skill level.<br><a href='{{ path('get_certified') }}' class='get-certified-now' style='color: #01c2e5;'>Get Certified Now</a>"></span>
+                            {% endif %}
+                        </div>
+                        <div class="location">
+                            {% if not result.city is empty %}
+                                {{ result.city }},
+                            {% endif %}
+                            {% if not result.country is empty %}
+                                {{ result.country|countryName }}
+                            {% endif %}
+                        </div>
+                        {% if result.userVoiceTags|length > 0 %}
+                            <div class="sounds-like">
+                                <ul>
+                                    <li class="title">Sounds like:</li>
+                                    {% set voiceTags = [] %}
+                                    {% for userVoiceTag in result.userVoiceTags %}
+                                        <li>{{ userVoiceTag.voiceTag.name }}</li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        {% endif %}
+                        <div class="studio-access">
+                            <ul>
+                                <li class="title">Studio Access:</li>
+                                <li>{% if result.studioAccess %}YES{% else %}NO{% endif %}</li>
+                            </ul>
+                        </div>
+                        {% if result.microphone %}
+                            <div class="microphone">
+                                <ul>
+                                    <li class="title">Microphone:</li>
+                                    <li>{{ result.microphone }}</li>
+                                </ul>
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    {% if userAudioList[result.id] is defined %}
+                        {% set userAudios = userAudioList[result.id] %}
+                        {% if not result.isSubscribed %}
+                            {% set userAudios = userAudios|slice(0, freePlan.userAudioLimit) %}
+                        {% endif %}
+                        <div class="user-audio-wrap">
+                        <div class="cycle-slideshow"
+                             data-cycle-fx="scrollHorz"
+                             data-cycle-timeout="0"
+                             data-cycle-prev="#audio-{{ result.id }}-prev"
+                             data-cycle-next="#audio-{{ result.id }}-next"
+                             data-cycle-slides="> div.user-list-track"
+                             data-cycle-log="false"
+                             >
+
+                            {% for userAudio in userAudios %}
+                            <div class="user-list-track">
+                                <div class="track-label">
+                                    <span>{{ userAudio.title }}</span>
+                                </div>
+                                <div class="playlist track-waveform small clearfix">
+                                    {% if userAudio.scId %}
+                                        <a href="{{ userAudio.scStreamUrl }}?client_id={{ soundcloud_client_id }}" type="audio/mp3" class="track" data-user="{{ userAudio.slug }}">PLAY</a>
+                                    {% else %}
+                                        <a href="{{ cdn_url }}{{ path('user_audio', {slug: userAudio.slug}) }}" type="audio/mp3" class="track"  data-user="{{ userAudio.slug }}">PLAY</a>
+                                    {% endif %}
+                                    <div class="waveform-wrap">
+                                        {% if userAudio.waveGenerated %}
+                                            <img src="{{ cdn_url }}/waveform/{{ userAudio.slug }}.png" class="waveform-main">
+                                            <img src="{{ cdn_url }}/waveform/{{ userAudio.slug }}-roll.png" class="roll hide">
+                                        {% else %}
+                                            <img src="{{ cdn_url }}/images/default-waveform.png" class="waveform-main">
+                                            <img src="{{ cdn_url }}/images/default-waveform-roll.png" class="roll hide">
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div id="{{ userAudio.slug }}-actions" class="user-audio-actions clearfix">
+                                    <div class="user-audio-like">
+                                        {% if app.user and app.user.id != result.id %}
+                                            <a href="{{ path('audio_like', {slug: userAudio.slug, status: 0} ) }}" class="btn btn-unlike btn-sm btn-default roll-alt{% if userAudio.id not in audioLikes %} hide{% endif %}">UNLIKE</a>
+                                            <a href="{{ path('audio_like', {slug: userAudio.slug, status: 1} ) }}" class="btn btn-like btn-sm btn-default{% if userAudio.id in audioLikes %} hide{% endif %}">LIKE</a>
+                                        {% endif %}
+                                        {#<i class="vocalizr-icon icon-light-thumb"></i>#}
+                                        <span class="like-text"><span class="members-like"><a class="allow-audio-play" data-toggle="vmodal" href="{{ path('audio_likes', {slug: userAudio.slug}) }}"><span class="total-likes">{{ userAudio.totalLikes }}</span> <span class="member-text">member{% if userAudio.totalLikes != 1 %}s{% endif %}</span></a></span> like this audio</span>
+                                    </div>
+                                    <div class="user-audio-plays" title="{{ userAudio.playCount }} play{% if userAudio.playCount != 1 %}s{% endif %}">
+                                        <i class="fa fa-play"></i> <span class="total-plays {{ userAudio.slug }}-count">{{ userAudio.playCount }}<span class="play-text"> audio play{% if userAudio.playCount != 1 %}s{% endif %}</span></span>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        {% if userAudios|length > 1 %}
+                        <div class="audio-nav">
+                            <a href=# id="audio-{{ result.id }}-prev" class="audio-prev btn btn-sm btn-default"><i class="fa fa-chevron-left"></i></a>
+                            <a href=# id="audio-{{ result.id }}-next" class="audio-next btn btn-sm btn-default"><i class="fa fa-chevron-right"></i></a>
+                        </div>
+                        {% endif %}
+                            </div>
+                    {% endif %}
+
+                    <div class="footer">
+                        <a href="{{ path('project_hire', {username: result.username}) }}" class="btn btn-sm btn-primary btn-hire-now"><span>HIRE NOW</span></a>
+                        <div class="pull-right">
+                            {% if result.ratedCount > 0 %}
+                                <a href="{{ path('user_view', {username: result.username}) }}#reviews" class="reviews">{{ result.ratedCount }} Review{% if result.ratedCount != 1 %}s{% endif %}</a>
+                            {% else %}
+                                <span class="reviews">0 Reviews</span>
+                            {% endif %}
+                            <div class="rating-text">{{ result.rating }} Star{% if result.rating > 1 %}s{% endif %}</div>
+                            <div class="star-rating star-disabled" data-score="{{ result.rating }}"></div>
+                        </div>
+                        <div class="clearfix"></div>
+                    </div>
+                </div>
+            {% endfor %}
+            {% endif %}
+
+        <p><a href="{{ path('vocalists') }}" class="btn btn-primary">Browse</a></p>
+</div>
+
+    <div class="col-sm-4">
+        <div class="discover-filter-panel panel panel-default">
+            <div class="panel-heading">
+                FIND SESSION SINGERS
+            </div>
+            <div class="panel-body padding">
+
+                <form id="search-form" action="{{ path('vocalists_filter', {filter: 'rated'} ) }}" method="get" style="display:inline" novalidate>
+                    <div class="row form-group">
+                        <div class="col-sm-12">
+                            <input type="checkbox" name="{{ form.audio.vars.full_name }}" value="1"{% if form.vars.value.audio %} checked{% endif %}> Must have audio
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row form-group">
+                        <div class="col-sm-12">
+                            <input type="checkbox" name="{{ form.certified.vars.full_name }}" value="1"{% if form.vars.value.certified %} checked{% endif %}> Must be a 'Certified Pro'
+                                                            <span class="vocalizr-certified" data-text="A 'Certified Pro' is deemed a professional by the experts at Vocalizr. The stamp is based on ability, experience, and skill level."></span>
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <div class="row form-group">
+                        <div class="col-sm-12">
+                            {{ form_row(form.sounds_like) }}
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <div class="row form-group">
+                        <div class="col-sm-12">
+                            {{ form_row(form.gender) }}
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <div class="row form-group">
+                        <div class="col-sm-12">
+                            <label>VOCALIST FEE</label>
+                            {{ form_widget(form.fees) }}
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <div class="row form-group">
+                        <div class="col-sm-12">
+                            <input type="checkbox" name="{{ form.studio_access.vars.full_name }}" value="1"{% if form.vars.value.studio_access %} checked{% endif %}> Must have studio access
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <div class="row form-group">
+                        <div class="col-sm-12">
+                            <label>LOCATION</label>
+                            <input id="geo-location" type="text" name="location" class="form-control" placeholder="Start typing the city..." value="{{ form.vars.value.city }}">
+                            {{ form_widget(form.city) }}
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <div class="row form-group">
+                        <div class="col-sm-12">
+                        {{ form_row(form.genre) }}
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <div class="row form-group">
+                        <div class="col-sm-12">
+                            {{ form_row(form.vocal_style) }}
+                        </div>
+                    </div>
+
+                    <div class="row form-group">
+                        <div class="col-sm-12">
+                            {{ form_row(form.vocal_characteristic) }}
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <div class="row form-group">
+                        <div class="col-sm-12">
+                            {{ form_row(form.username) }}
+                        </div>
+                    </div>
+
+                    <hr>
+                    {{ form_row(form._token) }}
+                    <input type="hidden" name="page" value="1" id="page">
+                    <input type="hidden" name="search" value="Search">
+
+                    <div class="form-buttons">
+                        <button type="submit" name="search" value="search" class="btn btn-sm btn-default">SEARCH</button>
+                        <a href="{{ path('vocalists') }}" class="btn btn-sm btn-default roll-alt">RESET</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+                    {% endblock %}

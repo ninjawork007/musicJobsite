@@ -1,0 +1,62 @@
+{% extends '::app.html.twig' %}
+
+{% block title %}Marketplace{% endblock %}
+
+{% block javascript %}
+
+            <script type="text/javascript" src="{{ asset('js/uploader/plupload.full.min.js') }}"></script>
+            <script type="text/javascript" src="{{ asset('js/audio-uploader.js') }}"></script>
+
+        <script>
+            AudioUploader.init('marketplace-upload-audio-container', 'upload-audio-btn');
+        </script>
+{% endblock %}
+
+{% block body %}
+<div class="row">
+    <div class="col-sm-8">
+        <h1>Marketplace Sale</h1>
+
+        {% include 'messages.html.twig' %}
+
+        <div class="row">
+            <div class="col-sm-12 manage-marketplace-item">
+
+                <ul class="nav nav-tabs">
+                    <li><a href="#detail" data-toggle="tab">Detail</a></li>
+                    <li><a href="#assets" data-toggle="tab" class="active">Assets</a></li>
+                </ul>
+
+                <div class="tab-content">
+                    <!-- ACTIVITY TAB -->
+                    <div id="detail" class="tab-pane tab-detail">
+                    </div>
+
+                    <div id="assets" class="tab-pane tab-assets">
+                        Do you have any assets to include for this marketplace item?
+                        <div class="radio">
+                            <label>
+                                <input type="radio" name="has_assets" value="0"> No - There are no assets for this item. Only the master audio.
+                            </label>
+                        </div>
+                        <div class="radio">
+                            <label>
+                                <input type="radio" name="has_assets" value="1"> Yes - I have assets.
+                            </label>
+                        </div>
+
+                        <div class="assets-upload-wrap">
+                            Upload your assets here.
+                        </div>
+
+                        <div class="form-group text-right">
+                            <input type="submit" class="btn btn-sm btn-default" value="Save">
+                            <input type="submit" class="btn btn-sm btn-default" value="Publish">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

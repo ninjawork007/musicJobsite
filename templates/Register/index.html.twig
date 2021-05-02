@@ -1,0 +1,64 @@
+{% extends 'Register/base/layout.html.twig' %}
+
+{% block title %}Register and connect with other great artists from around the globe{% endblock %}
+
+{% block description %}Register on Vocalizr and you will be moments away from connecting with other great artists from around the globe!{% endblock %}
+
+{% form_theme form 'Register/form_theme.thml.twig' %}
+{% block form_widget_simple %}
+
+    {% set type = type|default('text') %}
+    <input type="{{ type }}" {{ block('widget_attributes') }} {% if value is not empty %}value="{{ value }}" {% endif %}/>
+
+{% endblock form_widget_simple %}
+{% block wrap %}
+    <div class="centered-content">
+        <div class="left-offset"></div>
+        <div class="split-container signup-page">
+        <div class="left-block">
+            <div class="vertical-container" style="--vertical-gap: 0">
+                <div class="logo-header">
+                    <img src="{{ asset('images/logo_clean.png') }}" alt="vocalizr logo" width="122px" height="36px">
+                </div>
+                <div class="section-header">
+                    <h1>Create your free account</h1>
+                </div>
+                {% include 'messages_app.html.twig' %}
+                <div class="voc-panel">
+                    <div class="heading">
+                        You're one step away from doing great things!
+                    </div>
+                    <div class="content">
+                        <div class="main">
+                            <form id="user" method="post" name="user">
+                                {{ form_widget(form) }}
+                            </form>
+                        </div>
+                        <div class="content-footer">
+                            <button name="button" type="submit" class="btn btn-primary" form="user">Create your free account</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="right-block">
+            <div class="vertical-container text-description" style="max-width: 352px; margin-top: 236px">
+                <div class="hint font-grades">
+                    <div class="hint-title">Did you know?</div>
+                    <div class="hint-content">Vocalizr is the no. 1 site for connecting high quality Producers & Vocalists on the internet.</div>
+                </div>
+                <p class="font-grades">
+                    We are a two-way platform for Producers & Vocalists where you can buy, sell, hire, connect & create.
+                </p>
+                <p class="font-grades">
+                    With over $1m paid out to artists for work completed on the site to date!
+                </p>
+                <p class="font-grades">
+                    And our top performers have earnt over $60k each!
+                </p>
+            </div>
+        </div>
+    </div>
+        <div class="right-offset"></div>
+    </div>
+{% endblock %}

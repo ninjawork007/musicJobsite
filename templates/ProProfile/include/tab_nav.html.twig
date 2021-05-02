@@ -1,0 +1,25 @@
+<div class="nav nav-tabs" id="nav-tab" role="tablist">
+    <a class="nav-item nav-link active" id="nav-home-tab" data-toggle="tab" href="#nav-home" role="tab"
+       aria-controls="nav-home" aria-selected="true">Home</a>
+    <a class="nav-item nav-link" id="nav-tracks-tab" data-toggle="tab" href="#nav-tracks" role="tab"
+       aria-controls="nav-tracks" aria-selected="false">Tracks</a>
+    <a class="nav-item nav-link" id="nav-videos-tab" data-toggle="tab" href="#nav-videos" role="tab"
+       aria-controls="nav-videos" aria-selected="false">Videos</a>
+    <a class="nav-item nav-link" id="nav-reviews-tab" data-toggle="tab" href="#nav-reviews" role="tab"
+       aria-controls="nav-reviews" aria-selected="false">Reviews</a>
+    <a class="nav-item nav-item_end nav-link" id="nav-connections-tab" data-toggle="tab" href="#nav-connections"
+       role="tab" aria-controls="nav-connections" aria-selected="false">Connections</a>
+
+    <div class="button-send">
+        {% if user != app.user %}
+            <a href="{{ path('project_hire', {'username': user.username}) }}" class="button-send__hire">Hire Me</a>
+        {% else %}
+            <a href="{{ path('user_edit') }}" class="button-send__hire">Edit Profile</a>
+        {% endif %}
+        <a href="#" class="button-send__share">Share
+            <span class="img-wrp">
+                <img class="img-svg" src="{{ asset('/bundles/vocalizrapp/bootstrap4/img/logged/icon_plus.svg') }}" alt="+">
+            </span>
+        </a>
+    </div>
+</div>

@@ -1,0 +1,9 @@
+<div class="discover-item bid-{{ bid.uuid }} {{ proBid ? 'pro' : 'simple' }}{% if project.userInfo == app.user and bid.readAt is null %} unread{% endif %}{{ bid.highlightOption ? ' highlighted' }} highlight-option-{{ bid.highlightOption ? bid.highlightOption : 0 }}">
+    {% block bid_body %}
+    {% endblock %}
+    {% block bid_footer %}
+        <div class="footer">
+            {% include 'Project/view/bid_footer.html.twig' %}
+        </div>
+    {% endblock %}
+</div>

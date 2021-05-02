@@ -1,0 +1,20 @@
+{% extends 'include/panel/popup_panel.html.twig' %}
+{% block classes %}restriction-modal{% endblock %}
+{% block header_left %}PLEASE USE ORIGINAL PAYPAL{% endblock %}
+{% block header_right %}
+    <div style="width: 23px;height: 23px;border-radius: 50%;background-color: #f13434; margin-right: 5px">
+        <img style="margin-left: 5px;" src="{{ asset('images/icon/stop.svg') }}" alt="STOP!">
+    </div>
+{% endblock %}
+{% block note %}SECURITY NOTICE{% endblock %}
+{% block body %}
+    <div class="body" style="line-height: 17px; max-width: 260px;">
+        For your safety & security, we limit the use of PayPal email
+        on withdrawal to be the same PayPal email you used to deposit.
+    </div>
+{% endblock %}
+{% block footer %}
+    <a href="https://support.vocalizr.com" target="_blank" class="btn btn-primary" data-dismiss="modal">
+        SUPPORT
+    </a>
+{% endblock %}

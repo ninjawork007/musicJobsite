@@ -1,0 +1,45 @@
+.connect-row {
+    background: #3a4b55;
+    color: #8698a3;
+    padding: 20px 22px;
+    margin-bottom: 2px;
+    position: relative;
+}
+.connect-row .avatar {
+    display: table-cell;
+}
+.connect-row .user-info {
+    display: table-cell;
+}
+.connect-row .user-list-item {
+    margin-bottom: 0;
+}
+.remove-connection, .ignore-connection {
+    color: #8698a3;
+    font-size: 11px;
+    margin-left: 4px;
+}
+.remove-connection:hover, .ignore-connection:hover {
+    color: #fff;
+    text-decoration: none;
+}
+.connect-actions {
+    position: absolute;
+    right: 20px;
+    top: 20px;
+}
+.user-list-type {
+    color: #fff;
+}
+
+.connect-search {
+    float: right;
+    margin-top: -10px;
+}
+.top-connect-row {
+    font-size: 12px;
+    margin-bottom:-1px;
+}
+.connection-list-pending {
+    margin-bottom: 20px;
+}

@@ -1,0 +1,211 @@
+{% extends 'app.html.twig' %}
+
+{% block title %}Hire {{ hireUser.displayName }} for your next project{% endblock %}
+
+{% block javascript %}
+
+            <script type="text/javascript" src="{{ asset('js/uploader/plupload.full.min.js') }}"></script>
+            <script type="text/javascript" src="{{ asset('js/audio-uploader.js') }}"></script>
+
+        <script>
+            AudioUploader.init('gig-upload-audio-container', 'upload-audio-btn');
+
+            var budget = $("#project_budget").val();
+            $('#' + budget).show();
+
+            var lookingFor = $("#form_looking_for").val();
+            if (lookingFor == "producer") {
+                $('.budget-desc').hide();
+            }
+        </script>
+
+{% endblock %}
+
+{% block stylesheet %}
+    <style>
+
+    </style>
+{% endblock %}
+
+{% block body %}
+<div id="create-gig-container" class="row">
+    <div class="col-sm-8">
+        <h1>Hire Now</h1>
+
+        {% include 'messages_app.html.twig' %}
+            <p>If you would like to have multiple members put forward ideas or bids for your project then <a href="{{ path('project_start') }}" data-toggle="vmodal">Create a Gig or Content</a>.</p>
+        <div class="light-content">
+
+
+                <form id="create-gig-form" action="{{ path('project_hire', {username: hireUser.username}) }}" method="post" novalidate>
+                {{ form_row(form._token) }}
+
+                {{ form_errors(form) }}
+
+                <div class="row form-group">
+                    <div class="col-sm-12">
+                        {{ form_row(form.title) }}
+                    </div>
+                </div>
+
+                {% if hireUser.isVocalist and hireUser.isProducer %}
+                <hr>
+
+                <div class="row form-group">
+                    <div class="col-sm-5">
+                        {{ form_row(form.looking_for) }}
+                    </div>
+                </div>
+                {% endif %}
+
+                <hr>
+
+                <div class="row form-group">
+                    <div class="col-sm-12">
+                        <label for="gig-upload-audio-container">UPLOAD AUDIO *:</label> <span class="help-note">MP3,AAC,M4A FILES ONLY</span>
+                    </div>
+                </div>
+
+
+                <div id="gig-upload-audio-container" data-url="{{ path('upload_audio') }}" data-extensions="{{ upload_audio_allowed_extended }}" data-form="create-gig-form">
+                    <div class="upload-mobile-msg">Open site on desktop to upload audio</div>
+                    <div class="upload-audio-actions">
+                        <a id="upload-audio-btn" href="" class="btn btn-sm btn-default">SELECT FILE</a><br>
+                    </div>
+                    <div class="upload-audio-error hide"></div>
+                    <div class="upload-audio-bar-container">
+                        Uploading...
+                        <div class="progress"><div class="upload-audio-bar progress-bar" style="width: 0;"></div></div>
+                    </div>
+                    {% if app.request.get('audio_file') %}
+                    <input class="hidden-audio" type="hidden" name="audio_file" value="{{ app.request.get('audio_file') }}" />
+                    <input class="hidden-audio" type="hidden" name="audio_title" value="{{ app.request.get('audio_title') }}" />
+                    <div class="audio-upload-preview" style="display:block">
+                        <hr>
+                        <div class="track-list-item">
+                            <div class="ui360 track-play inline"><a href="/upload/audio/tmp?f={{ app.request.get('audio_file') }}"><span>PLAY</span></a></div>
+                            <span class="track-title">{{ app.request.get('audio_title') }}</span>
+                            <span class="track-length"></span>
+                            <span class="badge badge-featured">PREVIEW</span>
+                            <a href="" class="btn btn-sm btn-default remove">CANCEL</a>
+                        </div>
+                    </div>
+                    {% else %}
+                    <div class="audio-upload-preview">
+                        <hr>
+                        <div class="track-list-item">
+                            <div class="track-play inline"><a href=""><span>PLAY</span></a></div>
+                            <span class="track-title"></span>
+                            <span class="track-length"></span>
+                            <span class="badge badge-featured">PREVIEW</span>
+                            <a href="" class="btn btn-sm btn-default remove">CANCEL</a>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <div class="row form-group">
+                    <div class="col-sm-4 budget-wrap">
+                        {{ form_row(form.budget) }}
+                    </div>
+                    <div class="col-sm-8 budget-desc">
+                        <label>BUDGET DESCRIPTION</label>
+                        <div id="20-100">Just a few words sung by a vocalist (under 10 words), or some ad-libs.</div>
+                        <div id="100-300">For a couple of sentences sung that have already been written, or for some singing and songwriting needed.</div>
+                        <div id="300-500">For a couple of sentences sung that have already been written, or for some singing and songwriting needed.</div>
+                        <div id="500-800">Seeking a professional topline vocal, lyrics/song written, and performed.</div>
+                        <div id="800-1000">Seeking a professional topline vocal, lyrics/song written, and performed.</div>
+                        <div id="1000-0">For high quality, experienced and professional vocalists with a track record in songwriting, toplines, and session singing.</div>
+                    </div>
+                </div>
+
+
+                <hr>
+
+                <div class="row form-group">
+                    <div class="col-sm-5 form-royalty-type-group">
+                        <div class="">
+                            <label class="field-label required" for="s2id_autogen3">Royalties<i class="fa fa-question-circle"></i>{{ form_errors(form.royalty) }}</label><br>
+                            {{ form_widget(form.royalty_mechanical) }}
+                            {{ form_widget(form.royalty_performance) }}
+                        </div>
+                    </div>
+                    <div class="col-sm-5 form-royalty-group">
+                        {{ form_widget(form.royalty, {'attr': {'data-slider-value': form.vars.value.royalty}}) }}
+                        <div class="royalty-num"><span>{{ form.vars.value.royalty }}</span>%</div>
+                    </div>
+                    <div id="royalty-tip">
+                        Set the percentage of royalties you agree to share with the employee
+                    </div>
+                </div>
+
+                <hr>
+
+                <div class="row form-group">
+                    <div class="col-sm-12">
+                        {{ form_row(form.genres) }}
+                    </div>
+                </div>
+
+                <hr>
+
+                <div class="row form-group">
+                    <div class="col-sm-12">
+                        <label class="field-label required" for="project_description">
+                            Describe work in detail with custom message * {{ form_errors(form.description) }}
+                        </label>
+                        {{ form_widget(form.description) }}
+                    </div>
+                </div>
+
+                <hr>
+
+                <div class="form-group text-right">
+                    <button name="next" class="btn btn-sm btn-default" value="NEXT">SEND REQUEST</button>
+                </div>
+
+            </form>
+        </div>
+    </div>
+    <div class="col-sm-4">
+
+        <div class="banner-wrapper is-mrec">
+            <!-- /353537636/Vocalizr_MREC1_300x250 -->
+            <div id='div-gpt-ad-1494936661372-5' style='height:250px; width:300px;'>
+                <script>
+                    googletag.cmd.push(function() { googletag.display('div-gpt-ad-1494936661372-5'); });
+                </script>
+            </div>
+        </div>
+
+        <div class="panel panel-default">
+            {% embed '@VocalizrApp/Project/include/hireNowWidget.html.twig' %}
+                {% block panel_title %}HIRE NOW REQUEST FOR{% endblock %}
+            {% endembed %}
+        </div>
+        <div class="panel panel-default welcome-panel">
+            <div class="panel-heading">
+                HOW DOES IT WORK
+            </div>
+            <div class="panel-body">
+                <p>Create a private gig just for the member you want to hire. They'll submit their bid on how much they are willing to do the work for, then get to work in the studio!</p>
+            </div>
+        </div>
+        <div class="panel panel-default welcome-panel">
+            <div class="panel-heading">
+                NO RISK!
+            </div>
+            <div class="panel-body">
+                <p>Pay the vocalist/producer when you're <strong>100%</strong> satisfied. If the vocal/audio isn't what you're after, hit the "Negotiate" button (in the studio under payment), and explain why and your money will be refunded within a week.</p>
+                <p><a href="{{ path('website_faq') }}#disputes" target="_blank">Read our FAQ</a></p>
+            </div>
+        </div>
+        <div class="protected-vocalizr">
+            <i class="fa fa-shield"></i>
+            Protected by the Vocalizr Agreement<br>
+            <a href="{{ path('project_agreement', {uuid: '1', type: 'gig'}) }}">Download Template</a>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,27 @@
+<form action="{{ path('user_edit_save_video') }}" method="post">
+    <div class="row form-group">
+        <div class="col-sm-12">
+            <div class="">
+                <label class="field-label required" for="video_link">
+                    Video link (Youtube or Vimeo)
+                </label>
+                <input type="text" id="video_link" name="video_link" required="required" class="form-control input">
+                {% if return_tab is defined and return_tab %}
+                    <input id="return_tab" name="return_tab" type="hidden" value="{{ return_tab }}">
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <div class="form-group">
+        <button type="submit" class="btn btn-sm btn-default">ADD VIDEO</button>
+    </div>
+</form>
+<hr>
+<div data-role="video-container" id ="video-container" class="col-md-12 track-list-item">
+    {% include 'User:edit_videos.html.twig' %}
+</div>
+{% if userVideosCount > userVideos|length %}
+    <div class="form-group">
+        <button data-limit="10" data-edit="1" data-path="{{ path('user_get_user_video') }}" data-id="{{ user.id }}" class="btn btn-default" data-role="add-more-videos">Load more</button>
+    </div>
+{% endif %}

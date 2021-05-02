@@ -1,0 +1,266 @@
+{% extends 'app.html.twig' %}
+
+{% block title %}Gig Center{% endblock %}
+
+{% block body %}
+    <div class="col-sm-12">
+        <h1>Gig Center</h1>
+
+        <div class="row">
+            <div class="col-sm-12">
+                <ul class="nav nav-tabs gig-center-tabs">
+                    <li class="active"><a href="{{ path("project_center") }}">Gigs / Contests {% if app.user.unreadProjectActivity %}<span class="gig-center-status new">NEW</span>{% endif %}</a></li>
+                    <li><a href="{{ path("project_center_bids") }}">Bids / Entries</a></li>
+                    <li><a href="{{ path("project_center_invites") }}">Invitations {% if app.user.unseenProjectInvitation %}<span class="gig-center-status new">NEW</span>{% endif %}</a></li>
+                </ul>
+
+                <div class="tab-content tab-gig-center">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="gig-center-list-header">
+                                <h2>ACTIVE GIGS</h2>
+                            </div>
+                            <div class="gig-center-list {% if activeProjects|length == 0 %}empty{% endif %}">
+                                {% if activeProjects|length > 0 %}
+                                    {% for project in activeProjects %}
+                                        {% set projectUnread = null %}
+                                        {% if project.userInfo == app.user %}
+                                            {% if project.lastActivity|length > 0 and project.employerReadAt is null %}
+                                                {% set projectUnread = 'unread' %}
+                                            {% endif %}
+                                        {% else %}
+                                            {% if project.lastActivity|length > 0 and project.employeeReadAt is null %}
+                                                {% set projectUnread = 'unread' %}
+                                            {% endif %}
+                                        {% endif %}
+                                        <div class="gig-center-item active-gig {{ projectUnread }}">
+                                            <div class="gig-info">
+                                                <a href="{{ path('project_studio', {'uuid' : project.uuid}) }}" class="gig-title">{{ project.title }}</a>
+                                                {% if project.dueDate is not null %}
+                                                    {% if project.dueDate|timeLeftSingle %}
+                                                        <div class="deadline">DUE IN {{ project.dueDate|timeLeftSingle.num }} {{ project.dueDate|timeLeftSingle.text|upper }}</div>
+                                                    {% else %}
+                                                        <div class="deadline soon">OVERDUE</div>
+                                                    {% endif %}
+                                                {% endif %}
+                                                <br>
+                                                <div class="items">
+                                                    <div class="item">
+                                                        Last Activity:
+                                                        {% if projectUnread == 'unread' %}
+                                                            {% if project.lastActivity.name == 'awarded' %}
+                                                                {% set badgeColor = 'green' %}
+                                                            {% elseif project.lastActivity.name == 'new message' %}
+                                                                {% set badgeColor = 'blue' %}
+                                                            {% elseif project.lastActivity.name == 'new lyrics' %}
+                                                                {% set badgeColor = 'purple' %}
+                                                            {% elseif project.lastActivity.name == 'new audio' %}
+                                                                {% set badgeColor = 'blue' %}
+                                                            {% elseif project.lastActivity.name == 'assets requested' %}
+                                                                {% set badgeColor = 'yellow' %}
+                                                            {% elseif project.lastActivity.name == 'new asset' %}
+                                                                {% set badgeColor = 'orange' %}
+                                                            {% else %}
+                                                                {% set badgeColor = 'light-grey' %}
+                                                            {% endif %}
+                                                        {% else %}
+                                                            {% set badgeColor = 'light-grey' %}
+                                                        {% endif %}
+                                                        <span class="badge badge-{{ badgeColor }}">{{ project.lastActivity.name|upper }}</span>
+                                                        <span class="highlight"> {{ project.lastActivity.date.date|timeAgoString }} ago</span>
+                                                    </div>
+                                                    {% if project.projectType == 'paid' %}
+                                                        <div class="item">Amount: <span class="highlight">${{ (project.projectBid.amount / 100)|number_format(2) }} USD</span></div>
+                                                    {% else %}
+                                                        <div class="item">
+                                                        {% if project.sfs %}
+                                                            <span class="badge badge-sfs">SEARCH FOR A SINGER</span>
+                                                        {% else %}
+                                                            <span class="badge badge-orange">CONTEST</span>
+                                                        {% endif %}
+                                                        </div>
+                                                    {% endif %}
+                                                    {% if project.royalty %}
+                                                        <div class="item">
+                                                            Royalty: <span class="highlight">{{ project.royalty }}%</span>
+                                                            {% if project.royaltyMechanical %}
+                                                                <span class="icon-royalty-mechanical" data-text="Mechanical royalties offered">M</span>
+                                                            {% endif %}
+                                                            {% if project.royaltyPerformance %}
+                                                                <span class="icon-royalty-performance" data-text="Performance royalties offered">P</span>
+                                                            {% endif %}
+                                                        </div>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+
+                                            <div class="gig-info">
+                                                <div class="item user-info">
+                                                    {% if project.userInfo == app.user %}
+                                                        <div>
+                                                            {{ project.lookingFor|capitalize }}: <a href="{{ path('user_view', {username: project.projectBid.userInfo.username}) }}">{{ project.projectBid.userInfo.displayName }}</a>
+                                                        </div>
+                                                        <div class="avatar">
+                                                            {% if project.projectBid.userInfo.path is null %}
+                                                                <img src="{{ asset('images/default_avatar.svg') }}" width="42" height="42" class="img-circle">
+                                                            {% else %}
+                                                                <img src="{{ asset('uploads/avatar/small/' ~ project.projectBid.userInfo.path ) }}" width="42" height="42" class="img-circle  avatar-sm-{{ project.projectBid.userInfo.username }}">
+                                                            {% endif %}
+                                                        </div>
+                                                    {% else %}
+                                                        <div>
+                                                            Employer: <a href="{{ path('user_view', { username: project.userInfo.username }) }}">{{ project.userInfo.displayName }}</a>
+                                                        </div>
+                                                        <div class="avatar">
+                                                            {% if project.userInfo.path is null %}
+                                                                <img src="{{ asset('images/default_avatar.svg') }}" width="42" height="42" class="img-circle">
+                                                            {% else %}
+                                                                <img src="{{ asset('uploads/avatar/small/' ~ project.userInfo.path ) }}" width="42" height="42" class="img-circle  avatar-sm-{{ project.userInfo.username }}">
+                                                            {% endif %}
+                                                        </div>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                {% else %}
+                                    You do not have any active gigs
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="gig-center-list-header">
+                                <h2>PUBLISHED</h2>
+                            </div>
+                            <div class="gig-center-list {% if publishedProjects|length == 0 %}empty{% endif %}">
+                                {% if publishedProjects|length > 0 %}
+                                    {% for project in publishedProjects %}
+                                        {% set bidStats = publishedBidsStats[project.id] is defined ? publishedBidsStats[project.id] : {
+                                            totalBids: 0,
+                                            avgBidAmount: 0,
+                                            highest: 0,
+                                        } %}
+                                        <div class="gig-center-item published-gig{% if project.lastActivity|length > 0 and project.employerReadAt is null %} unread{% endif %}">
+                                            <div class="gig-info{% if project.lastActivity|length > 0 and project.employerReadAt is null and project.lastActivity.name == 'new bid' %} clearfix{% endif %}">
+                                                {% if project.projectType == "contest" %}
+                                                    <a href="{{ path('contest_view', {'uuid' : project.uuid}) }}" class="gig-title">{{ project.title }}</a>
+                                                {% else %}
+                                                    <a href="{{ path('project_view', {'uuid' : project.uuid}) }}" class="gig-title">{{ project.title }}</a>
+                                                {% endif %}
+                                                {% if project.lastActivity|length > 0 and project.employerReadAt is null and project.lastActivity.name == 'new bid' %}
+                                                    <span class="label label-jade action pull-right new-bids">{{ project.lastActivity.count }} NEW {% if project.projectType == "contest" %}ENTRY{% else %}BID{% endif %}{% if project.lastActivity.count > 1 %}S{% endif %}</span>
+                                                {% endif %}<br>
+                                                {% if project.bidsDue|timeLeftSingle %}
+                                                    <div class="deadline bids">{% if project.projectType == "contest" %}CONTEST{% else %}BIDDING{% endif %} ENDS IN {{ project.bidsDue|timeLeftSingle.num }} {{ project.bidsDue|timeLeftSingle.text|upper }}</div><br>
+                                                {% else %}
+                                                    <div class="deadline bids soon">{% if project.projectType == "contest" %}CONTEST{% else %}BIDDING{% endif %} HAS ENDED</div><br>   
+                                                {% endif %}
+                                                <div class="item">{% if project.projectType == "contest" %}Entries{% else %}Bids{% endif %}: <span class="highlight">{{ bidStats.totalBids }}</span></div>
+                                                {% if project.projectType == 'paid' %}
+                                                <div class="item">Avg Bid: <span class="highlight">${{ bidStats.avgBidAmount / 100 | number_format(2) }}</span></div>
+                                                {% endif %}
+                                                {% if bidStats.totalBids > 0 %}<div class="item">Last {% if project.projectType == "contest" %}entry{% else %}bid{% endif %}: {% if project.lastActivity is defined %}<span class="highlight">{{ project.lastActivity.date.date|timeAgoString }} ago</span>{% endif %}</div>{% endif %}
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                {% else %}
+                                    You do not have any published gigs
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="gig-center-list-header">
+                                <h2>DRAFT</h2>
+                            </div>
+                            <div class="gig-center-list {% if unpublishedProjects|length == 0 %}empty{% endif %}">
+                                {% if unpublishedProjects|length > 0 %}
+                                    {% for project in unpublishedProjects %}
+                                        <div class="gig-center-item published-gig">
+                                            <div class="gig-info">
+                                                {% if project.projectType == "contest" %}
+                                                    <a href="{{ path('contest_new', {'uuid' : project.uuid}) }}" class="gig-title">{{ project.title }}</a><br>
+                                                {% else %}
+                                                    <a href="{{ path('project_new', {'uuid' : project.uuid}) }}" class="gig-title">{{ project.title }}</a><br>
+                                                {% endif %}
+                                                <div class="item">Created: <span class="highlight">{{ project.createdAt|timeAgoString }} ago</span></div>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                {% else %}
+                                    You do not have any drafts
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="gig-center-list-header">
+                                <h2>COMPLETED GIGS</h2>
+                            </div>
+                            <div class="gig-center-list {% if completedProjects|length == 0 %}empty{% endif %}">
+                                {% if completedProjects|length > 0 %}
+                                    {% for project in completedProjects %}
+                                        <div class="gig-center-item completed-gig">
+                                            <div class="gig-info">
+                                                <a href="{{ path('project_studio', {'uuid' : project.uuid}) }}" class="gig-title">{{ project.title }}</a><br>
+                                                <div class="items">
+                                                    <div class="item">Completed: <span class="highlight">{{ project.completedAt|date('M d, Y') }}</span></div>
+                                                    {% if project.royalty > 0 %}
+                                                    <div class="item">
+                                                        Royalty: <span class="highlight">{{ project.royalty }}%</span>
+                                                        {% if project.royaltyMechanical %}
+                                                            <span class="icon-royalty-mechanical" data-text="Mechanical royalties offered">M</span>
+                                                        {% endif %}
+                                                        {% if project.royaltyPerformance %}
+                                                            <span class="icon-royalty-performance" data-text="Performance royalties offered">P</span>
+                                                        {% endif %}
+                                                    </div>
+                                                    {% endif %}
+
+                                                    {% if project.projectType == 'paid' %}
+                                                        <div class="item">
+                                                            Amount: <span class="highlight">${{ (project.projectEscrow.amount / 100)|number_format(2) }} USD</span>
+                                                        </div>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+
+                                            <div class="gig-info pull-right">
+                                                <div class="item user-info">
+                                                    {% if project.userInfo == app.user %}
+                                                        {{ project.lookingFor|capitalize }}: <a href="{{ path('user_view', {username: project.projectBid.userInfo.username}) }}">{{ project.projectBid.userInfo.displayName }}</a>
+                                                        <div class="avatar">
+                                                            {% if project.projectBid.userInfo.path is null %}
+                                                                <img src="{{ asset('images/default_avatar.svg') }}" width="42" height="42" class="img-circle">
+                                                            {% else %}
+                                                                <img src="{{ asset('uploads/avatar/small/' ~ project.projectBid.userInfo.path ) }}" width="42" height="42" class="img-circle  avatar-sm-{{ project.projectBid.userInfo.username }}">
+                                                            {% endif %}
+                                                        </div>
+                                                    {% else %}
+                                                        Employer: <a href="{{ path('user_view', {username: project.userInfo.username}) }}">{{ project.userInfo.displayName }}</a>
+                                                        <div class="avatar">
+                                                            {% if project.userInfo.path is null %}
+                                                                <img src="{{ asset('images/default_avatar.svg') }}" width="42" height="42" class="img-circle">
+                                                            {% else %}
+                                                                <img src="{{ asset('uploads/avatar/small/' ~ project.userInfo.path ) }}" width="42" height="42" class="img-circle  avatar-sm-{{ project.userInfo.username }}">
+                                                            {% endif %}
+                                                        </div>
+                                                    {% endif %}
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                {% else %}
+                                    You do not have any completed gigs
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>	
+{% endblock %}

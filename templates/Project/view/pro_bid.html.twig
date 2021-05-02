@@ -1,0 +1,76 @@
+{% extends 'Project/view/base_bid.html.twig' %}
+{% block bid_body %}
+    <div class="item-body">
+        <div class="item-top">
+            <div class="media">
+                <div class="avatar no-shadow">
+                    <a
+                        class="img-circle"
+                        href="{{ path('user_view', {username: bid.userInfo.username} ) }}"
+                        style="background-image: url('{{ bid.userInfo.path is empty ? asset('images/default_avatar.svg') :  asset('uploads/avatar/medium/' ~ bid.userInfo.path )}}')"
+                    ></a>
+                    {% if bid.userInfo.isSubscribed %}
+                        <img alt="pro" src="{{ asset('images/vocalizr_pro_stamp.svg') }}" class="svg-stamp-pro" data-text="<div class='tip-header'>This Vocalizr user is an <a href='{{ path('membership') }}' class=stamp-pro-hover>Access Pass</a> member</div>">
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="info-columns">
+            <div class="info">
+                <div class="name">
+                    <a href="{{ path('user_view', {username: bid.userInfo.username} ) }}" class="username">{{ bid.userInfo.displayName }}</a>
+                    {% if bid.userInfo.isCertified %}
+                        <img class="vocalizr-certified-stamp-clipped" src="{{
+                            asset(bid.highlightOption == 1 ? 'images/certified_pro_stamp_clipped_black.svg' : 'images/certified_pro_stamp_clipped.svg')
+                        }}" alt="" data-text="<div class='tip-header'>Vocalizr Certified Professional</div>A 'Certified Professional’ is deemed a professional by the experts at Vocalizr. The stamp is based on ability, experience, and skill level.<br><a href='{{ path('get_certified') }}' class='get-certified-now' style='color: #01c2e5;'>Get Certified Now</a>">
+                    {% endif %}
+                </div>
+                <div class="location">
+                    {% if not bid.userInfo.city is empty %}
+                        {{ bid.userInfo.city }},
+                    {% endif %}
+                    {% if not bid.userInfo.country is empty %}
+                        {{ bid.userInfo.country|countryName }}
+                    {% endif %}
+                </div>
+                {% if bid.userInfo.userVoiceTags|length > 0 %}
+                    <div class="sounds-like">
+                        <ul>
+                            <li class="title">Sounds Like:</li>
+                            {% set voiceTags = [] %}
+                            {% for userVoiceTag in bid.userInfo.userVoiceTags %}
+                                <li>{{ userVoiceTag.voiceTag.name }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% endif %}
+                <div class="studio-access">
+                    <ul>
+                        <li class="title">Studio Access:</li>
+                        <li>{% if bid.userInfo.studioAccess %}YES{% else %}NO{% endif %}</li>
+                    </ul>
+                </div>
+                {% if bid.userInfo.microphone %}
+                    <div class="microphone">
+                        <ul>
+                            <li class="title">Microphone:</li>
+                            <li>{{ bid.userInfo.microphone }}</li>
+                        </ul>
+                    </div>
+                {% endif %}
+            </div>
+            <div class="bid-amount">
+                {% if project.projectType == 'paid' %}
+                    <div class="currency-symbol">$</div>
+                    <div class="value">
+                        {{ (bid.amount / 100)|number_format }}
+                        <div class="currency">USD</div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        </div>
+
+        {% include 'Project/view/bid_audio.html.twig' %}
+    </div>
+{% endblock %}

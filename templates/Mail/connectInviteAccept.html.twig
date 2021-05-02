@@ -1,0 +1,25 @@
+Hey <strong>{{ result.from.usernameOrFirstName }}</strong>,
+
+<p style="font-size: 15px;"><strong>{{ result.to.displayName }} accepted your connect invitation</strong></p>
+
+<div style="margin-top: 10px;">
+    <table cellspacing="0" cellpadding="0" border="0">
+        <tr>
+            <td width="80"><img src="{{ url('circle_avatar', {path: result.to.path}) }}" width="65" style="display: inline-block;"></td>
+            <td style="vertical-align: middle;font-family: sans-serif; font-size: 14px;">{{ result.to.displayName }}<br>
+                <strong>{% if result.to.isVocalist and result.to.isProducer %}Producer, Vocalist{% else %}{% if result.to.isVocalist %}Vocalist{% endif %}{% if result.to.isProducer %}Producer{% endif %}{% endif %}</strong><br>
+                from {% if result.to.city %}{{ result.to.city }}, {% endif %}{{ result.to.country|countryName }}</td>
+        </tr>
+    </table>
+</div>
+
+<p>
+    <br>
+    <a href="{{ url('user_view', { username: result.to.username }) }}" style="color: #fff; font-size: 14px; background-color: #14b9d6; text-decoration: none; border-radius: 3px; padding: 8px 16px; border-width: 1px; border-style: solid; border-color: #1aadc7;">Send Message</a>
+    <a href="{{ url('user_view', { username: result.to.username }) }}" style="color: #000; margin-left: 5px; font-size: 14px; background-color: #fff; text-decoration: none; border-radius: 3px; padding: 8px 16px; border-width: 1px; border-style: solid; border-color: #7e7e7e;">View Profile</a>
+</p>
+
+        
+<div style="height: 10px;"></div>
+
+<p>To stop getting these notifications please go to <a href="{{ url('user_edit') }}#pref" style="color: #14b9d6;">Preferences</a> under "Edit Profile".</p>

@@ -1,0 +1,15 @@
+Hey <strong>{{ userInfo.usernameOrFirstName }}</strong>!
+
+<p>We wanted to touch base with you as you have just hit the half-way mark of your free one month trial of Vocalizr Pro and wanted to see how it is all going. </p>
+
+<p>Vocalizr Pro is getting more and more popular with our customers who really want to leverage the best out of their Vocalizr membership and best of all - save $$! Don't forget as a Vocalizr Pro, you will get first access to all of the exciting upcoming releases. </p>
+
+<p>If you aren't keen on Vocalizr Pro, you can cancel your membership but make sure you do it prior to the first payment date, otherwise you will be charged.</p>
+
+<p>As a Vocalizr VIP, please do let us know your thoughts on Vocalizr Pro and if you have any questions or suggestions for us.</p>
+
+{% if userInfo.isVocalist %}
+<p>In the meantime, check out the latest gigs posted at <a href="http://www.vocalizr.com/gig-hunter">vocalizr.com</a>.</p>
+{% else %}
+<p>In the meantime, check out our newest vocalists at <a href="http://www.vocalizr.com/vocalists">vocalizr.com</a>.</p>
+{% endif %}

@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <script>
+          (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+          (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+          m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+          })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+          ga('create', 'UA-35668621-1', 'vocalizr.com');
+          ga('send', 'pageview');
+          ga('require', 'GTM-N7W3CW2');
+          
+        {% if app.user %}
+           ga('set', 'dimension1', 'Member' );
+           {% if app.user.isSubscribed %}
+           ga('set', 'dimension2', 'PRO' );
+           {% else %}
+           ga('set', 'dimension2', 'FREE' );
+           {% endif %}
+
+            {% if app.user.isProducer and app.user.isVocalist %}
+                ga('set', 'dimension3', 'Vocalist & Producer' );
+           {% elseif app.user.isProducer %}
+              ga('set', 'dimension3', 'Producer' ); 
+           {% elseif app.user.isProducer %}
+              ga('set', 'dimension3', 'Vocalist' ); 
+           {% endif %}
+        {% else %}
+           ga('set', 'dimension1', 'Visitor' );
+        {% endif %}
+   
+        </script>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="icon" type="image/png" href="vfavicon.png">
+        <meta property="og:image" content="http://{{ domain_base }}/images/logo_share.png"/>
+        <meta property="og:image:secure_url" content="https://www.mynextimage.com/thumbs/smythe/logoshare.jpg" />
+        
+        <title>
+            {% set _titleBlock = block('title') %}
+            {% if not _titleBlock is empty %}
+                {{ _titleBlock }} | Vocalizr
+            {% else %}
+                Connecting Vocalists and Producers | Vocalizr
+            {% endif %}
+        </title>
+        
+{#        {% set _descBlock = block('description') %}#}
+{#        {% if not _descBlock is empty %}#}
+{#            <meta name="description" content="{{ _descBlock }}">#}
+{#        {% else %}#}
+{#            <meta name="description" content="{{ _titleBlock }}. Connect with vocalists and producers from around the world.">#}
+{#        {% endif %}#}
+
+{#        {% stylesheets#}
+{#            '@VocalizrAppBundle/Resources/public/css/bootstrap.min.css'#}
+{#            '@VocalizrAppBundle/Resources/public/css/font-awesome.min.css'#}
+{#            '@VocalizrAppBundle/Resources/public/css/website.css'#}
+{#        %}#}
+{#            <link rel="stylesheet" href="{{ asset_url }}" />#}
+{#        {% endstylesheets %}#}
+
+        <link rel="stylesheet" href="{{ asset('css/bootstrap.min.css') }}" />
+        <link rel="stylesheet" href="{{ asset('css/font-awesome.min.css') }}" />
+        <link rel="stylesheet" href="{{ asset('css/website.css') }}" />
+        {% block stylesheet %}{% endblock %}
+
+    </head>
+
+    <body>
+        {% block body %}{% endblock %}
+        <!-- special IE-only canvas fix -->
+        <!--[if IE]><script type="text/javascript" src="{{ asset('js/excanvas.js') }}"></script><![endif]-->
+        
+       {# {% javascripts
+            '@VocalizrAppBundle/Resources/public/js/jquery.js'
+            '@VocalizrAppBundle/Resources/public/js/bootstrap.min.js'
+            '@VocalizrAppBundle/Resources/public/js/website.js'
+         %}
+            <script type="text/javascript" src="{{ asset_url }}"></script>
+        {% endjavascripts %} #}
+
+        <script type="text/javascript" src="{{ asset('js/jquery.js') }}"></script>
+        <script type="text/javascript" src="{{ asset('js/bootstrap.js') }}"></script>
+        <script type="text/javascript" src="{{ asset('js/website.js') }}"></script>
+
+        {% block javascript %}{% endblock %}
+        
+    </body>
+</html>

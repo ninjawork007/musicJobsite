@@ -1,0 +1,42 @@
+<!-- ACTIVITY TAB -->
+<div id="activity" class="tab-pane tab-gig-studio active">
+    <div class="new-comment-wrap">
+        <div class="new-comment row">
+            <form id="comment-form" class="form-inline" action="{{ path('project_studio', {uuid: project.uuid}) }}" method="post">
+                <input id="lastFeedId" type="hidden" name="lastFeedId" value="{{ projectFeed|length > 0 ? projectFeed|first.id : 0 }}">
+                <div class="form-group col-sm-12">
+                    <label class="sr-only">Enter your comment</label>
+                    <textarea name="comment" value="" class="form-control" placeholder="Enter your comment..." rows="10" style="max-width: 100%"></textarea>
+                </div>
+                <div class="form-buttons col-sm-12">
+                    <a href="" id="comment-upload-audio-btn" class="btn btn-sm btn-default"><i class="fa fa-music"></i> ATTACH AUDIO</a>
+                    <button type="submit" class="btn btn-sm btn-default">SUBMIT</button>
+                </div>
+                <div id="comment-filelist"></div>
+            </form>
+            <div id="comment-upload-audio-container" class="col-sm-12" data-url="{{ path('upload_audio') }}" data-extensions="mp3,wav,aif,m4a,aiff" data-form="comment-form" data-studio-message-board="yes">
+                <div class="upload-audio-error hide"></div>
+                <div class="upload-audio-bar-container">
+                    Uploading...
+                    <div class="progress"><div class="upload-audio-bar progress-bar" style="width: 0;"></div></div>
+                </div>
+                <div class="audio-upload-preview">
+                    <div class="track-list-item">
+                        <div class="track-play inline"><a href=""><span>PLAY</span></a></div>
+                        <span class="track-title"></span>
+                        <span class="track-length"></span>
+                        <span class="badge badge-featured">PREVIEW</span>
+                        <a href="" class="btn btn-sm btn-default remove">CANCEL</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="feed" class="comment-history">
+        {{ include(
+            'ProjectStudio:feedItems.html.twig',
+            { 'projectFeed': projectFeed, project: project, displayNames: displayNames }
+        ) }}
+    </div>
+</div>
+<!-- //ACTIVITY TAB -->

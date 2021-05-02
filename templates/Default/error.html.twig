@@ -1,0 +1,30 @@
+<div class="modal-dialog">
+    <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <h4 class="modal-title">
+                {% block title %}
+                    {% if title is defined %}
+                        {{ title }}
+                    {% else %}
+                        Sorry...
+                    {% endif %}
+                {% endblock %}
+            </h4>
+        </div>
+        <div class="modal-body padding">
+            {% block message %}
+                <p class="modal-error">{{ error }}</p>
+                {% if violations is defined %}
+                    <ul>
+                        {% for violation in violations %}
+                            <li>
+                                {{ violation }}
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            {% endblock %}
+        </div>
+    </div><!-- /.modal-content -->
+</div><!-- /.modal-dialog -->

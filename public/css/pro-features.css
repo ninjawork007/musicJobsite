@@ -1,0 +1,76 @@
+.voc-panel.pro ul {
+    padding-left: 30px;
+}
+.voc-panel.pro ul.pro-features {
+    padding-left: 50px;
+    margin-top: 10px;
+}
+.voc-panel.plan li {
+    font-weight: 500;
+    position: relative;
+    display: flex;
+    align-items: center;
+    font-size: 13px;
+    line-height: 16px;
+    margin-bottom: 10px;
+}
+.voc-panel.plan li.multiple {
+
+}
+.voc-panel.pro li:before {
+    width: 14px;
+    height: 15px;
+    content: "";
+    display: block;
+    position: absolute;
+    left: -30px;
+    top: 1px;
+    background-image: url("/images/icon/pro-plan-check-mark.svg");
+    background-size: contain;
+    background-repeat: no-repeat;
+}
+.payment-page .voc-panel.pro li:before {
+    left: -25px;
+}
+.voc-panel.free {
+    width: 280px;
+    background: #213038;
+}
+.voc-panel.plan .title {
+    font-size: 18px;
+    padding-bottom: 24px;
+}
+.payment-page .voc-panel.plan .title {
+    padding-top: 10px;
+    padding-bottom: 14px;
+}
+.voc-panel.plan li b {
+    font-weight: 900;
+}
+.voc-panel ul {
+    list-style: none;
+    padding-left: 22px;
+}
+
+.badge-new {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #4FACFE;
+    box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
+    border-radius: 2px;
+    font-size: 10px;
+    padding-left: 4px;
+    padding-right: 4px;
+    height: 16px;
+    margin-right: 5px;
+    font-weight: 900;
+    margin-top: -3px;
+}
+
+@media (max-width: 486px) {
+    .voc-panel.pro ul.pro-features {
+        padding-left: 30px;
+        margin-top: 5px;
+    }
+}

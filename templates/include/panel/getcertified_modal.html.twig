@@ -1,0 +1,14 @@
+{% extends 'include/panel/popup_panel.html.twig' %}
+{% block header_left %}Get Certified, Win More Jobs{% endblock %}
+{% block header_right %}<img src="{{ asset('/images/certified_pro_stamp_clipped.svg') }}" alt="PRO">{% endblock %}
+{% block note %}{% endblock %}
+{% block body %}
+    <p class="body" style="line-height: 1.29; padding-right: 10px">
+        Become a Certified Professional on Vocalizr and win more jobs easily. Make sure your profile is fully filled out, with at least 3 tracks and a full bio, and you are sure you have satisfied the <a href="https://vocalizrhelp.zendesk.com/hc/en-us/articles/115008361208">requirements</a>.
+    </p>
+{% endblock %}
+{% block footer %}
+    <a href="{{ path('get_certified') }}" class="btn btn-primary" id="identity-intents">
+        Get certified now
+    </a>
+{% endblock %}

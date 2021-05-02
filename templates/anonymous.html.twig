@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <script>
+          (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+          (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+          m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+          })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+          ga('create', 'UA-35668621-1', 'vocalizr.com');
+          ga('send', 'pageview');
+          ga('require', 'GTM-N7W3CW2');
+
+        </script>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="description" content="">
+        <link rel="shortcut icon" href="favicon.png">
+
+        {% block meta_tags %}
+        {% endblock %}
+
+        <title>
+            {% block title_html_tag %}
+                {% set _titleBlock = block('title') %}
+                {% if not _titleBlock is empty %}
+                    {{ _titleBlock }}, Vocalizr
+                {% else %}
+                    Vocalizr
+                {% endif %}
+            {% endblock %}
+        </title>
+
+        <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.11.2/css/all.css" integrity="sha384-zrnmn8R8KkWl12rAZFt4yKjxplaDaT7/EUkKm7AovijfrQItFWR7O/JJn4DAa/gx" crossorigin="anonymous">
+
+        <link rel="stylesheet" href="{{ asset('css/bootstrap.min.css') }}" />
+        <link rel="stylesheet" href="{{ asset('css/datepicker.css') }}" />
+        <link rel="stylesheet" href="{{ asset('css/bootstrap-theme.css') }}" />
+        <link rel="stylesheet" href="{{ asset('css/select2.css') }}" />
+        <link rel="stylesheet" href="{{ asset('css/font-awesome.min.css') }}" />
+        <link rel="stylesheet" href="{{ asset('css/tipped.css') }}" />
+        <link rel="stylesheet" href="{{ asset('css/360player.css') }}" />
+        <link rel="stylesheet" href="{{ asset('css/screen.css') }}" />
+
+        {% block stylesheet %}{% endblock %}
+        
+        <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDbl6GtPS57CxLtjiaH0IhEEEUsfUz63yc&libraries=places"></script>
+
+        <script async='async' src='https://www.googletagservices.com/tag/js/gpt.js'></script>
+        <script>
+          var googletag = googletag || {};
+          googletag.cmd = googletag.cmd || [];
+        </script>
+        
+        <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+        <!--[if lt IE 9]>
+          <script src="{{ asset('js/html5shiv.js') }}"></script>
+          <script src="{{ asset('js/respond.min.js') }}"></script>
+        <![endif]-->
+    </head>
+
+    <body {% block body_attr %}{% endblock %}>
+        {% block wrap %}
+            <div id="wrap">
+                <div class="header">
+                    <a href="/" class="centered-brand"><img src="{{ asset('images/logo_clean.png') }}" alt="vocalizr logo" width="146px" height="44px"></a>
+                </div>
+                <!-- Begin page content -->
+                {% block body %}{% endblock %}
+            </div>
+        {% endblock %}
+
+
+        <script type="text/javascript" src="{{ asset('js/jquery.js') }}"></script>
+        <script type="text/javascript" src="{{ asset('js/bootstrap.min.js') }}"></script>
+        <script type="text/javascript" src="{{ asset('js/soundmanager2.js') }}"></script>
+        <script type="text/javascript" src="{{ asset('js/tipped.js') }}"></script>
+        <script type="text/javascript" src="{{ asset('js/select2.min.js') }}"></script>
+        <script type="text/javascript" src="{{ asset('js/bootstrap-datepicker.js') }}"></script>
+        <script type="text/javascript" src="{{ asset('js/bootstrap-slider.js') }}"></script>
+        <script type="text/javascript" src="{{ asset('js/jquery.raty.min.js') }}"></script>
+        <script type="text/javascript" src="{{ asset('js/jquery.icheck.min.js') }}"></script>
+        <script type="text/javascript" src="{{ asset('js/berniecode-animator.js') }}"></script>
+        <script type="text/javascript" src="{{ asset('js/app.js') }}"></script>
+
+        {% block javascript %}{% endblock %}
+        {% block body_end_trackers %}{% endblock %}
+    </body>
+</html>
