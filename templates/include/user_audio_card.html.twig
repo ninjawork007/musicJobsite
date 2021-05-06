@@ -1,6 +1,7 @@
 {#@var UserInfo userInfo#}
 {#@var UserAudio[] userAudios#}
-<div class="discover-item {{ block('item_classes') }}">
+{% set block_item_classes = block('item_classes') is defined ? block('item_classes') : '' %}
+<div class="discover-item {{ block_item_classes }}">
     <div class="item-body{% if no_controls is not defined or not no_controls %} has-controls{% endif %}">
         <div class="item-top">
             <div class="media">

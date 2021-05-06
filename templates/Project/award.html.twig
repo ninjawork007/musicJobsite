@@ -200,9 +200,9 @@
                                 {% if app.user.wallet >= bid.amount|addPricePercent(subscriptionPlan.project_percent_added) or project.projectType == 'collaboration'  %}
                                     <div class="gig-agreement">
                                         {% if project.projectType == 'collaboration' %}
-                                            {{ controller('App:Project:collabAgreement', {'project': project}) }}
+                                            {{ render(controller('App\\Controller\\ProjectController:collabAgreementAction', {'project': project})) }}
                                         {% else %}
-                                            {{ controller('App:Project:agreement', {'project': project, projectBid: bid}) }}
+                                            {{ render(controller('App\\Controller\\ProjectController:agreementAction', {'project': project, projectBid: bid})) }}
                                         {% endif %}
                                     </div>
 
@@ -290,7 +290,7 @@
        </div>
 
        {% block hint_modal %}
-           {{ controller('App:Hint:show') }}
+           {{ render(controller('App\\Controller\\HintController:showAction')) }}
        {% endblock %}
 
 {% endblock %}

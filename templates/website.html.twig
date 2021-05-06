@@ -38,8 +38,8 @@
         <meta property="og:image:secure_url" content="https://www.mynextimage.com/thumbs/smythe/logoshare.jpg" />
         
         <title>
-            {% set _titleBlock = block('title') %}
-            {% if not _titleBlock is empty %}
+            {% if block("title") is defined %}
+                {% set _titleBlock = block('title') %}
                 {{ _titleBlock }} | Vocalizr
             {% else %}
                 Connecting Vocalists and Producers | Vocalizr

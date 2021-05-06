@@ -128,7 +128,7 @@
                         </script>
                     </div>
                 </div>
-                {{ controller('App:Vmag:_sidebar', {article: article} ) }}
+                {{ render(controller('App\\Controller\\VmagController:_sidebarAction', {article: article} )) }}
             </div>
         </div>
     </div>

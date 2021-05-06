@@ -429,7 +429,7 @@ Highcharts.setOptions(Highcharts.theme);
                             {% set userConnect = fromUser.userConnectInvitesSent|first %}
                         {% endif %}
 
-                        {{ controller('App:User:connectButton', {userInfo: fromUser, userConnect: userConnect, type: 'large'} ) }}
+                        {{ render(controller('App\\Controller\\UserController:connectButtonAction', {userInfo: fromUser, userConnect: userConnect, type: 'large'} )) }}
                     {% endif %}
                 </div>
                 {% endfor %}

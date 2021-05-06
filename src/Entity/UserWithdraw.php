@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\Mapping\ClassMetadata;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\UserWithdrawRepository")
@@ -103,6 +104,14 @@ class UserWithdraw
      * @ORM\Column(type="integer", length=11)
      */
     protected $fee = 0;
+
+    public static function loadValidatorMetadata(ClassMetadata $metadata)
+    {
+        $metadata->addPropertyConstraint('paypal_email', new Assert\Email(array(
+            'message' => 'The email "{{ value }}" is not a valid email.',
+            'checkMX' => true,
+        )));
+    }
 
     /**
      * @ORM\PrePersist

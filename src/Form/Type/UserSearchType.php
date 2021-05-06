@@ -52,6 +52,7 @@ class UserSearchType extends AbstractType
             },
         ]);
         $builder->add('studio_access', CheckboxType::class);
+
         $builder->add('audio', CheckboxType::class);
 
         $certifiedAttrs = [];

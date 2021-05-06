@@ -10,6 +10,7 @@
         "ext-ctype": "*",
         "ext-iconv": "*",
         "ext-imagick": "*",
+        "ext-mongo": "*",
         "ext-json": "^8.0",
         "ext-zip": "*",
         "claviska/simpleimage": "^3.6",

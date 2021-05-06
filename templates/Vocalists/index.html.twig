@@ -129,6 +129,7 @@
         <div class="row form-group">
             <div class="col-sm-12">
                 {{ form_widget(form.audio) }}
+                {{ form_label(form.audio) }}
 {#                <input type="checkbox" name="{{ form.audio.vars.full_name }}" value="1"{% if form.vars.value.audio %} checked{% endif %}> Must have audio#}
             </div>
         </div>
@@ -137,6 +138,7 @@
             <div class="row form-group">
                 <div class="col-sm-12">
                     {{ form_widget(form.certified) }}
+                    {{ form_label(form.certified) }}
 {#                    <input type="checkbox" name="{{ form.certified.vars.full_name }}" value="1"{% if form.vars.value.certified %} checked{% endif %}> Must be a 'Certified Pro'#}
                     <span class="vocalizr-certified" data-text="A 'Certified Professional’ is deemed a professional by the experts at Vocalizr. The stamp is based on ability, experience, and skill level.<br><a href='{{ path('get_certified') }}' class='get-certified-now' style='color: #01c2e5;'>Get Certified Now</a>"></span>
                 </div>
@@ -164,7 +166,7 @@
         <div class="row form-group">
             <div class="col-sm-12">
                 <label>VOCALIST FEE</label>
-{#                {{ form_widget(form.fees) }}#}
+                {{ form_widget(form.fees) }}
             </div>
         </div>
 
@@ -173,6 +175,7 @@
         <div class="row form-group">
             <div class="col-sm-12">
                 {{ form_widget(form.studio_access) }}
+                {{ form_label(form.studio_access) }}
 {#                <input type="checkbox" name="{{ form.studio_access.vars.full_name }}" value="1"{% if form.vars.value.studio_access %} checked{% endif %}> Must have studio access#}
             </div>
         </div>

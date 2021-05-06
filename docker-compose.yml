@@ -14,8 +14,8 @@ services:
       PHP_DATE_TIMEZONE: UTC
     volumes:
       - .:/srv/vocalizr
-      - ./docker/php/config:/srv/vocalizr/app/config
-      - php-sessions:/srv/vocalizr/app/sessions
+      - ./docker/php/config:/srv/vocalizr/config
+      - php-sessions:/srv/vocalizr/var/sessions
     ports:
       - '9998:80'
     container_name: "php_vocalizr"

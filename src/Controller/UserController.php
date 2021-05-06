@@ -10,6 +10,7 @@ use App\Entity\UserVocalCharacteristic;
 use App\Entity\UserVocalStyle;
 use App\Entity\VocalCharacteristic;
 use App\Entity\VocalStyle;
+use App\Form\Type\UserSearchType;
 use App\Model\UserAudioModel;
 use App\Model\UserInfoLanguageModel;
 use App\Model\UserInfoModel;
@@ -17,6 +18,7 @@ use App\Service\HelperService;
 use App\Service\MembershipSourceHelper;
 use App\Service\StatisticsService;
 use App\Service\StripeConfigurationProvider;
+use Symfony\Component\Asset\Packages;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
@@ -1115,14 +1117,19 @@ class UserController extends AbstractController
      * @Route("/user/favorites", name="user_favorites")
      * @Route("/user/favorites/del/{username}", name="user_favorite_del", defaults={"action" = "delete"})
      * @Template()
+     *
+     * @param Request $request
+     * @param ContainerInterface $container
+     *
+     * @return array
      */
-    public function favoritesAction(Request $request)
+    public function favoritesAction(Request $request, ContainerInterface $container)
     {
         $em           = $this->getDoctrine()->getManager();
         $user         = $this->getUser();
         $userInfoRepo = $em->getRepository('App:UserInfo');
 
-        $form = $this->createForm(new \App\Form\Type\UserSearchType());
+        $form = $this->createForm(UserSearchType::class);
 
         // If user has requested to delete their favorite
         if ($request->get('action') && $username = $request->get('username')) {
@@ -1214,10 +1221,10 @@ class UserController extends AbstractController
             $q->setParameters($params);
         }
 
-        $paginator  = $this->get('knp_paginator');
+        $paginator  = $container->get('knp_paginator');
         $pagination = $paginator->paginate(
             $q->getQuery(),
-            $this->get('request')->query->get('page', 1)/*page number*/,
+            $request->query->get('page', 1)/*page number*/,
             10// limit per page
         );
 
@@ -1272,7 +1279,7 @@ class UserController extends AbstractController
 
         // Get all audio ids on this screen
         $audioLikes = [];
-        $dm         = $this->get('doctrine_mongodb')->getManager();
+        $dm         = $container->get('doctrine_mongodb')->getManager();
 
         if ($audioIds) {
             $qb = $dm->createQueryBuilder('App:AudioLike')
@@ -1289,14 +1296,14 @@ class UserController extends AbstractController
             'static_key' => 'FREE',
         ]);
 
-        return [
+        return $this->render('User/favorites.html.twig', [
             'pagination'    => $pagination,
             'form'          => $form->createView(),
             'audioLikes'    => $audioLikes,
             'userConnects'  => $userConnects,
             'freePlan'      => $freePlan,
             'userAudioList' => $userAudios,
-        ];
+        ]);
     }
 
     /**
@@ -1552,7 +1559,7 @@ class UserController extends AbstractController
      * @param Request $request
      * @param HelperService $helper
      */
-    public function audioAction(Request $request, HelperService $helper)
+    public function audioAction(Request $request, HelperService $helper, Packages $assetsManager)
     {
         $em      = $this->getDoctrine()->getManager();
         $user    = $this->getUser();
@@ -1571,7 +1578,7 @@ class UserController extends AbstractController
         }
 
         // redirect to actual file
-        header('Location: /a/user/' . $userAudio->getUserInfo()->getId() . '/' . $userAudio->getPath());
+        header('Location: '. $assetsManager->getUrl('uploads/audio/user/' . $userAudio->getUserInfo()->getId() . '/' . $userAudio->getPath()) );
         exit;
 
         $helper->streamAudio($file);
@@ -2058,11 +2065,11 @@ class UserController extends AbstractController
             $className = 'btn-lg';
         }
 
-        return [
+        return  $this->render('User/connectButton.html.twig', [
             'className'   => $className,
             'user'        => $userInfo,
             'userConnect' => $userConnect,
-        ];
+        ]);
     }
 
     /**

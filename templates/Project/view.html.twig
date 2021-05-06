@@ -27,13 +27,12 @@
         var stripe = Stripe("{{ stripe_checkout_key }}");
     </script>
 
-    {% if app.session.hasFlash('just_published') %}
+    {% if app.session.flashbag.has('just_published') %}
         <script>
             var html = $('#whatsnext').html();
             $('#vocalizrModal').html(html);
             $('#vocalizrModal').modal('show');
         </script>
-        {{ app.session.removeFlash('just_published') }}
     {% endif %}
 
     {% if userBid and not userBid.highlightOption and not project.awardedAt and project.bidsDue > date() %}
@@ -274,13 +273,12 @@
         </div>
 
         <div class="col-sm-4">
-
             <div class="row">
                 <div id="project-status-widget" class="col-sm-12">
-                    {{ controller('App:Project:projectStatusWidget', {
+                    {{ render(controller('App\\Controller\\ProjectController:projectStatusWidgetAction', {
                         'uuid': project.uuid,
                         'fromPage' : 'view'
-                    }) }}
+                    })) }}
                 </div>
 
                 {% if not project.isOwner(app.user) and app.user is not null and not app.user.isSubscribed and not projectAwarded %}
@@ -357,6 +355,6 @@
         </div>
     </div>
 
-    {{ controller('App:Hint:show') }}
+    {{ render(controller('App\\Controller\\HintController:showAction')) }}
 
 {% endblock %}

@@ -17,6 +17,10 @@ class VocalistsController extends AbstractUserSearchController
      * @Route("/vocalists/gig/{project}", defaults={"project" = ""}, name="vocalists_gig")
      * @Route("/vocalists/sort/{filter}", defaults={"filter" = ""}, name="vocalists_filter")
      * @Template()
+     * @param Request               $request
+     * @param ContainerInterface    $container
+     *
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
      */
     public function indexAction(Request $request, ContainerInterface $container)
     {
@@ -329,7 +333,7 @@ class VocalistsController extends AbstractUserSearchController
 
                 // Get user favourites
                 $favs       = [];
-                $conn       = $this->get('database_connection');
+                $conn       = $container->get('database_connection');
                 $favResults = $conn->fetchAll('SELECT favorite_user_info_id FROM user_favorite WHERE user_info_id = ' . $user->getId() . ' AND favorite_user_info_id IN (' . implode(',', $userIds) . ')');
 
                 if ($favResults) {
@@ -367,6 +371,9 @@ class VocalistsController extends AbstractUserSearchController
     /**
      * @Route("/male-vocalists", name="male_vocalists")
      * @Template()
+     * @param Request               $request
+     * @param ContainerInterface    $container
+     * @return array
      */
     public function maleVocalistsAction(Request $request, ContainerInterface $container)
     {
@@ -502,7 +509,7 @@ class VocalistsController extends AbstractUserSearchController
 
                 // Get user favourites
                 $favs       = [];
-                $conn       = $this->get('database_connection');
+                $conn       = $container->get('database_connection');
                 $favResults = $conn->fetchAll('SELECT favorite_user_info_id FROM user_favorite WHERE user_info_id = ' . $user->getId() . ' AND favorite_user_info_id IN (' . implode(',', $userIds) . ')');
 
                 if ($favResults) {
@@ -531,6 +538,9 @@ class VocalistsController extends AbstractUserSearchController
     /**
      * @Route("/female-vocalists", name="female_vocalists")
      * @Template()
+     * @param Request               $request
+     * @param ContainerInterface    $container
+     * @return array
      */
     public function femaleVocalistsAction(Request $request, ContainerInterface $container)
     {
@@ -660,7 +670,7 @@ class VocalistsController extends AbstractUserSearchController
 
                 // Get user favourites
                 $favs       = [];
-                $conn       = $this->get('database_connection');
+                $conn       = $container->get('database_connection');
                 $favResults = $conn->fetchAll('SELECT favorite_user_info_id FROM user_favorite WHERE user_info_id = ' . $user->getId() . ' AND favorite_user_info_id IN (' . implode(',', $userIds) . ')');
 
                 if ($favResults) {
@@ -690,7 +700,9 @@ class VocalistsController extends AbstractUserSearchController
      * @Route("/session-singers-hire", name="sessionSingersHire")
      * @Template()
      *
-     * @param \Symfony\Component\HttpFoundation\Request $request
+     * @param Request               $request
+     * @param ContainerInterface    $container
+     * @return array
      */
     public function sessionSingersHireAction(Request $request, ContainerInterface $container)
     {
@@ -816,7 +828,7 @@ class VocalistsController extends AbstractUserSearchController
 
                 // Get user favourites
                 $favs       = [];
-                $conn       = $this->get('database_connection');
+                $conn       = $container->get('database_connection');
                 $favResults = $conn->fetchAll('SELECT favorite_user_info_id FROM user_favorite WHERE user_info_id = ' . $user->getId() . ' AND favorite_user_info_id IN (' . implode(',', $userIds) . ')');
 
                 if ($favResults) {
@@ -846,7 +858,9 @@ class VocalistsController extends AbstractUserSearchController
      * @Route("/female-singers-hire", name="femaleSingersHire")
      * @Template()
      *
-     * @param \Symfony\Component\HttpFoundation\Request $request
+     * @param Request            $request
+     * @param ContainerInterface $container
+     * @return array
      */
     public function femaleSingersHireAction(Request $request, ContainerInterface $container)
     {
@@ -976,7 +990,7 @@ class VocalistsController extends AbstractUserSearchController
 
                 // Get user favourites
                 $favs       = [];
-                $conn       = $this->get('database_connection');
+                $conn       = $container->get('database_connection');
                 $favResults = $conn->fetchAll('SELECT favorite_user_info_id FROM user_favorite WHERE user_info_id = ' . $user->getId() . ' AND favorite_user_info_id IN (' . implode(',', $userIds) . ')');
 
                 if ($favResults) {
@@ -1006,7 +1020,10 @@ class VocalistsController extends AbstractUserSearchController
      * @Route("/male-singers-hire", name="maleSingersHire")
      * @Template()
      *
-     * @param \Symfony\Component\HttpFoundation\Request $request
+     * @param Request            $request
+     * @param ContainerInterface $container
+     *
+     * @return array
      */
     public function maleSingersHireAction(Request $request, ContainerInterface $container)
     {
@@ -1136,7 +1153,7 @@ class VocalistsController extends AbstractUserSearchController
 
                 // Get user favourites
                 $favs       = [];
-                $conn       = $this->get('database_connection');
+                $conn       = $container->get('database_connection');
                 $favResults = $conn->fetchAll('SELECT favorite_user_info_id FROM user_favorite WHERE user_info_id = ' . $user->getId() . ' AND favorite_user_info_id IN (' . implode(',', $userIds) . ')');
 
                 if ($favResults) {

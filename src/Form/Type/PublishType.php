@@ -3,6 +3,8 @@
 namespace App\Form\Type;
 
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\FormBuilderInterface;
 
 use App\Entity\Project;
@@ -13,7 +15,7 @@ class PublishType extends AbstractType
     {
         $builder
             ->add('to_favorites')
-            ->add('publish_type', 'choice', [
+            ->add('publish_type', ChoiceType::class, [
                 'label'   => 'PUBLISHING OPTIONS',
                 'choices' => [
                     Project::PUBLISH_PUBLIC  => ucwords(Project::PUBLISH_PUBLIC),
@@ -29,7 +31,7 @@ class PublishType extends AbstractType
             ->add('lock_to_cert', null, [
             'property_path' => 'pro_required'
             ])
-            ->add('upgrade_to_pro', 'hidden', [
+            ->add('upgrade_to_pro', HiddenType::class, [
                 'mapped' => false,
                 'attr'   => [
                     'class'  => 'js-upgrade-to-pro-check',

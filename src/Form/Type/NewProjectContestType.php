@@ -149,7 +149,7 @@ class NewProjectContestType extends AbstractType
                     ],
                 ])
                 ->add('lyrics', null, [
-                    'label' => 'Lyrics <span class="help-note">ENTER SOMETHING YOU MIGHT WANT TO HEAR</span>',
+                    'label' => 'Lyrics',
                     'attr'  => [
                         'class' => 'form-control',
                         'rows'  => '4',

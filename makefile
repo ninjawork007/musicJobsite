@@ -4,7 +4,7 @@ APP_ENV=demo
 PROJECT_NAME=$(APP_ENV)_vocalizr
 APP_CONTAINER=php_1
 APP_SHELL=docker exec -it $(PROJECT_NAME)_$(APP_CONTAINER) /bin/sh -c
-APP_BIN=app/console
+APP_BIN=bin/console
 
 #update: force-pull
 #	make post-update
@@ -35,13 +35,17 @@ up :
 down :
 	docker-compose down
 
+#composer install
+start :
+	docker exec -it php_vocalizr composer install
+
 #Start symfony server
 start :
-	docker exec -it php_vocalizr php app/console server:run 0.0.0.0:8000
+	docker exec -it php_vocalizr php bin/console server:run 0.0.0.0:8000
 
 #Clear symfony cache
 cache :
-	docker exec -it php_vocalizr php app/console cache:clear
+	docker exec -it php_vocalizr php bin/console cache:clear
 
 #Show all running containers ips
 ips :

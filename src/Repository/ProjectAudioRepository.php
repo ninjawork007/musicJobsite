@@ -24,6 +24,7 @@ class ProjectAudioRepository extends EntityRepository
         try {
             $em = $this->_em;
 
+            dd(__DIR__);
             // Check if file exists
             $uploadDir = __DIR__ . '/../../../../tmp';
             if (!file_exists($uploadDir . DIRECTORY_SEPARATOR . $fileName)) {

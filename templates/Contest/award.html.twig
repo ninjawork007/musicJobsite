@@ -209,7 +209,7 @@
        </div>
 
        {% block hint_modal %}
-           {{ controller('App:Hint:show') }}
+           {{ render(controller('App\\Controller\\HintController:showAction')) }}
        {% endblock %}
 
 

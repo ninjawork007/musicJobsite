@@ -3,6 +3,8 @@
 namespace App\Controller;
 
 //use JMS\SecurityExtraBundle\Annotation\Secure;
+use App\Service\PayPalService;
+use App\Service\ProjectPriceCalculator;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Component\Routing\Annotation\Route;
@@ -45,7 +47,9 @@ class ContestController extends AbstractController
         $file       = $this->getParameter('kernel.project_dir') . '/config/packages/project.yml';
         $projectYml = $ymlParser->parse(file_get_contents($file));
 
-        $form = $this->createForm(new ProjectSearchType($projectYml['budget']));
+        $form = $this->createForm(ProjectSearchType::class, [
+            'budget' => $projectYml['budget']
+        ]);
         $page = $request->get('page', 1);
         $user = $this->getUser();
 
@@ -245,11 +249,11 @@ class ContestController extends AbstractController
          * Handle owner saving functions
          * Before saving, check permission
          */
-        if ($request->isMethod('POST')) {
-            $updatedAt = $project->getUpdatedAt();
+        $form->handleRequest($request);
+        $locationForm->handleRequest($request);
 
-            $form->handleRequest($request);
-            $locationForm->handleRequest($request);
+        if ($form->isSubmitted()) {
+            $updatedAt = $project->getUpdatedAt();
 
             if ($request->get('location')) {
                 if (!$locationForm->get('city')->getData()) {
@@ -274,8 +278,20 @@ class ContestController extends AbstractController
                 $form->get('budget_from')->addError(new FormError('Min amount is $150'));
             }
 
+            $locationFormIsValid = true;
+            $locationFormData    = $locationForm->getData();
+            foreach ( $locationFormData as $field => $value) {
+                $value = '';
+                if(!$value) {
+                    $locationFormIsValid = false;
+                }
+            }
+
             // If contest and no audio, throw error
-            if ($form->isValid() && $locationForm->isValid() && ($project->getId() || $request->get('audio_file'))) {
+//            if ($form->isValid() && $locationFormIsValid && ($project->getId() || $request->get('audio_file'))) {
+//            mayur_dev_testing
+            /* uncomment above line, remove below line and value array */
+            if ($form->isValid() && !$locationFormIsValid && ($project->getId() || $request->get('audio_file'))) {
                 $project->setUserInfo($user);
 
                 $project->setProjectType(Project::PROJECT_TYPE_CONTEST);
@@ -289,11 +305,19 @@ class ContestController extends AbstractController
 
                 if ($request->get('location')) {
                     $values = $locationForm->getData();
-                    $project->setCity($values['city']);
-                    $project->setState($values['state']);
-                    $project->setCountry($values['country']);
-                    $project->setLocationLat($values['location_lat']);
-                    $project->setLocationLng($values['location_lng']);
+
+                // need to remove below and update above condition // mayur_dev_testing
+                $values['city'] ='ahmedabad';
+                $values['state'] ='gujrat';
+                $values['country'] ='india';
+                $values['location_lat'] ='23.0225';
+                $values['location_lng'] ='72.5714';
+
+                $project->setCity($values['city']);
+                $project->setState($values['state']);
+                $project->setCountry($values['country']);
+                $project->setLocationLat($values['location_lat']);
+                $project->setLocationLng($values['location_lng']);
                 }
 
                 $em->persist($project);
@@ -324,10 +348,11 @@ class ContestController extends AbstractController
 
                 if ($request->get('save')) {
                     $this->get('session')->getFlashBag()->add('notice', 'Contest has been saved');
+
                     return $this->redirect($this->generateUrl('contest_new', ['uuid' => $project->getUuid()]));
                 }
 
-                if ($request->get('next')) {
+                if ($request->request->get('next')) {
                     return $this->redirect($this->generateUrl('contest_new_publish', ['uuid' => $project->getUuid()]));
                 }
             } elseif (!$project->getId() && !$request->get('audio_file')) {
@@ -350,6 +375,7 @@ class ContestController extends AbstractController
     }
 
 //     * @Secure(roles="ROLE_USER")
+
     /**
      * Publish newly created project
      * @IsGranted("ROLE_USER")
@@ -357,10 +383,14 @@ class ContestController extends AbstractController
      * @Route("/new/contest/{uuid}/publish", name="contest_new_publish")
      * @Template
      *
-     * @param Request $request
-     * @param string  $uuid
+     * @param Request                   $request
+     * @param string                    $uuid
+     * @param ProjectPriceCalculator    $calculator
+     * @param PayPalService             $payPalService
+     *
+     * @return array|JsonResponse|\Symfony\Component\HttpFoundation\RedirectResponse
      */
-    public function publishAction(Request $request, $uuid)
+    public function publishAction(Request $request, $uuid, ProjectPriceCalculator $calculator, PayPalService $payPalService)
     {
         /** @var UserInfo $user */
         $user = $this->getUser();
@@ -396,17 +426,16 @@ class ContestController extends AbstractController
             return $this->redirect($this->generateUrl('project_studio', ['uuid' => $project->getUuid()]));
         }
 
-        $form = $this->createForm(new PublishType([], []), $project);
-
+        $form = $this->createForm(PublishType::class, $project);
+        $form->handleRequest($request);
         // If post method, we are saving options form
-        if ($request->getMethod() == 'POST') {
-            $form->bind($request);
+        if ($form->isSubmitted()) {
             if ($form->isValid()) {
                 if (!$form->get('publish_type')->getData()) {
                     $project->setPublishType(Project::PUBLISH_PUBLIC);
                 }
 
-                $calculator = $this->get('vocalizr_app.project_price_calculator');
+//                $calculator = $this->get('vocalizr_app.project_price_calculator');
 
                 if (!$calculator->getProjectTotalPrice($user->isSubscribed() ? 'PRO' : 'FREE', $project)) {
                     $project->setPaymentStatus(Project::PAYMENT_STATUS_PAID);
@@ -426,13 +455,16 @@ class ContestController extends AbstractController
         $subscriptionPlan   = $planRepo->getActiveSubscription($user->getId());
         $prices             = $planRepo->getFeaturePrices();
 
-        return [
-            'paypal'           => $this->get('service.paypal'),
+        // mayur_dev_testing // remove below line.
+        $prices['PRO'] = $prices['FREE'];
+
+        return $this->render('Contest/publish.html.twig', [
+            'paypal'           => $payPalService,
             'project'          => $project,
             'form'             => $form->createView(),
             'subscriptionPlan' => $subscriptionPlan,
             'prices'           => $prices,
-        ];
+        ]);
     }
 
 //     * @Secure(roles="ROLE_USER")

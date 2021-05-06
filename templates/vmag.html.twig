@@ -99,7 +99,7 @@
                 <div class="collapse navbar-collapse navigation">
                 <ul class="nav navbar-nav">
                     <li><a href="{{ path('vmag_index') }}"{% if app.request.attributes.get('_template').get('name') == "index" %} class="active"{% endif %}>News</a></li>
-                    {{ controller('App:Vmag:_categoryNav', {route:  app.request.attributes.get('_template').get('name'), slug: app.request.get('slug') } ) }}
+                    {{ render(controller('App\\Controller\\VmagController:_categoryNavAction', {route:  app.request.attributes.get('_template').get('name'), slug: app.request.get('slug') } )) }}
                 </ul>
                 </div>
             </div>

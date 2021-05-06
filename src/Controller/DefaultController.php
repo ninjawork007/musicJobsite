@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\AppMessage;
 use App\Entity\AppMessageRead;
 use App\Entity\EmailChangeRequest;
+use App\Form\Type\UserSearchType;
 use App\Service\MembershipSourceHelper;
 use Slot\MandrillBundle\Message;
 
@@ -60,7 +61,7 @@ class DefaultController extends AbstractController
      */
     public function feesAction()
     {
-        return [];
+        return $this->render('Default/fees.html.twig', []);
     }
 
     /**
@@ -69,7 +70,7 @@ class DefaultController extends AbstractController
      */
     public function termsAction()
     {
-        return [];
+        return $this->render('Default/terms.html.twig', []);
     }
 
     /**
@@ -78,7 +79,7 @@ class DefaultController extends AbstractController
      */
     public function privacyAction()
     {
-        return [];
+        return $this->render('Default/privacy.html.twig', []);
     }
 
     /**
@@ -328,13 +329,15 @@ class DefaultController extends AbstractController
         $file       = $this->getParameter('kernel.project_dir') . '/config/packages/project.yml';
         $projectYml = $ymlParser->parse(file_get_contents($file));
 
-        $form = $this->createForm(new \App\Form\Type\UserSearchType($projectYml['budget']));
+        $form = $this->createForm(UserSearchType::class, [
+            'budget' => $projectYml['budget']
+        ]);
 
         if (!$request->get('search')) {
             $_GET[$form->getName()]['audio'] = true;
         }
 
-        $form->bind($_GET[$form->getName()]);
+        $form->handleRequest($_GET[$form->getName()]);
 
         return ['form' => $form->createView()];
     }

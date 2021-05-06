@@ -39,11 +39,8 @@
         {% include 'messages_app.html.twig' %}
         
         <div class="light-content">
-            {% if project.id %}
-                <form id="create-gig-form" action="{{ path('project_new', {uuid: project.uuid}) }}" method="post" novalidate>
-            {% else %}
-                <form id="create-gig-form" action="{{ path('project_new') }}" method="post" novalidate>
-            {% endif %}
+            {% set formAction = project.id ? path('project_new', {uuid: project.uuid}) : path('project_new') %}
+            <form id="create-gig-form" action="{{ formAction }}" method="post" novalidate>
                 {{ form_row(form._token) }}
                     
                 {{ form_errors(form) }}
@@ -110,7 +107,7 @@
                     <div class="audio-upload-preview" style="display:block">
                         <hr>
                         <div class="track-list-item">
-                            <div class="ui360 track-play inline"><a href="/upload/audio/tmp?f={{ app.request.get('audio_file') }}"><span>PLAY</span></a></div>
+                            <div class="ui360 track-play inline"><a href="{{ asset('upload/audio/tmp') ~ '?f=' ~ app.request.get('audio_file') }}"><span>PLAY</span></a></div>
                             <span class="track-title">{{ app.request.get('audio_title') }}</span>
                             <span class="track-length"></span>
                             <span class="badge badge-featured">PREVIEW</span>

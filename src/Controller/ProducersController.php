@@ -266,7 +266,7 @@ class ProducersController extends AbstractUserSearchController
 
                 // Get user favourites
                 $favs       = [];
-                $conn       = $this->get('database_connection');
+                $conn       = $container->get('database_connection');
                 $favResults = $conn->fetchAll('SELECT favorite_user_info_id FROM user_favorite WHERE user_info_id = ' . $user->getId() . ' AND favorite_user_info_id IN (' . implode(',', $userIds) . ')');
 
                 if ($favResults) {

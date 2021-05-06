@@ -85,10 +85,7 @@
         <meta name="twitter:image" content="http://vocalizr.com/images/sfs/share-{{ project.uuid }}.jpg?v1" />
     {% endif %}
 
-    {% stylesheets
-        '@VocalizrAppBundle/Resources/public/css/projects.css'
-    %}<link rel="stylesheet" href="{{ asset_url }}" />{% endstylesheets %}
-
+    <link rel="stylesheet" href="{{ asset('css/projects.css') }}" />
 {% endblock %}
 
 {% block body %}
@@ -402,13 +399,13 @@
                             <div class="tab-content">
                                 <div role="tabpanel" class="tab-pane active" id="all">
                                     <div class="bids-list">
-                                        {{ render(controller('App:Contest:ownerBids', {uuid: project.uuid, page: 1, filter: app.request.get('filter'), dir: app.request.get('dir')})) }}
+                                        {{ render(controller('App\\Controller\\ContestController:ownerBidsAction', {uuid: project.uuid, page: 1, filter: app.request.get('filter'), dir: app.request.get('dir')}))) }}
                                     </div>
                                 </div>
                                 <div role="tabpanel" class="tab-pane" id="shortlist">
                                     {% if shortlistBids %}
                                         {% for bid in shortlistBids %}
-                                            {% embed '@VocalizrApp/Contest/include/audio.ownerBid.html.twig' %}
+                                            {% embed 'Contest/include/audio.ownerBid.html.twig' %}
                                             {% endembed %}
                                         {% endfor %}
                                     {% endif %}
@@ -416,7 +413,7 @@
                                 <div role="tabpanel" class="tab-pane" id="hidden">
                                     {% if hiddenBids %}
                                         {% for bid in hiddenBids %}
-                                            {% embed '@VocalizrApp/Contest/include/audio.ownerBid.html.twig' %}
+                                            {% embed 'Contest/include/audio.ownerBid.html.twig' %}
                                                 {% block actions_right %}
                                                     <a href="{{ path('project_shortlist_bid', {uuid: project.uuid, bidUuid: bid.uuid}) }}" class="btn btn-sm btn-default btn-shortlist shortlist-{{ bid.uuid }} hide" data-uuid="{{ bid.uuid }}"><i class="fa fa-star" aria-hidden="true"></i></a>
                                                     <a href="{{ path('project_hide_bid', {uuid: project.uuid, bidUuid: bid.uuid}) }}" data-uuid="{{ bid.uuid }}" class="btn btn-sm btn-default roll-alt btn-unhide-bid hide-{{ bid.uuid }}"><i class="fa fa-reply" aria-hidden="true"></i></a>
@@ -429,7 +426,7 @@
 
                         {% else %}
                         <div class="bids-list">
-                            {{ controller('App:Contest:bids', {uuid: project.uuid, page: 1, filter: app.request.get('filter'), dir: app.request.get('dir')}) }}
+                            {{ render(controller('App\\Controller\\ContestController:bidsAction', {uuid: project.uuid, page: 1, filter: app.request.get('filter'), dir: app.request.get('dir')})) }}
                         </div>
                         {% endif %}
                     {% endif %}
@@ -438,10 +435,10 @@
             </div>
 
             <div id="project-status-widget" class="col-sm-4">
-                {{ controller('App:Contest:projectStatusWidget', {
+                {{ render(controller('App\\Controller\\ContestController:projectStatusWidgetAction', {
                     'uuid': project.uuid,
                     'fromPage' : 'view'
-                }) }}
+                })) }}
 
                 {% if app.user and (not project.isOwner(app.user) and not app.user.isSubscribed) and not projectAwarded %}
 
@@ -552,6 +549,6 @@
             </div>
         </div>
 
-        {{ controller('App:Hint:show') }}
+    {{ render(controller('App\\Controller\\HintController:showAction')) }}
 
 {% endblock %}

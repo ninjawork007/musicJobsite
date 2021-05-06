@@ -43,11 +43,8 @@
         {% include 'messages.html.twig' %}
 
         <div class="light-content">
-            {% if project.id %}
-                <form id="create-gig-form" action="{{ path('contest_new', {uuid: project.uuid}) }}" method="post" novalidate>
-            {% else %}
-                <form id="create-gig-form" action="{{ path('contest_new') }}" method="post" novalidate>
-            {% endif %}
+            {% set formAction = project.id ? path('contest_new', {uuid: project.uuid}) : path('contest_new') %}
+            <form id="create-gig-form" action="{{ formAction }}" method="post" novalidate>
                 {{ form_row(form._token) }}
 
                 {{ form_errors(form) }}
@@ -115,7 +112,7 @@
                     <div class="audio-upload-preview" style="display:block">
                         <hr>
                         <div class="track-list-item">
-                            <div class="ui360 track-play inline"><a href="/upload/audio/tmp?f={{ app.request.get('audio_file') }}"><span>PLAY</span></a></div>
+                            <div class="ui360 track-play inline"><a href="{{ asset('upload/audio/tmp') ~ '?f=' ~ app.request.get('audio_file') }}"><span>PLAY</span></a></div>
                             <span class="track-title">{{ app.request.get('audio_title') }}</span>
                             <span class="track-length"></span>
                             <span class="badge badge-featured">PREVIEW</span>
@@ -156,7 +153,7 @@
                     </div>
                     <div class="col-sm-8 budget-desc">
                         <label>PRICE DESCRIPTION</label>
-                        <div id="150">
+                        <div id="150" style="display: block;">
                             Just a few words sung by a vocalist (under 10 words), or some ad-libs.
                         </div>
                         <div id="200">
@@ -268,7 +265,8 @@
                     </div>
                     <div class="row form-group lyrics-input">
                         <div class="col-sm-12">
-                            {{ form_row(form.lyrics) }}
+                            {{ form_label(form.lyrics) }} <span class="help-note">ENTER SOMETHING YOU MIGHT WANT TO HEAR</span>
+                            {{ form_widget(form.lyrics) }}
                         </div>
                     </div>
                 </div>

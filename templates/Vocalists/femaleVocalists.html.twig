@@ -74,7 +74,7 @@
                             <i class="fa fa-users"></i> <a href="{{ path('user_view', {username: result.username}) }}#connections">{{ result.connectCount }} Connection{% if result.connectCount != 1 %}s{% endif %}</a>
                         </div>
                         <div class="connect-status">
-                        {{ controller('App:User:connectButton', {userInfo: result, userConnect: userConnect} ) }}
+                            {{ render(controller('App\\Controller\\UserController:connectButtonAction', {userInfo: result, userConnect: userConnect} )) }}
                         </div>
                     </div>
 
@@ -265,8 +265,8 @@
 
                     <div class="row form-group">
                         <div class="col-sm-12">
-                            <label>VOCALIST FEE</label>
                             {{ form_widget(form.fees) }}
+                            {{ form_label(form.fees) }}
                         </div>
                     </div>
 

@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Service\WaveformService;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ORM\EntityManager;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -22,15 +23,15 @@ class AudioController extends AbstractController
      *
      * @Route("/audio/{slug}/likes", name="audio_likes")
      * @Template()
-     * @param Request           $request
-     * @param DocumentManager   $dm
+     * @param Request            $request
+     * @param DocumentManager    $dm
+     * @param ContainerInterface $container
      * @return array[]
-     * @throws \Doctrine\ODM\MongoDB\MongoDBException
      */
-    public function likesAction(Request $request, DocumentManager $dm)
+    public function likesAction(Request $request, DocumentManager $dm, ContainerInterface $container)
     {
         $em = $this->getDoctrine()->getManager();
-//        $dm = $this->get('doctrine_mongodb')->getManager();
+        $dm = $container->get('doctrine_mongodb')->getManager();
 
         $likeUsers = [];
 
@@ -92,11 +93,12 @@ class AudioController extends AbstractController
      * Record play count for user
      *
      * @Route("/audio/{slug}/record", name="record_audio_play")
-     * @param Request           $request
-     * @param DocumentManager   $dm
+     * @param Request            $request
+     * @param DocumentManager    $dm
+     * @param ContainerInterface $container
      * @return JsonResponse
      */
-    public function recordAudioPlayAction(Request $request, DocumentManager $dm)
+    public function recordAudioPlayAction(Request $request, DocumentManager $dm, ContainerInterface $container)
     {
         $em   = $this->getDoctrine()->getManager();
         $user = $this->getUser();
@@ -112,34 +114,34 @@ class AudioController extends AbstractController
         $userAudio->setPlayCount($count + 1);
         $em->persist($userAudio);
 
-//        $dm = $this->get('doctrine_mongodb')->getManager();
+        $dm = $container->get('doctrine_mongodb')->getManager();
 
-//        $audioPlayRepo = $dm->getRepository('App:AudioPlay');
-//        if (!$audioPlay = $audioPlayRepo->findOneBy([
-//            'audio_id' => $userAudio->getId(),
-//            'date' => date('Y-m-d'),
-//        ])) {
-//            $audioPlay = new \App\Document\AudioPlay();
-//            $audioPlay->setAudioId($userAudio->getId());
-//            $audioPlay->setUserId($userAudio->getUserInfo()->getId());
-//            $audioPlay->setDate(date('Y-m-d'));
-//        }
-//        $count = $audioPlay->getCount();
-//        $audioPlay->setCount($count + 1);
-//        $dm->persist($audioPlay);
+        $audioPlayRepo = $dm->getRepository('App:AudioPlay');
+        if (!$audioPlay = $audioPlayRepo->findOneBy([
+            'audio_id' => $userAudio->getId(),
+            'date' => date('Y-m-d'),
+        ])) {
+            $audioPlay = new \App\Document\AudioPlay();
+            $audioPlay->setAudioId($userAudio->getId());
+            $audioPlay->setUserId($userAudio->getUserInfo()->getId());
+            $audioPlay->setDate(date('Y-m-d'));
+        }
+        $count = $audioPlay->getCount();
+        $audioPlay->setCount($count + 1);
+        $dm->persist($audioPlay);
 
-//        // If user is logged in, record audio play by usre
-//        if ($user && $user->getId() != $userAudio->getUserInfo()->getId()) {
-//            $audioPlayUser = new \App\Document\AudioPlayUser();
-//            $audioPlayUser->setAudioId($userAudio->getId());
-//            $audioPlayUser->setUserId($userAudio->getUserInfo()->getId());
-//            $audioPlayUser->setFromUserId($user->getId());
-//            $audioPlayUser->setDate(date('Y-m-d'));
-//            $audioPlayUser->setCreatedAt(date('Y-m-d H:i:s'));
-//            $dm->persist($audioPlayUser);
-//        }
+        // If user is logged in, record audio play by usre
+        if ($user && $user->getId() != $userAudio->getUserInfo()->getId()) {
+            $audioPlayUser = new \App\Document\AudioPlayUser();
+            $audioPlayUser->setAudioId($userAudio->getId());
+            $audioPlayUser->setUserId($userAudio->getUserInfo()->getId());
+            $audioPlayUser->setFromUserId($user->getId());
+            $audioPlayUser->setDate(date('Y-m-d'));
+            $audioPlayUser->setCreatedAt(date('Y-m-d H:i:s'));
+            $dm->persist($audioPlayUser);
+        }
 
-//        $dm->flush();
+        $dm->flush();
         $em->flush();
 
         return new JsonResponse(['success' => true, 'count' => $userAudio->getPlayCount()]);

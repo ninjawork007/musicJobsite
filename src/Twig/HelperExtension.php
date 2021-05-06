@@ -43,7 +43,7 @@ class HelperExtension extends AbstractExtension
     {
         return [
             new TwigFilter('timeAgoString', [$this, 'timeAgoFilter']),
-            new TwigFilter('timeLeftString', [$this, 'formatPrice']),
+            new TwigFilter('timeLeftString', [$this, 'timeLeftFilter']),
             new TwigFilter('timeLeftSingle', [$this, 'timeLeftSingle']),
             new TwigFilter('daysOffset', [$this, 'daysOffsetFilter']),
             new TwigFilter('starRating', [$this, 'starRatingFilter']),

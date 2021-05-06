@@ -178,6 +178,7 @@
                                 <div class="col-sm-5 checkboxes">
                                     <br>
                                     {{ form_widget(form.studio_access) }}
+                                    {{ form_label(form.studio_access) }}
                                 </div>
                             </div>
                             
@@ -224,10 +225,10 @@
      
             
             <div id="project-status-widget" class="col-sm-4">
-                {{ controller('App:Project:projectStatusWidget', {
+                {{ render(controller('App\\Controller\\ProjectController:projectStatusWidgetAction',{
                     'uuid': project.uuid,
                     'fromPage' : 'edit'
-                }) }}
+                })) }}
                 
             </div>
         </div>

@@ -1,4 +1,4 @@
-{% extends '::app.html.twig' %}
+{% extends 'app.html.twig' %}
 
 {% block title %}Sign Agreement{% endblock %}
 
@@ -61,9 +61,9 @@
                         <div class="light-content">
                             <div class="gig-agreement">
                                 {% if project.projectType == 'contest' %}
-                                {{ controller('App:Contest:agreement', {'project': project, projectBid: projectBid}) }}
+                                    {{ render(controller('App\\Controller\\ContestController:agreementAction', {'project': project, projectBid: projectBid})) }}
                                 {% else %}
-                                {{ controller('App:Project:agreement', {'project': project, projectBid: projectBid}) }}
+                                    {{ render(controller('App\\Controller\\ProjectController:agreementAction', {'project': project, projectBid: projectBid})) }}
                                 {% endif %}
                             </div>
 
@@ -87,15 +87,15 @@
             
             <div id="project-status-widget" class="col-sm-4">
                 {% if project.projectType == 'contest' %}
-                    {{ controller('App:Contest:projectStatusWidget', {
+                    {{ render(controller('App\\Controller\\ContestController:projectStatusWidgetAction', {
                         'uuid': project.uuid,
                         'fromPage' : 'agreement'
-                    }) }}
+                    })) }}
                 {% else %}
-                    {{ controller('App:Project:projectStatusWidget', {
+                    {{ render(controller('App\\Controller\\ProjectController:projectStatusWidgetAction'
                         'uuid': project.uuid,
                         'fromPage' : 'agreement'
-                    }) }}
+                    })) }}
                 {% endif %}
             </div>
         </div>

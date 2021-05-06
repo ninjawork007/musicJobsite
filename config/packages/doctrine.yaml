@@ -18,5 +18,7 @@ doctrine:
                 prefix: 'App\Entity'
                 alias: App
         dql:
+            string_functions:
+                IFELSE: DoctrineExtensions\Query\Mysql\IfElse
             numeric_functions:
                 Rand: App\Doctrine\Rand

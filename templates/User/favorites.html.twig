@@ -1,4 +1,4 @@
-{% extends '::app.html.twig' %}
+{% extends 'app.html.twig' %}
 
 {% block title %}Your favorites{% endblock %}
 
@@ -60,7 +60,7 @@
                             <i class="fa fa-users"></i> <a href="{{ path('user_view', {username: result.username}) }}#connections">{{ result.connectCount }} Connection{% if result.connectCount != 1 %}s{% endif %}</a>
                         </div>
                         <div class="connect-status">
-                        {{ controller('App:User:connectButton', {userInfo: result, userConnect: userConnect} ) }}
+                            {{ render(controller('App\\Controller\\UserController:connectButtonAction', {userInfo: result, userConnect: userConnect} )) }}
                         </div>
                     </div>
 
@@ -223,7 +223,9 @@
 
                     <div class="row form-group">
                         <div class="col-sm-12">
-                            <input type="checkbox" name="{{ form.studio_access.vars.full_name }}" value="1"{% if form.vars.value.studio_access %} checked{% endif %}> Must have studio access
+                            {{ form_widget(form.studio_access) }}
+{#                            <input type="checkbox" name="{{ form.studio_access.vars.full_name }}" value="1"{% if form.vars.value.studio_access %} checked{% endif %}> #}
+                            Must have studio access
                         </div>
                     </div>
 

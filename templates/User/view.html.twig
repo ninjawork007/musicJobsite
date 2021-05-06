@@ -126,7 +126,7 @@
                             <span>Hire Now</span>
                             <div></div>
                         </a>
-                        {{ controller('App:User:connectButton', {userInfo: userInfo, userConnect: userConnect} ) }}
+                        {{ render(controller('App\\Controller\\UserController:connectButtonAction', {userInfo: userInfo, userConnect: userConnect} )) }}
                         {% if isUserFavorite %}
                         <a href="{{ path('user_favorite', {username: userInfo.username}) }}" class="btn btn-sm btn-default member-favourite roll-alt">
                             <i class="fa fa-star"></i>
@@ -153,7 +153,7 @@
                             <div></div>
                         </a>
                         {% endif %}
-                        {{ controller('App:Project:inviteToGigButton', {userInfo: userInfo} ) }}
+                        {{ render(controller('App\\Controller\\ProjectController:inviteToGigButtonAction', {userInfo: userInfo} )) }}
                     </div>
                 {% endif %}
             {% endif %}
@@ -415,7 +415,7 @@
                     {% if userInfo.connectCount > 0 %}
                         <div class="tab-pane" id="connections">
                             <div data-role="user-connections-container" class="user-connections">
-                                {{ controller('App:User:viewConnections', {id: userInfo.id} ) }}
+                                {{ render(controller('App\\Controller\\UserController:viewConnectionsAction', {id: userInfo.id} )) }}
                                 {% if userInfo.connectCount > 20 %}
                                     <div class="form-group">
                                         <button data-path="{{ path('user_view_connections', {id: userInfo.id}) }}"

@@ -2,9 +2,17 @@
 
 namespace App\Controller;
 
+use App\Model\ProjectModel;
+use App\Service\HelperService;
+use App\Service\PayPalService;
+use App\Service\ProjectPriceCalculator;
+use Mpdf\Mpdf;
 use Doctrine\ORM\EntityManager;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
+use Slot\MandrillBundle\Message;
+use Symfony\Component\EventDispatcher\EventDispatcher;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -33,6 +41,7 @@ use App\Form\Type\PublishType;
 use App\Model\HintModel;
 use App\Repository\ProjectBidRepository;
 use App\Repository\SubscriptionPlanRepository;
+use Twig\Environment;
 
 class ProjectController extends AbstractController
 {
@@ -115,16 +124,15 @@ class ProjectController extends AbstractController
                                                         'english' => $english,
                                                         'budget'  => $projectYml['budget']
                                                     ]);
+        $form->handleRequest($request);
         $locationForm = $this->createForm(LocationType::class);
+        $locationForm->handleRequest($request);
 
         /**
          * Handle owner saving functions
          * Before saving, check permission
          */
         if ($request->isMethod('POST')) {
-            $form->handleRequest($request);
-            $locationForm->handleRequest($request);
-
             if ($request->get('location')) {
                 if (!$locationForm->get('city')->getData()) {
                     $locationForm->get('city')->addError(new FormError('Invalid city'));
@@ -143,8 +151,6 @@ class ProjectController extends AbstractController
                 $form->get('royalty')->addError(new FormError('Select royalty amount'));
             }
 
-//            dump($form->isValid() );
-//            dd( $locationForm->isValid());
             if ($form->isValid() && $locationForm->isValid()) {
                 $budget          = $form->get('budget')->getData();
                 list($min, $max) = explode('-', $budget);
@@ -451,7 +457,7 @@ class ProjectController extends AbstractController
      * @param Request $request
      * @param string  $uuid
      */
-    public function publishAction(Request $request, $uuid)
+    public function publishAction(Request $request, $uuid, ProjectPriceCalculator $calculator, PayPalService $payPalService)
     {
         /** @var UserInfo $user */
         $user = $this->getUser();
@@ -487,17 +493,16 @@ class ProjectController extends AbstractController
             return $this->redirect($this->generateUrl('project_studio', ['uuid' => $project->getUuid()]));
         }
 
-        $form = $this->createForm(new PublishType([], []), $project);
-
+        $form = $this->createForm(PublishType::class, $project);
+        $form->handleRequest($request);
         // If post method, we are saving options form
         if ($request->getMethod() == 'POST') {
-            $form->bind($request);
-            if ($form->isValid()) {
+            if ($form->isSubmitted() && $form->isValid()) {
                 if (!$form->get('publish_type')->getData()) {
                     $project->setPublishType(Project::PUBLISH_PUBLIC);
                 }
 
-                $calculator = $this->get('vocalizr_app.project_price_calculator');
+//                $calculator = $this->get('vocalizr_app.project_price_calculator');
 
                 if (!$calculator->getProjectTotalPrice($user->isSubscribed() ? 'PRO' : 'FREE', $project)) {
                     $project->setPaymentStatus(Project::PAYMENT_STATUS_PAID);
@@ -517,13 +522,13 @@ class ProjectController extends AbstractController
         $subscriptionPlan   = $planRepo->getActiveSubscription($user->getId());
         $prices             = $planRepo->getFeaturePrices();
 
-        return [
-            'paypal'           => $this->get('service.paypal'),
+        return $this->render('Project/publish.html.twig', [
+            'paypal'           => $payPalService,
             'project'          => $project,
             'form'             => $form->createView(),
             'subscriptionPlan' => $subscriptionPlan,
             'prices'           => $prices,
-        ];
+        ]);
     }
 
 //     * @Secure(roles="ROLE_USER")
@@ -603,7 +608,8 @@ class ProjectController extends AbstractController
 
         $this->get('session')->getFlashBag()->add('notice', 'Your Gig has been successfully published');
 
-        $this->get('event_dispatcher')->dispatch(
+        $dispatcher = new EventDispatcher();
+        $dispatcher->dispatch(
             'contest_or_gig.just_created',
             new JustCreatedEvent(JustCreatedEvent::TYPE_GIG, $user, $project)
         );
@@ -734,17 +740,19 @@ class ProjectController extends AbstractController
         $file       = $this->getParameter('kernel.project_dir') . '/config/packages/project.yml';
         $projectYml = $ymlParser->parse(file_get_contents($file));
 
-        $form         = $this->createForm(new EditProjectType($english, $projectYml['budget']), $project);
-        $locationForm = $this->createForm(new LocationType());
+        $form         = $this->createForm(EditProjectType::class, $project, [
+                                            'english' => $english,
+                                            'budget'  => $projectYml['budget']
+                                        ]);
+        $locationForm = $this->createForm(LocationType::class);
+        $form->handleRequest($request);
+        $locationForm->handleRequest($request);
 
         /**
          * Handle owner saving functions
          * Before saving, check permission
          */
         if ($request->isMethod('POST') && $request->get('save')) {
-            $form->bind($request);
-            $locationForm->bind($request);
-
             if ($request->get('location')) {
                 if (!$locationForm->get('city')->getData()) {
                     $locationForm->get('city')->addError(new FormError('Invalid city'));
@@ -851,7 +859,7 @@ class ProjectController extends AbstractController
             ]);
         }
 
-        return [
+        return $this->render('Project/edit.html.twig', [
             'form'                => $form->createView(),
             'locationForm'        => $locationForm->createView(),
             'project'             => $project,
@@ -862,7 +870,7 @@ class ProjectController extends AbstractController
             'bidStats'            => $bidStats,
             'favoriteCount'       => $favoriteCount,
             'bids'                => $bids,
-        ];
+        ]);
     }
 
     /**
@@ -874,7 +882,7 @@ class ProjectController extends AbstractController
      * @param type                                      $uuid
      * @Template()
      */
-    public function projectStatusWidgetAction(Request $request, $uuid)
+    public function projectStatusWidgetAction(Request $request, $uuid, ProjectModel $projectModel)
     {
         $em   = $this->getDoctrine()->getManager();
         $user = $this->getUser();
@@ -902,7 +910,7 @@ class ProjectController extends AbstractController
         $bidStats['avgBidAmount'] = $bidStats['avgBidAmount'] / 100;
 
         $publishForm = $this->createFormBuilder($project)
-            ->add('publish_type', 'choice', [
+            ->add('publish_type', ChoiceType::class, [
                 'label'   => 'PUBLISHING OPTIONS',
                 'choices' => [Project::PUBLISH_PUBLIC => ucwords(Project::PUBLISH_PUBLIC),
                     Project::PUBLISH_PRIVATE          => ucwords(Project::PUBLISH_PRIVATE), ],
@@ -933,7 +941,7 @@ class ProjectController extends AbstractController
         if ($project->getIsActive() && time() < $project->getBidsDue()->getTimestamp()) {
             if ($user) {
                 // Check if project has restrictions
-                $userMatchesPreferences = $this->userMeetProjectPreferences($project);
+                $userMatchesPreferences = $this->userMeetProjectPreferences($project, $projectModel);
                 if (count($userMatchesPreferences) > 0) {
                     $restrictBid = true;
                 }
@@ -957,7 +965,7 @@ class ProjectController extends AbstractController
         ]);
 
         $projectBid = new ProjectBid();
-        $bidForm    = $this->createForm(new ProjectBidType(), $projectBid);
+        $bidForm    = $this->createForm(ProjectBidType::class, $projectBid);
 
         $templateData = [
             'project'                => $project,
@@ -977,14 +985,14 @@ class ProjectController extends AbstractController
             $jsonResponse = [
                 'success' => true,
                 'html'    => $this->renderView(
-                    'VocalizrAppBundle:Project:projectStatusWidget.html.twig',
+                    'Project/projectStatusWidget.html.twig',
                     $templateData
                 ),
             ];
             return new Response(json_encode($jsonResponse));
         }
 
-        return $this->render('@VocalizrApp/Project/projectStatusWidget.html.twig', $templateData);
+        return $this->render('Project/projectStatusWidget.html.twig', $templateData);
     }
 
     private function notifyFavorites(Project $project)
@@ -1049,7 +1057,7 @@ class ProjectController extends AbstractController
      * @Route("/gig/{uuid}", name="project_view")
      * @Template()
      */
-    public function viewAction(Request $request)
+    public function viewAction(Request $request, HelperService $helper)
     {
         $uuid              = $request->get('uuid', false);
         $user              = $this->getUser();
@@ -1057,7 +1065,7 @@ class ProjectController extends AbstractController
         $userAudioRepo     = $em->getRepository('App:UserAudio');
         $projectAudioRepo  = $em->getRepository('App:ProjectAudio');
         $displayIntroModal = false;
-        $helper            = $this->get('service.helper');
+//        $helper            = $this->get('service.helper');
 
         // Make sure project is valid
         if (!$uuid) {
@@ -1096,7 +1104,7 @@ class ProjectController extends AbstractController
 
         // Project bid form
         $projectBid = new ProjectBid();
-        $bidForm    = $this->createForm(new ProjectBidType(), $projectBid);
+        $bidForm    = $this->createForm(ProjectBidType::class, $projectBid);
 
         // Get bid stats (total bids, avg bid amount)
         $bidStats                 = $em->getRepository('App:ProjectBid')->getBidStats($project->getId());
@@ -1154,10 +1162,9 @@ class ProjectController extends AbstractController
             ]);
         }
 
-        $subscriptionPlan['free'] = $em->getRepository('App:SubscriptionPlan')->findOneBy(['static_key' => 'FREE']);
-        $subscriptionPlan['pro']  = $em->getRepository('App:SubscriptionPlan')->findOneBy(['static_key' => 'PRO']);
+        $subscriptionPlan = $em->getRepository('App:SubscriptionPlan')->getFeaturePrices();
 
-        return $this->render('VocalizrAppBundle:Project:view.html.twig', [
+        return $this->render('Project/view.html.twig', [
             'project'             => $project,
             'projectAwarded'      => $projectAwarded,
             'defaultProjectAudio' => $defaultProjectAudio,
@@ -1182,9 +1189,9 @@ class ProjectController extends AbstractController
      *
      * @return array
      */
-    private function userMeetProjectPreferences($project)
+    private function userMeetProjectPreferences($project, $projectModel)
     {
-        return $this->get('vocalizr_app.model.project')->getUserMeetProjectPreferencesArray($this->getUser(), $project);
+        return $projectModel->getUserMeetProjectPreferencesArray($this->getUser(), $project);
     }
 
     /**
@@ -1195,8 +1202,10 @@ class ProjectController extends AbstractController
      * @Template()
      *
      * @param \Symfony\Component\HttpFoundation\Request $request
+     * @param ProjectModel $projectModel
+     * @return RedirectResponse|Response
      */
-    public function bidAction(Request $request)
+    public function bidAction(Request $request, ProjectModel $projectModel)
     {
         $uuid = $request->get('uuid', false);
         /** @var UserInfo $user */
@@ -1247,7 +1256,7 @@ class ProjectController extends AbstractController
         // Check bid hasn't past, if not, do additional checks
         if ($resubmit || time() < $project->getBidsDue()->getTimestamp()) {
             // Check if project has restrictions
-            $userMatchesPreferences = $this->userMeetProjectPreferences($project);
+            $userMatchesPreferences = $this->userMeetProjectPreferences($project, $projectModel);
             if (count($userMatchesPreferences) > 0) {
                 $restrictBid = true;
             }
@@ -1291,11 +1300,10 @@ class ProjectController extends AbstractController
 
         // Project bid form
         $projectBid = new ProjectBid();
-        $bidForm    = $this->createForm(new ProjectBidType(), $projectBid);
-
+        $bidForm    = $this->createForm(ProjectBidType::class, $projectBid);
+        $bidForm->handleRequest($request);
         // If they are placing a bid, and havent already done so
         if ($request->getMethod() == 'POST') {
-            $bidForm->bind($request);
 
             if ($project->getProjectType() == 'paid') {
                 $amount      = $request->get($bidForm->getName());
@@ -1828,7 +1836,7 @@ class ProjectController extends AbstractController
         if ($sendEmail) {
             $dispatcher = $this->get('hip_mandrill.dispatcher');
 
-            $message = new \Hip\MandrillBundle\Message();
+            $message = new Message();
             $message->setSubject('Gig Invitation to "' . $project->getTitle() . '"');
             if ($project->getProjectType() == Project::PROJECT_TYPE_CONTEST) {
                 $message->setSubject('Contest Invitation to "' . $project->getTitle() . '"');
@@ -2120,11 +2128,11 @@ class ProjectController extends AbstractController
      * @Route("/gig/{uuid}/agreement/{type}", defaults={"type" = "gig"}, name="project_agreement")
      * @Template()
      */
-    public function downloadAgreementTemplateAction(Request $request)
+    public function downloadAgreementTemplateAction(Request $request, Environment $twig)
     {
         $container = $this->container;
         $user      = $this->getUser();
-        $rootDir   = $container->get('kernel')->getRootDir();
+        $rootDir   = $this->getParameter('kernel.project_dir');
 
         if ($request->get('type') == 'gig') {
             $type  = 'gig';
@@ -2134,20 +2142,20 @@ class ProjectController extends AbstractController
             $type  = 'contest';
         }
 
-        $header = $container->get('templating')->render('VocalizrAppBundle:Pdf:header.html.twig', [
+        $header = $this->render('Pdf/header.html.twig', [
             'title' => $title,
         ]);
-        $footer = $container->get('templating')->render('VocalizrAppBundle:Pdf:footer.html.twig');
+        $footer = $this->render('Pdf/footer.html.twig', []);
 
         $content = null;
         if ($request->get('type') == 'gig') {
-            $content = $container->get('templating')->render('VocalizrAppBundle:Project:agreement.html.twig');
+            $content = $this->render('Project/agreement.html.twig', []);
         } elseif ($request->get('type') == 'contest') {
-            $content = $container->get('templating')->render('VocalizrAppBundle:Contest:agreement.html.twig');
+            $content = $this->render('Contest/agreement.html.twig', []);
         }
-        $css = realpath($rootDir . '/../src/Vocalizr/AppBundle/Resources/public/css/pdf.css');
+        $css = realpath($rootDir . '/public/css/pdf.css');
 
-        $mpdf = new \mPDF('', 'A4', '', '', 0, 0, 30, 35, 0, 10);
+        $mpdf = new Mpdf(['', 'A4', '', '', 0, 0, 30, 35, 0, 10]);
         $mpdf->setHTMLHeader($header);
         $mpdf->setHTMLFooter($footer);
         $mpdf->WriteHTML(file_get_contents($css), 1);
@@ -2172,12 +2180,12 @@ class ProjectController extends AbstractController
         $employeeSubscriptionPlan = $em->getRepository('App:SubscriptionPlan')
                 ->getActiveSubscription($projectBid->getUserInfo()->getId());
 
-        return [
+        return $this->render('Project/agreement.html.twig', [
             'project'                  => $project,
             'projectBid'               => $projectBid,
             'subscriptionPlan'         => $subscriptionPlan,
             'employeeSubscriptionPlan' => $employeeSubscriptionPlan,
-        ];
+        ]);
     }
 
     /**

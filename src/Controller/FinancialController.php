@@ -2,6 +2,12 @@
 
 namespace App\Controller;
 
+use App\Model\ProjectModel;
+use App\Model\UserActionAuditModel;
+use App\Model\UserAudioModel;
+use App\Service\HelperService;
+use App\Service\MandrillService;
+use App\Service\PayPalService;
 use App\Service\UserRestrictionService;
 use Knp\Component\Pager\Paginator;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -30,15 +36,19 @@ class FinancialController extends AbstractController
      * @Route("/user/finances", name="user_financial")
      * @Template
      *
-     * @param Request $request
+     * @param Request                   $request
+     * @param ContainerInterface        $container
+     * @param UserRestrictionService    $userRestrictionService
+     * @param UserActionAuditModel      $audioModel
      *
      * @return array|RedirectResponse
      */
-    public function indexAction(Request $request, ContainerInterface $container, UserRestrictionService $userRestrictionService)
+    public function indexAction(Request $request, ContainerInterface $container, UserRestrictionService $userRestrictionService, UserActionAuditModel $audioModel)
     {
         $isPaid = ($request->get('paid', false) === false) ? false : true;
         if ($isPaid) {
-            $this->get('vocalizr_app.model.user_audit')->logAction(UserActionAudit::ACTION_DEPOSIT);
+//            $this->get('vocalizr_app.model.user_audit')->logAction(UserActionAudit::ACTION_DEPOSIT);
+            $audioModel->logAction(UserActionAudit::ACTION_DEPOSIT);
             return new RedirectResponse($this->generateUrl('user_financial'));
         }
         $em   = $this->getDoctrine()->getManager();
@@ -78,13 +88,19 @@ class FinancialController extends AbstractController
      *
      * @Route("/user/finances/deposit", name="financial_deposit")
      * @Template
+     *
+     * @param Request       $request
+     * @param PayPalService $paypal
+     *
+     * @return array
+     * @throws \Exception
      */
-    public function depositAction(Request $request)
+    public function depositAction(Request $request, PayPalService $paypal)
     {
         $em     = $this->getDoctrine()->getManager();
         /** @var UserInfo $user */
         $user   = $this->getUser();
-        $paypal = $this->get('service.paypal');
+//        $paypal = $this->get('service.paypal');
 
         if ($user && $user->isVerificationsExists() && !$user->isVerified() && !$user->isRequestedVerificationRecently()) {
             $this->get('session')->getFlashBag()->add('error', 'Your latest verification attempt failed. Please, try again.');
@@ -92,10 +108,10 @@ class FinancialController extends AbstractController
 
         $subscriptionPlan = $em->getRepository('App:SubscriptionPlan')->getActiveSubscription($user->getId());
 
-        return [
+        return $this->render('Financial/deposit.html.twig', [
             'subscriptionPlan' => $subscriptionPlan,
             'paypal'           => $paypal,
-        ];
+        ]);
     }
 
     /**
@@ -104,20 +120,27 @@ class FinancialController extends AbstractController
      * @Route("/user/finances/withdraw", name="financial_withdraw")
      * @Route("/user/finances/withdraw/cancel/{withdrawId}", name="financial_withdraw_cancel")
      * @Template
-     * @param Request $request
-     * @param UserRestrictionService $UserRestrictionService
-     * @param ContainerInterface $container
+     * @param Request                   $request
+     * @param UserRestrictionService    $UserRestrictionService
+     * @param ContainerInterface        $container
+     * @param HelperService             $helper
+     * @param MandrillService           $mandrillService
      *
      * @return RedirectResponse|\Symfony\Component\HttpFoundation\Response
      * @throws \Exception
      */
-    public function withdrawAction(Request $request, UserRestrictionService $UserRestrictionService, ContainerInterface $container)
+    public function withdrawAction(Request $request,
+                                   UserRestrictionService $UserRestrictionService,
+                                   ContainerInterface $container,
+                                   HelperService $helper,
+                                   MandrillService $mandrillService)
     {
         $em           = $this->getDoctrine()->getManager();
         /** @var UserInfo $user */
         $user         = $this->getUser();
-        $withdrawForm = $this->createForm(new UserWithdrawType($user));
-        $helper       = $this->get('service.helper');
+        $userWithdraw = new UserWithdraw();
+        $withdrawForm = $this->createForm(UserWithdrawType::class, $userWithdraw, [ 'userInfo' => $user]);
+//        $helper       = $this->get('service.helper');
 
         /** @var Session $session */
         $session                     = $request->getSession();
@@ -183,7 +206,7 @@ class FinancialController extends AbstractController
                         'paymentAmount' => $newWithdraw->getAmount(),
                     ]);
 
-                    $this->get('vocalizr_app.service.mandrill')->sendWithdrawAlert($body, $this->container->getParameter('kernel.environment'));
+                    $mandrillService->sendWithdrawAlert($body, $this->getParameter('kernel.environment'));
                 }
 
                 if (
@@ -231,10 +254,10 @@ class FinancialController extends AbstractController
         $withdrawRequests = $em->getRepository('App:UserWithdraw')
                 ->getByUserQuery($user->getId());
 
-        $paginator  = $paginator->get('knp_paginator');
+        $paginator  = $container->get('knp_paginator');
         $pagination = $paginator->paginate(
             $withdrawRequests,
-            $this->get('request')->query->get('page', 1)/*page number*/,
+            $request->query->get('page', 1)/*page number*/,
             10// limit per page
         );
 
@@ -253,10 +276,14 @@ class FinancialController extends AbstractController
      * @Route("/user/finances/refund/contest/{uuid}/refund", name="finances_contest_refund")
      * @Template
      *
-     * @param Request $request
-     * @param string  $uuid
+     * @param Request           $request
+     * @param string            $uuid
+     * @param ProjectModel      $projectModel
+     * @param MandrillService   $mandrillService
+     *
+     * @return Project[]|null[]|RedirectResponse|\Symfony\Component\HttpFoundation\Response
      */
-    public function refundAction(Request $request, $uuid)
+    public function refundAction(Request $request, $uuid, ProjectModel $projectModel, MandrillService $mandrillService)
     {
         $user = $this->getUser();
         $em   = $this->getDoctrine()->getManager();
@@ -271,7 +298,7 @@ class FinancialController extends AbstractController
         ;
 
         if (!$project) {
-            return $this->forward('VocalizrAppBundle:Default:error', [
+            return $this->forward('App:Default:error', [
                 'error' => 'Invalid contest',
             ]);
         }
@@ -279,7 +306,7 @@ class FinancialController extends AbstractController
         $projectEscrow = $project->getProjectEscrow();
         // Make sure project still has escrow
         if ($projectEscrow->getRefunded()) {
-            return $this->forward('VocalizrAppBundle:Default:error', [
+            return $this->forward('App:Default:error', [
                 'error' => 'This contest has already been refunded',
             ]);
         }
@@ -288,16 +315,16 @@ class FinancialController extends AbstractController
         if ($request->isMethod('POST')) {
             // Make sure it hasn't been awarded
             if ($project->getProjectBid()) {
-                return $this->forward('VocalizrAppBundle:Default:error', [
+                return $this->forward('App:Default:error', [
                     'error' => 'You cannot get a refund on a contest that has been awarded',
                 ]);
             }
 
-            $refund = $this->get('vocalizr_app.model.project')->deactivateProject($project);
+            $refund = $projectModel->deactivateProject($project);
 
             if ($project->getProjectType() === Project::PROJECT_TYPE_CONTEST) {
                 foreach ($project->getProjectBids() as $projectBid) {
-                    $this->get('vocalizr_app.service.mandrill')->sendMessage(
+                    $mandrillService->sendMessage(
                         $projectBid->getUserInfo()->getEmail(),
                         'Contest Closed Early',
                         'contest-closed-early',
@@ -335,7 +362,7 @@ class FinancialController extends AbstractController
             ->setAmount('-' . $newWithdraw->getAmount())
             ->setType(UserWalletTransaction::TYPE_WITHDRAW_REQUEST)
             ->setUserInfo($newWithdraw->getUserInfo())
-            ->setCurrency($this->container->getParameter('default_currency'))
+            ->setCurrency($this->getParameter('default_currency'))
             ->setDescription($newWithdraw->getDescription())
             ->setEmail($newWithdraw->getPaypalEmail())
             ->setCustomId(UserWalletTransaction::TYPE_WITHDRAW_REQUEST . '_' . $newWithdraw->getId())

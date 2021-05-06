@@ -5,6 +5,8 @@ namespace App\Form\Type;
 use Doctrine\ORM\EntityRepository;
 
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\UrlType;
 use Symfony\Component\Form\FormBuilderInterface;
 
 class EditProjectContestType extends AbstractType
@@ -19,12 +21,12 @@ class EditProjectContestType extends AbstractType
         $defaultLanguage = $this->defaultLanguage;
 
         $builder->add('royalty', null, [
-            'label' => 'Royalty %',
-            'attr'  => [
-                'class' => 'form-control percent-slider',
-            ],
-            'required' => false,
-        ])
+                    'label' => 'Royalty %',
+                    'attr'  => [
+                        'class' => 'form-control percent-slider',
+                    ],
+                    'required' => false,
+                ])
                 ->add('royalty_mechanical', null, [
                     'label'    => 'Mechanical',
                     'required' => false,
@@ -58,7 +60,7 @@ class EditProjectContestType extends AbstractType
                         'label' => 'Vocalizr Certified Pros Only',
                     ]
                 )
-                ->add('audio_brief', 'url', [
+                ->add('audio_brief', UrlType::class, [
                     'label' => 'Audio Brief Link (Youtube, Soundcloud)',
                     'attr'  => [
                         'class'       => 'form-control',
@@ -67,7 +69,7 @@ class EditProjectContestType extends AbstractType
                 ])
                 ->add(
                     'gender',
-                    'choice',
+                    ChoiceType::class,
                     [
                         'label'             => 'Gender',
                         'attr'              => ['class' => 'select2'],
@@ -141,7 +143,7 @@ class EditProjectContestType extends AbstractType
                         'rows'  => '4',
                     ],
                 ])
-                ->add('lyrics_needed', 'choice', [
+                ->add('lyrics_needed', ChoiceType::class, [
                     'choices' => [
                         '1' => 'Vocalist to provide lyrics',
                         '0' => 'I will provide lyrics', ],

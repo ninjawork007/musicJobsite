@@ -5,31 +5,34 @@ namespace App\Form\Type;
 use Doctrine\ORM\EntityRepository;
 
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\DateType;
+use Symfony\Component\Form\Extension\Core\Type\UrlType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class EditProjectType extends AbstractType
 {
-    public function __construct($defaultLanguage, $budgets)
-    {
-        $this->defaultLanguage = $defaultLanguage;
-        $this->budgets         = $budgets;
-    }
 
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $defaultLanguage = $this->defaultLanguage;
-        $budgets         = $this->budgets;
+        $defaultLanguage = $options['english'];
+        $budgets         = [];
+
+        foreach ($options['budget'] as $value => $label) {
+            $budgets[$label] = $value;
+        }
 
         $builder->add(
             'budget',
-            'choice',
+            ChoiceType::class,
             [
                 'label'             => 'Budget',
                 'attr'              => ['class' => 'select2'],
                 'preferred_choices' => [''],
                 'required'          => true,
+                'mapped'            => false,
                 'choices'           => $budgets,
-                'property_path'     => false,
             ]
         )
                 /*
@@ -61,11 +64,11 @@ class EditProjectType extends AbstractType
                 ])
                 ->add(
                     'due_date',
-                    'date',
+                    DateType::class,
                     [
                         'label'  => 'Gig to be completed by',
                         'widget' => 'single_text',
-                        'format' => 'MM/dd/yyyy',
+//                        'format' => 'MM/dd/yyyy',
                         'attr'   => [
                             'class'               => 'form-control datepicker',
                             'type'                => 'text',
@@ -82,7 +85,7 @@ class EditProjectType extends AbstractType
                 )
                 ->add(
                     'gender',
-                    'choice',
+                    ChoiceType::class,
                     [
                         'label'             => 'Gender',
                         'attr'              => ['class' => 'select2'],
@@ -94,7 +97,7 @@ class EditProjectType extends AbstractType
                 )
                 ->add(
                     'looking_for',
-                    'choice',
+                    ChoiceType::class,
                     [
                         'label'             => 'Looking for',
                         'attr'              => ['class' => 'select2'],
@@ -118,7 +121,7 @@ class EditProjectType extends AbstractType
                         },
                     ]
                 )
-                ->add('audio_brief', 'url', [
+                ->add('audio_brief', UrlType::class, [
                     'label' => 'Audio Brief Link (Youtube, Soundcloud)',
                     'attr'  => [
                         'class'       => 'form-control',
@@ -182,6 +185,14 @@ class EditProjectType extends AbstractType
         ];
     }
 
+    public function configureOptions(OptionsResolver $resolver): void
+    {
+        $resolver->setDefaults([
+            // ...,
+            'english' => 'App\Entity\Language',
+            'budget' => [],
+        ]);
+    }
     public function getName()
     {
         return 'project';

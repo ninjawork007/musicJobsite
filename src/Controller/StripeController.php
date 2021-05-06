@@ -113,7 +113,7 @@ class StripeController extends AbstractController
             ['Stripe-Version: 2020-03-02;identity_beta=v4'],
             'https://api.stripe.com/v1/identity/verification_sessions',
             $data,
-            $this->container->getParameter('stripe_api_key')
+            $this->getParameter('stripe_api_key')
         );
 
         $stripe->call();
