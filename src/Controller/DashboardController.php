@@ -44,11 +44,6 @@ class DashboardController extends AbstractController
     public function indexAction(Request $request, Security $security)
     {
 
-        $encoder  = new MessageDigestPasswordEncoder('sha1', false, 1);
-        $password = $encoder->encodePassword("password", "95d76cdfcef0c9af572ab5d67d396da5");
-
-        dd($password);
-
         $em   = $this->getDoctrine()->getManager();
 
         /** @var UserInfo $user */
