@@ -2,7 +2,17 @@
 
 namespace App\Controller;
 
+use App\Entity\AdminActionAudit;
+use App\Form\Type\ArticleType;
+use App\Form\Type\AuthorType;
+use App\Model\UserInfoModel;
+use App\Service\StripeManager;
+use App\Service\UserRestrictionService;
 use Doctrine\ORM\EntityManager;
+use Slot\MandrillBundle\Message;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\Form\Extension\Core\Type\DateType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -118,7 +128,8 @@ class AdminController extends AbstractController
         $startDate->sub(new \DateInterval('P12W'));
         $endDate = new \DateTime();
 
-        return ['users'      => $numUsers,
+        return $this->render('Admin/index.html.twig', [
+            'users'          => $numUsers,
             'vocalists'      => $numVocalists,
             'producers'      => $numProducers,
             'proUsers'       => $proUsers,
@@ -128,7 +139,8 @@ class AdminController extends AbstractController
             'gigs_in_studio' => $numGigsInStudio,
             'range'          => $range,
             'startDate'      => $startDate,
-            'endDate'        => $endDate, ];
+            'endDate'        => $endDate
+        ]);
     }
 
     /**
@@ -142,9 +154,9 @@ class AdminController extends AbstractController
             return $this->redirect($this->generateUrl('dashboard'));
         }
 
-        $subscriptionType = $this->createForm(new SubscriptionType());
+        $subscriptionType = $this->createForm(SubscriptionType::class);
 
-        return $this->render('VocalizrAppBundle:Admin:adminUsers.html.twig', [
+        return $this->render('Admin/adminUsers.html.twig', [
             'subscription_form' => $subscriptionType->createView(),
         ]);
     }
@@ -209,7 +221,7 @@ class AdminController extends AbstractController
             'success'    => true,
             'numResults' => count($results),
             'html'       => $this->renderView(
-                'VocalizrAppBundle:Admin:adminUsersResults.html.twig',
+                'Admin/adminUsersResults.html.twig',
                 ['results' => $results]
             ),
         ];
@@ -253,7 +265,7 @@ class AdminController extends AbstractController
             'success' => true,
             'userId'  => $id,
             'html'    => $this->renderView(
-                'VocalizrAppBundle:Admin:adminUsersResults.html.twig',
+                'Admin/adminUsersResults.html.twig',
                 ['results' => [$user]]
             ),
         ]);
@@ -263,7 +275,7 @@ class AdminController extends AbstractController
      * @Route("/admin/user/activate/{id}", name="admin_user_activate")
      * @Route("/admin/user/deactivate/{id}", name="admin_user_deactivate")
      */
-    public function adminUserActivateAction(Request $request, $id)
+    public function adminUserActivateAction(Request $request, $id, UserInfoModel $userModel)
     {
         // check the logged in user is an admin
         if (!$this->getUser()->getIsAdmin()) {
@@ -275,7 +287,7 @@ class AdminController extends AbstractController
 
         $em = $this->getDoctrine()->getManager();
 
-        $userModel = $this->get('vocalizr_app.model.user_info');
+//        $userModel = $this->get('vocalizr_app.model.user_info');
 
         // load the user
         /** @var UserInfo $userInfo */
@@ -284,7 +296,7 @@ class AdminController extends AbstractController
         if (!$userInfo) {
             return new JsonResponse([
                 'success' => false,
-                'message'              => 'Invalid user',
+                'message' => 'Invalid user',
             ]);
         }
         $userInfo->setActivationEventSuppressed(true);
@@ -314,7 +326,7 @@ class AdminController extends AbstractController
             'success' => true,
             'userId'  => $userInfo->getId(),
             'html'    => $this->renderView(
-                'VocalizrAppBundle:Admin:adminUsersResults.html.twig',
+                'Admin/adminUsersResults.html.twig',
                 ['results' => $results]
             ),
         ];
@@ -328,20 +340,21 @@ class AdminController extends AbstractController
      * @param int $id
      * @return JsonResponse
      */
-    public function adminUserProAction(Request $request, $id)
+    public function adminUserProAction(Request $request, $id, UserInfoModel $userModel)
     {
         if (!$this->getUser() || !$this->getUser()->getIsAdmin()) {
             throw new AccessDeniedHttpException();
         }
         $em = $this->getDoctrine()->getManager();
-        $userModel = $this->get('vocalizr_app.model.user_info');
+//        $userModel = $this->get('vocalizr_app.model.user_info');
         $user = $userModel->getObject($id);
 
         $responseData = ['userId' => $id];
 
         if ($request->get('_route') === 'admin_user_upgrade') {
-            $type = $this->createForm(new SubscriptionType(), $subscription = new UserSubscription());
-            $type->bind($request);
+            $subscription = new UserSubscription();
+            $type         = $this->createForm(SubscriptionType::class, $subscription);
+            $type->handleRequest($request);
             $subscription
                 ->setSubscriptionPlan($plan = $em->getRepository('App:SubscriptionPlan')
                     ->findOneBy(['static_key' => 'PRO']))
@@ -372,7 +385,7 @@ class AdminController extends AbstractController
         } else {
             $responseData['success'] = true;
             $responseData['html'] = $this->renderView(
-                'VocalizrAppBundle:Admin:adminUsersResults.html.twig',
+                'Admin/adminUsersResults.html.twig',
                 ['results' => [$user]]
             );
         }
@@ -384,7 +397,7 @@ class AdminController extends AbstractController
      * @Route("/admin/user/certify/{id}/{from}", defaults={"from" = "admin"}, name="admin_user_certify")
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    public function adminUserCertifyAction(Request $request, $id, $from)
+    public function adminUserCertifyAction(Request $request, $id, $from, StripeManager $stripeManager, ContainerInterface $container)
     {
         // check the logged in user is an admin
         if (!$this->getUser()->getIsAdmin()) {
@@ -411,7 +424,7 @@ class AdminController extends AbstractController
             $audit->setAction('uncertify');
             $userCertified = $em->getRepository('App:UserCertification')
                 ->findOneBy(['userInfo' => $userInfo->getId()], ['id' => 'DESC']);
-            $stripeManager = $this->get('vocalizr_app.stripe_manager');
+//            $stripeManager = $this->get('vocalizr_app.stripe_manager');
             if (isset($userCertified)) {
                 $paymentSessionData = $em->getRepository('App:PaymentSessionData')
                     ->findOneBy(['userCertification' => $userCertified->getId()]);
@@ -422,15 +435,15 @@ class AdminController extends AbstractController
             $audit->setAction('certify');
 
             // Send email to user
-            $dispatcher = $this->container->get('hip_mandrill.dispatcher');
-            $message    = new \Hip\MandrillBundle\Message();
+            $dispatcher = $container->get('hip_mandrill.dispatcher');
+            $message    = new Message();
             $message->setSubject('Congratulations, you\'re Certified!');
             $message
                 ->setTrackOpens(true)
                 ->setTrackClicks(true);
 
             $message->addTo($userInfo->getEmail());
-            $body = $this->container->get('templating')->render('VocalizrAppBundle:Mail:certified.html.twig', [
+            $body = $this->container->get('templating')->render('Mail/certified.html.twig', [
                 'userInfo' => $userInfo,
             ]);
             $message->addGlobalMergeVar('BODY', $body);
@@ -447,7 +460,7 @@ class AdminController extends AbstractController
                 'success' => true,
                 'userId'  => $userInfo->getId(),
                 'html'    => $this->renderView(
-                    'VocalizrAppBundle:Admin:adminUsersResults.html.twig',
+                    'Admin/adminUsersResults.html.twig',
                     ['results' => $results]
                 ),
             ];
@@ -473,7 +486,7 @@ class AdminController extends AbstractController
 
         $em = $this->getDoctrine()->getManager();
 
-        return [];
+        return $this->render('Admin/adminProjects.html.twig', []);
     }
 
     /**
@@ -485,8 +498,9 @@ class AdminController extends AbstractController
 
         // check the logged in user is an admin
         if (!$this->getUser()->getIsAdmin()) {
-            $responseData = ['success' => false,
-                'message'              => 'Invalid Access', ];
+            $responseData = [
+                'success'  => false,
+                'message'  => 'Invalid Access', ];
             return new Response(json_encode($responseData));
         }
 
@@ -506,7 +520,7 @@ class AdminController extends AbstractController
             'success'    => true,
             'numResults' => count($results),
             'html'       => $this->renderView(
-                'VocalizrAppBundle:Admin:adminProjectsResults.html.twig',
+                'Admin/adminProjectsResults.html.twig',
                 ['results' => $results]
             ),
         ];
@@ -536,7 +550,7 @@ class AdminController extends AbstractController
         }
 
         // create the admin audit object for recording this action
-        $audit = new \App\Entity\AdminActionAudit();
+        $audit = new AdminActionAudit();
         $audit->setProject($project);
         $audit->setActioner($this->getUser());
 
@@ -559,7 +573,7 @@ class AdminController extends AbstractController
 
             // delete from activity
             $qb = $em->createQueryBuilder();
-            $qb->delete('VocalizrAppBundle:VocalizrActivity', 'v');
+            $qb->delete('App:VocalizrActivity', 'v');
             $qb->andWhere($qb->expr()->eq('v.project', ':project'));
             $qb->setParameter(':project', $project);
             $qb->getQuery()->execute();
@@ -604,7 +618,7 @@ class AdminController extends AbstractController
             'success'   => true,
             'projectId' => $project->getId(),
             'html'      => $this->renderView(
-                'VocalizrAppBundle:Admin:adminProjectsResults.html.twig',
+                'Admin/adminProjectsResults.html.twig',
                 ['results' => $results]
             ),
         ];
@@ -618,7 +632,7 @@ class AdminController extends AbstractController
      *
      * @return \App\Entity\UserWalletTransaction
      */
-    private function createUserWalletTransaction($project, $isDeactivate = true)
+    private function createUserWalletTransaction($project, $isDeactivate = true, UserInfoModel $userInfoModel)
     {
         $amount      = $project->getBudgetFrom() * 100;
         $description = 'Refund for cancelled Contest {project}';
@@ -627,8 +641,7 @@ class AdminController extends AbstractController
             $description = 'Escrow payment to contest {project}';
         }
 
-        $uwt = $this->get('vocalizr_app.model.user_info')
-            ->createWalletTransaction($project->getUserInfo(), $amount)
+        $uwt = $userInfoModel->createWalletTransaction($project->getUserInfo(), $amount)
         ;
 
         $uwt
@@ -735,7 +748,7 @@ class AdminController extends AbstractController
             return new JsonResponse([
                 'success'   => true,
                 'projectId' => $project->getId(),
-                'html'      => $this->renderView('VocalizrAppBundle:Admin:adminProjectsResults.html.twig', [
+                'html'      => $this->renderView('Admin/adminProjectsResults.html.twig', [
                     'results' => [$project],
                 ]),
             ]);
@@ -749,7 +762,7 @@ class AdminController extends AbstractController
         return new JsonResponse([
             'success'   => true,
             'projectId' => $project->getId(),
-            'html'      => $this->renderView('VocalizrAppBundle:Admin:adminProjectsResults.html.twig', [
+            'html'      => $this->renderView('Admin/adminProjectsResults.html.twig', [
                 'results'      => [$project],
                 'sent_receipt' => true,
             ]),
@@ -813,7 +826,7 @@ class AdminController extends AbstractController
         return new JsonResponse([
             'success'   => true,
             'projectId' => $project->getId(),
-            'html'      => $this->renderView('VocalizrAppBundle:Admin:adminProjectsResults.html.twig', [
+            'html'      => $this->renderView('Admin/adminProjectsResults.html.twig', [
                 'results' => [$project],
             ]),
         ]);
@@ -896,7 +909,7 @@ class AdminController extends AbstractController
 
         $error = null;
         $form  = $this->createFormBuilder()
-                ->add('startDate', 'date', [
+                ->add('startDate', DateType::class, [
                     'widget'      => 'single_text',
                     'constraints' => [
                         new \Symfony\Component\Validator\Constraints\NotBlank(), ],
@@ -904,7 +917,7 @@ class AdminController extends AbstractController
                         'class' => 'form-control ',
                     ],
                 ])
-                ->add('endDate', 'date', [
+                ->add('endDate', DateType::class, [
                     'widget'      => 'single_text',
                     'constraints' => [
                         new \Symfony\Component\Validator\Constraints\NotBlank(), ],
@@ -914,7 +927,7 @@ class AdminController extends AbstractController
                 ])
                 ->getForm();
         if ($request->isMethod('POST')) {
-            $form->bind($request);
+            $form->handleRequest($request);
             $startDate = $form->get('startDate')->getData();
             $endDate   = $form->get('endDate')->getData();
             if ($form->isValid()) {
@@ -953,7 +966,7 @@ class AdminController extends AbstractController
                 if (count($projects) == 0 && count($projectUpgrades) == 0) {
                     $error = 'No gigs found for that date period';
                 } else {
-                    $response = $this->render('VocalizrAppBundle:Admin:accountingReportCsv.html.twig', ['projects' => $projects, 'projectUpgrades' => $projectUpgrades]);
+                    $response = $this->render('Admin/accountingReportCsv.html.twig', ['projects' => $projects, 'projectUpgrades' => $projectUpgrades]);
 
                     $response->headers->set('Content-Type', 'text/csv');
                     $response->headers->set('Content-Disposition', 'attachment; filename="accountReport.csv"');
@@ -962,8 +975,10 @@ class AdminController extends AbstractController
                 }
             }
         }
-        return ['error' => $error,
-            'form'      => $form->createView(), ];
+        return $this->render('Admin/adminAccountingReport.html.twig', [
+            'error' => $error,
+            'form'  => $form->createView(),
+            ]);
     }
 
     // VMAG
@@ -974,11 +989,12 @@ class AdminController extends AbstractController
      * @Route("/admin/vmag", name="admin_vmag")
      * @Template()
      *
-     * @param \Symfony\Component\HttpFoundation\Request $request
+     * @param Request            $request
+     * @param ContainerInterface $container
      *
-     * @return \Symfony\Component\HttpFoundation\Response
+     * @return Response
      */
-    public function vmagAction(Request $request)
+    public function vmagAction(Request $request, ContainerInterface $container)
     {
         // check the logged in user is an admin
         if (!$this->getUser() || !$this->getUser()->getIsAdmin()) {
@@ -994,16 +1010,16 @@ class AdminController extends AbstractController
 
         $query = $q->getQuery();
 
-        $paginator  = $this->get('knp_paginator');
+        $paginator  = $container->get('knp_paginator');
         $pagination = $paginator->paginate(
             $query,
-            $this->get('request')->query->get('page', 1)/*page number*/,
+            $request->query->get('page', 1)/*page number*/,
             20// limit per page
         );
 
-        return [
+        return $this->render('Admin/vmag.html.twig', [
             'pagination' => $pagination,
-        ];
+        ]);
     }
 
     /**
@@ -1012,9 +1028,9 @@ class AdminController extends AbstractController
      * @Route("/admin/vmag/article/{id}", name="admin_vmag_article", defaults={"id" = ""})
      * @Template()
      *
-     * @param \Symfony\Component\HttpFoundation\Request $request
+     * @param Request $request
      *
-     * @return \Symfony\Component\HttpFoundation\Response
+     * @return Response
      */
     public function vmagArticleAction(Request $request, $id)
     {
@@ -1030,10 +1046,10 @@ class AdminController extends AbstractController
             $article = $em->getRepository('App:Article')->find($id);
         }
 
-        $form = $this->createForm(new \App\Form\Type\ArticleType($article), $article);
+        $form = $this->createForm(ArticleType::class, $article);
 
         if ($request->isMethod('POST')) {
-            $form->bindRequest($request);
+            $form->handleRequest($request);
 
             if (isset($_POST['publish'])) {
                 if (!$article->getPath() && !$article->getFile()) {
@@ -1064,9 +1080,9 @@ class AdminController extends AbstractController
 
                 if (isset($_POST['publish'])) {
                     $article->setPublishedAt(new \DateTime());
-                    $this->get('session')->setFlash('notice', 'Article Published');
+                    $this->addFlash('notice', 'Article Published');
                 } else {
-                    $this->get('session')->setFlash('notice', 'Article Saved');
+                    $this->addFlash('notice', 'Article Saved');
                 }
                 $em->persist($article);
                 $em->flush();
@@ -1075,10 +1091,10 @@ class AdminController extends AbstractController
             }
         }
 
-        return [
+        return $this->render('Admin/vmagArticle.html.twig', [
             'form'    => $form->createView(),
             'article' => $article,
-        ];
+        ]);
     }
 
     /**
@@ -1110,7 +1126,7 @@ class AdminController extends AbstractController
         $em->remove($article);
         $em->flush();
 
-        $this->get('session')->setFlash('notice', 'Article (' . $title . ') Deleted');
+        $this->addFlash('notice', 'Article (' . $title . ') Deleted');
 
         return $this->redirect($this->generateUrl('admin_vmag'));
     }
@@ -1213,9 +1229,9 @@ class AdminController extends AbstractController
 
         $images = $em->getRepository('App:ArticleImage')->findBy([], ['created_at' => 'DESC'], 12);
 
-        return [
+        return $this->render('Admin/vmagImages.html.twig', [
             'images' => $images,
-        ];
+        ]);
     }
 
     /**
@@ -1243,13 +1259,13 @@ class AdminController extends AbstractController
             $author = $em->getRepository('App:Author')->find($id);
         }
 
-        $form = $this->createForm(new \App\Form\Type\AuthorType(), $author);
+        $form = $this->createForm(AuthorType::class, $author);
 
         if ($request->isMethod('POST')) {
-            $form->bindRequest($request);
+            $form->handleRequest($request);
 
             if ($form->isValid()) {
-                $this->get('session')->setFlash('notice', 'Author Saved');
+                $this->addFlash('notice', 'Author Saved');
 
                 $em->persist($author);
                 $em->flush();
@@ -1258,10 +1274,10 @@ class AdminController extends AbstractController
             }
         }
 
-        return [
+        return $this->render('Admin/vmagAuthor.html.twig', [
             'form'   => $form->createView(),
             'author' => $author,
-        ];
+        ]);
     }
 
     /**
@@ -1270,11 +1286,12 @@ class AdminController extends AbstractController
      * @Route("/admin/vmag/authors", name="admin_vmag_authors")
      * @Template()
      *
-     * @param \Symfony\Component\HttpFoundation\Request $request
+     * @param Request            $request
+     * @param ContainerInterface $container
      *
-     * @return \Symfony\Component\HttpFoundation\Response
+     * @return Response
      */
-    public function vmagAuthorListAction(Request $request)
+    public function vmagAuthorListAction(Request $request, ContainerInterface $container)
     {
         // check the logged in user is an admin
         if (!$this->getUser()->getIsAdmin()) {
@@ -1284,21 +1301,21 @@ class AdminController extends AbstractController
         $em = $this->getDoctrine()->getManager();
         $q  = $em->getRepository('App:Author')->createQueryBuilder('a');
         $q->select('a');
-        $q->addSelect('(select count(ar.id) FROM VocalizrAppBundle:Article ar WHERE ar.author = a.id) article_count');
+        $q->addSelect('(select count(ar.id) FROM App:Article ar WHERE ar.author = a.id) article_count');
         $q->orderBy('a.created_at', 'DESC');
 
         $query = $q->getQuery();
 
-        $paginator  = $this->get('knp_paginator');
+        $paginator  = $container->get('knp_paginator');
         $pagination = $paginator->paginate(
             $query,
-            $this->get('request')->query->get('page', 1)/*page number*/,
+            $request->query->get('page', 1)/*page number*/,
             20// limit per page
         );
 
-        return [
+        return $this->render('Admin/vmagAuthorList.html.twig', [
             'pagination' => $pagination,
-        ];
+        ]);
     }
 
     /**
@@ -1306,9 +1323,9 @@ class AdminController extends AbstractController
      *
      * @Route("/admin/userJson", name="admin_user_json")
      *
-     * @param \Symfony\Component\HttpFoundation\Request $request
+     * @param Request $request
      *
-     * @return \Symfony\Component\HttpFoundation\Response
+     * @return Response
      */
     public function userJsonAction(Request $request)
     {
@@ -1367,7 +1384,9 @@ class AdminController extends AbstractController
                         'status' => 'PENDING',
                     ]);
 
-        return ['results' => $withdrawels];
+        return $this->render('Admin/adminWithdrawels.html.twig', [
+            'results' => $withdrawels
+        ]);
     }
 
     /**
@@ -1433,7 +1452,7 @@ class AdminController extends AbstractController
         $withdrawel = $q->getQuery()->getSingleResult();
 
         $cancelForm = $this->createFormBuilder()
-        ->add('message', 'textarea', [
+        ->add('message', TextareaType::class, [
             'label'    => 'Reason',
             'required' => false,
             'attr'     => [
@@ -1442,7 +1461,7 @@ class AdminController extends AbstractController
             ], ])
         ->getForm();
         if ($request->isMethod('POST')) {
-            $cancelForm->bind($request);
+            $cancelForm->handleRequest($request);
 
             $withdrawel->setStatus('DECLINED');
             $withdrawel->setStatusReason($cancelForm->get('message')->getData());
@@ -1456,7 +1475,7 @@ class AdminController extends AbstractController
             $em->flush();
         }
 
-        $this->get('session')->setFlash('notice', 'Withdrawel Cancelled');
+        $this->addFlash('notice', 'Withdrawel Cancelled');
         return $this->redirect($this->generateUrl('admin_withdrawels'));
     }
 
@@ -1489,7 +1508,7 @@ class AdminController extends AbstractController
         $errors         = [];
 
         $form = $this->createFormBuilder()
-                ->add('message', 'textarea', [
+                ->add('message', TextareaType::class, [
                     'label'    => 'Message',
                     'required' => false,
                     'data'     => 'Vocalizr Wallet Withdraw',
@@ -1500,7 +1519,7 @@ class AdminController extends AbstractController
                 ->getForm();
 
         $cancelForm = $this->createFormBuilder()
-                ->add('message', 'textarea', [
+                ->add('message', TextareaType::class, [
                     'label'    => 'Reason',
                     'required' => false,
                     'attr'     => [
@@ -1510,11 +1529,11 @@ class AdminController extends AbstractController
                 ->getForm();
 
         if ($request->isMethod('POST')) {
-            $form->bind($request);
+            $form->handleRequest($request);
 
             // check the withdraw hasn't already been completed
             if ($withdrawel->getStatus() == 'COMPLETED') {
-                $this->get('session')->setFlash('notice', 'NOTE: Withdrawel Request was previously marked completed!');
+                $this->addFlash('notice', 'NOTE: Withdrawel Request was previously marked completed!');
                 return $this->redirect($this->generateUrl('admin_withdrawels'));
             }
 
@@ -1540,7 +1559,7 @@ class AdminController extends AbstractController
 
             $em->flush();
 
-            $this->get('session')->setFlash('notice', 'Withdrawel Request has been completed successfully');
+            $this->addFlash('notice', 'Withdrawel Request has been completed successfully');
             return $this->redirect($this->generateUrl('admin_withdrawels'));
         }
 
@@ -1630,14 +1649,14 @@ class AdminController extends AbstractController
                 ->setTrackClicks(true);
         $message->addTo($marketplaceItem->getUserInfo()->getEmail());
 
-        $body = $this->container->get('templating')->render('VocalizrAppBundle:Mail:marketplaceItemApproved.html.twig', [
+        $body = $this->container->get('templating')->render('Mail/marketplaceItemApproved.html.twig', [
             'marketplaceItem' => $marketplaceItem,
         ]);
         $message->addGlobalMergeVar('BODY', $body);
 
         $dispatcher->send($message, 'default');
 
-        $this->get('session')->setFlash('notice', 'Marketplace Item has been approved');
+        $this->addFlash('notice', 'Marketplace Item has been approved');
         return $this->redirect($this->generateUrl('admin_marketplace'));
     }
 
@@ -1659,7 +1678,7 @@ class AdminController extends AbstractController
         }
 
         $form = $this->createFormBuilder($marketplaceItem)
-                ->add('status_reason', 'textarea', [
+                ->add('status_reason', TextareaType::class, [
                     'label'    => 'Reason',
                     'required' => false,
                     'attr'     => [
@@ -1669,28 +1688,28 @@ class AdminController extends AbstractController
                 ->getForm();
 
         if ($request->isMethod('POST')) {
-            $form->bind($request);
+            $form->handleRequest($request);
 
             $marketplaceItem->setStatus('rejected');
             $marketplaceItem->setStatusReason($form->get('status_reason')->getData());
             $em->flush();
 
             $dispatcher = $this->get('hip_mandrill.dispatcher');
-            $message    = new \Hip\MandrillBundle\Message();
+            $message    = new Message();
             $message->setPreserveRecipients(false);
             $message->setSubject('Vocalizr - Marketplace Item status updated');
             $message->setTrackOpens(true)
                     ->setTrackClicks(true);
             $message->addTo($marketplaceItem->getUserInfo()->getEmail());
 
-            $body = $this->container->get('templating')->render('VocalizrAppBundle:Mail:marketplaceItemRejected.html.twig', [
+            $body = $this->container->get('templating')->render('Mail/marketplaceItemRejected.html.twig', [
                 'marketplaceItem' => $marketplaceItem,
             ]);
             $message->addGlobalMergeVar('BODY', $body);
 
             $dispatcher->send($message, 'default');
 
-            $this->get('session')->setFlash('notice', 'Marketplace Item has been rejected');
+            $this->addFlash('notice', 'Marketplace Item has been rejected');
             return $this->redirect($this->generateUrl('admin_marketplace'));
         }
 
@@ -1834,17 +1853,16 @@ class AdminController extends AbstractController
      *
      * @return Response
      */
-    public function adminUserSubscriptions(Request $request)
+    public function adminUserSubscriptions(Request $request, UserInfoModel $userModel)
     {
         if (!$this->getUser() || !$this->getUser()->getIsAdmin()) {
             return $this->redirect($this->generateUrl('dashboard'));
         }
 
         $object = new SubscriptionIdsCsvObject();
-        $form   = $this->createForm(new SubscriptionIdsCsvType(), $object);
+        $form   = $this->createForm(SubscriptionIdsCsvType::class, $object);
         /** @var EntityManager $em */
-        $em            = $this->get('doctrine.orm.entity_manager');
-        $userModel     = $this->get('vocalizr_app.model.user_info');
+        $em            = $this->getDoctrine()->getManager();
         $messages      = [];
         $submitted     = false;
         $rowsCount     = 0;
@@ -1852,7 +1870,7 @@ class AdminController extends AbstractController
         $subscriptions = [];
 
         if ($request->isMethod('POST')) {
-            $form->bind($request);
+            $form->handleRequest($request);
             if ($form->isValid()) {
                 $submitted = true;
                 $handle    = fopen($object->getFile()->getPathname(), 'r');
@@ -1899,7 +1917,7 @@ class AdminController extends AbstractController
             $em->flush();
         }
 
-        return $this->render('@VocalizrApp/Admin/user_subscriptions.twig', [
+        return $this->render('Admin/user_subscriptions.twig', [
             'form'      => $form->createView(),
             'submitted' => $submitted,
             'messages'  => $messages,
@@ -1918,7 +1936,7 @@ class AdminController extends AbstractController
             return $this->redirect($this->generateUrl('dashboard'));
         }
 
-        return $this->render('@VocalizrApp/Admin/user_withdraw_email_lock.twig');
+        return $this->render('Admin/user_withdraw_email_lock.twig');
     }
 
     /**
@@ -1928,13 +1946,13 @@ class AdminController extends AbstractController
      * @param string $criteria
      * @return JsonResponse
      */
-    public function adminWithdrawEmailLockList(Request $request)
+    public function adminWithdrawEmailLockList(Request $request, UserRestrictionService $restrictionService)
     {
         if (!$this->getUser() || !$this->getUser()->getIsAdmin()) {
             throw new AccessDeniedHttpException();
         }
 
-        $restrictionService = $this->get('vocalizr_app.user_restriction');
+//        $restrictionService = $this->get('vocalizr_app.user_restriction');
         $searchTerm = trim($request->get('search-term'));
 
         if ($searchTerm == '') {
@@ -1962,7 +1980,7 @@ class AdminController extends AbstractController
             'success'    => true,
             'numResults' => count($users),
             'html'       => $this->renderView(
-                'VocalizrAppBundle:Admin:adminWithdrawEmailUserResults.html.twig',
+                'Admin/adminWithdrawEmailUserResults.html.twig',
                 ['results' => $users]
             ),
         ]);

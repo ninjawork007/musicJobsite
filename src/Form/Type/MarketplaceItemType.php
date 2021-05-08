@@ -5,6 +5,7 @@ namespace App\Form\Type;
 use Doctrine\ORM\EntityRepository;
 
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\FormBuilderInterface;
 
 class MarketplaceItemType extends AbstractType
@@ -23,7 +24,7 @@ class MarketplaceItemType extends AbstractType
         ])
                 ->add(
                     'item_type',
-                    'choice',
+                    ChoiceType::class,
                     [
                         'label'             => 'What are you selling?',
                         'attr'              => ['class' => 'select2'],
@@ -97,7 +98,7 @@ class MarketplaceItemType extends AbstractType
                 ])
                 ->add(
                     'gender',
-                    'choice',
+                    ChoiceType::class,
                     [
                         'label'             => 'Gender',
                         'attr'              => ['class' => 'select2'],

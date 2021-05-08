@@ -4,13 +4,13 @@
     <h1>User Subscriptions</h1>
     <div class="light-content">
 
-        <form method="post" {{ form_enctype(form) }}>
+        {{ form_start(form) }}
             <div class="form-group">
                 {{ form_row(form.file) }}
             </div>
             <button class="btn btn-default">Upload</button>
             {{ form_rest(form) }}
-        </form>
+        {{ form_end(form) }}
     </div>
     <div class="results-container">
         {% if submitted %}

@@ -3,7 +3,10 @@
 namespace App\Form\Type;
 
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 use App\Entity\UserProProfile;
 
@@ -16,11 +19,11 @@ class ProProfileType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('enabled', 'checkbox', [
+            ->add('enabled', CheckboxType::class, [
                 'label'    => 'Switch on Advanced Profile',
                 'required' => false,
             ])
-            ->add('heroImage', 'hidden')
+            ->add('heroImage', HiddenType::class)
             ->add('socialLinks', 'text', [
                 'label'         => 'Social Links',
                 'required'      => false,
@@ -54,7 +57,7 @@ class ProProfileType extends AbstractType
         ;
     }
 
-    public function setDefaultOptions(OptionsResolverInterface $resolver)
+    public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
             'data_class' => UserProProfile::class,

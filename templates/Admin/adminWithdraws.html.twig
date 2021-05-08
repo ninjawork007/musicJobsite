@@ -12,12 +12,13 @@
     <div class="row">
         <div class="col-sm-12">
             <h1>Withdraws</h1>
-            
-            {% if app.session.hasFlash('notice') %}
-                <div class="alert alert-success">
-                    {{ app.session.flash('notice') }}
-                </div>
-                {{ app.session.removeFlash('notice') }}
+
+            {% if app.session.flashbag.has('notice') %}
+                {% for message in app.flashes('notice') %}
+                    <div class="alert alert-success">
+                        {{ message }}
+                    </div>
+                {% endfor %}
             {% endif %}
 
             <table cellspacing="0" cellpadding="0" border="0" class="table table-dark" width="100%">

@@ -12,12 +12,13 @@
             <a href="{{ path('admin_vmag_authors') }}" class="btn btn-sm btn-default pull-right" style="margin-left: 5px;">BACK TO LIST</a>
             <a href="{{ path('admin_vmag_author') }}" class="btn btn-sm btn-default pull-right">NEW AUTHOR</a>
             <h1>Vmag Author</h1>
-            
-            {% if app.session.hasFlash('notice') %}
-                <div class="alert alert-success">
-                    {{ app.session.flash('notice') }}
-                </div>
-                {{ app.session.removeFlash('notice') }}
+
+            {% if app.session.flashbag.has('notice') %}
+                {% for message in app.flashes('notice') %}
+                    <div class="alert alert-success">
+                        {{ message }}
+                    </div>
+                {% endfor %}
             {% endif %}
             
             <form action="{{ path('admin_vmag_author', {id: app.request.get('id')} ) }}" method="post" novalidate enctype="multipart/form-data">

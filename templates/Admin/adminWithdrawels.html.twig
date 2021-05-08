@@ -19,11 +19,12 @@
         <div class="col-sm-10 admin-users">
             <h1>Withdrawel Requests</h1>
 
-            {% if app.session.hasFlash('notice') %}
-                <div class="alert alert-success">
-                    {{ app.session.flash('notice') }}
-                </div>
-                {{ app.session.removeFlash('notice') }}
+            {% if app.session.flashbag.has('notice') %}
+                {% for message in app.flashes('notice') %}
+                    <div class="alert alert-success">
+                        {{ message }}
+                    </div>
+                {% endfor %}
             {% endif %}
 
             <p>This page should be monitored on a daily basis to ensure withdrawels are acted upon promptly</p>

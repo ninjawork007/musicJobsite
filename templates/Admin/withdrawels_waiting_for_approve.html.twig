@@ -63,18 +63,22 @@
                 </div>
             </div>
 
-            {% if app.session.hasFlash('notice') %}
-                <div class="alert alert-success">
-                    {{ app.session.flash('notice') }}
-                </div>
-                {{ app.session.removeFlash('notice') }}
+            {% if app.session.flashbag.has('notice') %}
+                {% for message in app.flashes('notice') %}
+                    <div class="alert alert-success">
+                        {{ message }}
+                    </div>
+                {% endfor %}
             {% endif %}
-            {% if app.session.hasFlash('error') %}
-                <div class="alert alert-error">
-                    {{ app.session.flash('error') }}
-                </div>
-                {{ app.session.removeFlash('error') }}
+
+            {% if app.session.flashbag.has('error') %}
+                {% for message in app.flashes('error') %}
+                    <div class="alert alert-success">
+                        {{ message }}
+                    </div>
+                {% endfor %}
             {% endif %}
+
             <table cellspacing="0" cellpadding="0" border="0" class="table table-dark withdrawals" width="100%">
 
                 <thead>

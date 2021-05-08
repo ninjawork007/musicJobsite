@@ -4,10 +4,15 @@
 namespace App\Controller;
 
 
+use App\Service\MandrillService;
+use App\Service\StripeManager;
 use Doctrine\ORM\OptimisticLockException;
+
 use Slot\MandrillBundle\Message;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Entity\PaymentSessionData;
@@ -18,21 +23,26 @@ class AdminUserCertificationController extends AbstractController
 {
     /**
      * @Route("/admin/user_confirmation/list", name="userConfirmationList")
+     *
+     * @param Request            $request
+     * @param ContainerInterface $container
+     *
+     * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function userConfirmationListAction()
+    public function userConfirmationListAction(Request $request, ContainerInterface $container)
     {
         $this->checkAdmin();
 
         $userCertificationsQuery = $this->getDoctrine()->getRepository('App:UserCertification')
             ->findUserConfirmationsQuery();
-        $paginator  = $this->get('knp_paginator');
+        $paginator  = $container->get('knp_paginator');
         $pagination = $paginator->paginate(
             $userCertificationsQuery,
-            $this->get('request')->query->get('page', 1)/*page number*/,
+            $request->query->get('page', 1)/*page number*/,
             20// items per page
         );
 
-        return $this->render('@VocalizrApp/Admin/user_certification_waiting_for_approve.html.twig', [
+        return $this->render('Admin/user_certification_waiting_for_approve.html.twig', [
             'pagination' => $pagination,
         ]);
     }
@@ -47,17 +57,17 @@ class AdminUserCertificationController extends AbstractController
     {
         $this->checkAdmin();
 
-        $em = $this->getDoctrine()->getEntityManager();
+        $em = $this->getDoctrine()->getManager();
         /** @var UserCertification $userCertification */
         $userCertification = $em->getRepository(UserCertification::class)
             ->find($id);
         if (is_null($userCertification)) {
-            $this->get('session')->setFlash('error', 'User not found');
+            $this->addFlash('error', 'User not found');
             return $this->redirect($this->generateUrl('userConfirmationList'));
         }
         $this->userConfirmationApprove($userCertification);
 
-        $this->get('session')->setFlash('notice', 'Certification approved');
+        $this->addFlash('notice', 'Certification approved');
         return $this->redirect($this->generateUrl('userConfirmationList'));
     }
 
@@ -76,7 +86,7 @@ class AdminUserCertificationController extends AbstractController
         foreach ($userCertifications as $userCertification) {
             $this->userConfirmationApprove($userCertification);
         }
-        $this->get('session')->setFlash('notice', 'Certification approved');
+        $this->addFlash('notice', 'Certification approved');
 
         return $this->redirect($this->generateUrl('userConfirmationList'));
 
@@ -85,11 +95,11 @@ class AdminUserCertificationController extends AbstractController
     /**
      * @Route("/admin/user_confirmation/deny/{id}", name="userConfirmationDeny")
      * @param $id
+     * @param StripeManager $stripeManager
      * @return RedirectResponse
-     * @throws OptimisticLockException
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    public function userConfirmationDenyAction($id)
+    public function userConfirmationDenyAction($id, StripeManager $stripeManager)
     {
         $this->checkAdmin();
 
@@ -99,7 +109,7 @@ class AdminUserCertificationController extends AbstractController
         $userCertified = $em->getRepository(UserCertification::class)->find($id);
 
         if (!$userCertified) {
-            $this->get('session')->setFlash('error', 'User not found');
+            $this->addFlash('error', 'User not found');
             return $this->redirect($this->generateUrl('userConfirmationList'));
         }
 
@@ -110,7 +120,7 @@ class AdminUserCertificationController extends AbstractController
 
         if ($paymentSessionData) {
 
-            $stripeManager = $this->get('vocalizr_app.stripe_manager');
+//            $stripeManager = $this->get('vocalizr_app.stripe_manager');
 
             $error = null;
 
@@ -149,19 +159,20 @@ class AdminUserCertificationController extends AbstractController
         }
 
         $this->userConfirmationDeny($userCertified);
-        $this->get('session')->setFlash('notice', 'Certification attempt successfully denied.');
+        $this->addFlash('notice', 'Certification attempt successfully denied.');
 
         return $this->redirect($this->generateUrl('userConfirmationList'));
     }
 
     /**
      * @param UserCertification $userCertification
+     * @param MandrillService   $mandrill
+     *
      * @return UserCertification
-     * @throws OptimisticLockException
      */
-    private function userConfirmationApprove(UserCertification $userCertification)
+    private function userConfirmationApprove(UserCertification $userCertification, MandrillService $mandrill)
     {
-        $em = $this->getDoctrine()->getEntityManager();
+        $em = $this->getDoctrine()->getManager();
         /** @var UserInfo $userInfo */
         $userInfo = $userCertification->getUserInfo();
         $userCertification->setValidatedAt(new \DateTime());
@@ -169,13 +180,13 @@ class AdminUserCertificationController extends AbstractController
         $userInfo->setIsCertified(true);
         $em->flush();
 
-        $mandrill = $this->container->get('vocalizr_app.service.mandrill');
+//        $mandrill = $this->container->get('vocalizr_app.service.mandrill');
         $message = new Message();
         $message
             ->setTrackOpens(true)
             ->setTrackClicks(true);
 
-        $body = $this->container->get('templating')->render('VocalizrAppBundle:Mail:certified.html.twig', [
+        $body = $this->render('Mail/certified.html.twig', [
             'userInfo' => $userInfo,
         ]);
         $message->addGlobalMergeVar('BODY', $body);
@@ -186,12 +197,12 @@ class AdminUserCertificationController extends AbstractController
 
     /**
      * @param UserCertification $userCertification
+     * @param MandrillService   $mandrill
      * @return UserCertification
-     * @throws OptimisticLockException
      */
-    private function userConfirmationDeny(UserCertification $userCertification)
+    private function userConfirmationDeny(UserCertification $userCertification, MandrillService $mandrill)
     {
-        $em = $this->getDoctrine()->getEntityManager();
+        $em = $this->getDoctrine()->getManager();
         /** @var UserInfo $userInfo */
         $userInfo = $userCertification->getUserInfo();
         $userCertification->setValidatedAt(new \DateTime());
@@ -201,7 +212,7 @@ class AdminUserCertificationController extends AbstractController
         $em->persist($userCertification);
         $em->flush();
 
-        $mandrill = $this->container->get('vocalizr_app.service.mandrill');
+//        $mandrill = $this->container->get('vocalizr_app.service.mandrill');
         $message = new Message();
         $message->setPreserveRecipients(false);
         $message

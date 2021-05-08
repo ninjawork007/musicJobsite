@@ -20,16 +20,19 @@ class AdminRevenueController extends AbstractController
     /**
      * @Route("/admin/revenue", name="admin_revenue")
      */
-    public function indexAction()
+    public function indexAction(RevenueManager $revenueManager)
     {
         $this->checkAdmin();
 
-        $revenueManager = $this->get('vocalizr_app.revenue_manager');
+//        $revenueManager = $this->get('vocalizr_app.revenue_manager');
 
         $revenueCurrentMonth = $revenueManager->revenueCurrentMonth();
         $revenueAllTime = $revenueManager->revenueAllTime();
 
-        return $this->render('@VocalizrApp/Admin/admin_revenue.html.twig', ['revenueCurrentMonth' => $revenueCurrentMonth, 'revenueAllTime' => $revenueAllTime]);
+        return $this->render('Admin/admin_revenue.html.twig', [
+            'revenueCurrentMonth' => $revenueCurrentMonth,
+            'revenueAllTime'      => $revenueAllTime
+        ]);
     }
 
     /**

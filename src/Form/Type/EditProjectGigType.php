@@ -5,6 +5,9 @@ namespace App\Form\Type;
 use Doctrine\ORM\EntityRepository;
 
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\DateType;
+use Symfony\Component\Form\Extension\Core\Type\UrlType;
 use Symfony\Component\Form\FormBuilderInterface;
 
 class EditProjectGigType extends AbstractType
@@ -22,7 +25,7 @@ class EditProjectGigType extends AbstractType
 
         $builder->add(
             'budget',
-            'choice',
+            ChoiceType::class,
             [
                 'label'             => 'Budget',
                 'attr'              => ['class' => 'select2'],
@@ -56,7 +59,7 @@ class EditProjectGigType extends AbstractType
                 )
                 ->add(
                     'gender',
-                    'choice',
+                    ChoiceType::class,
                     [
                         'label'             => 'Gender',
                         'attr'              => ['class' => 'select2'],
@@ -66,7 +69,7 @@ class EditProjectGigType extends AbstractType
                             'male'                 => 'Male', ],
                     ]
                 )
-                ->add('audio_brief', 'url', [
+                ->add('audio_brief', UrlType::class, [
                     'label' => 'Audio Brief Link (Youtube, Soundcloud)',
                     'attr'  => [
                         'class'       => 'form-control',
@@ -75,7 +78,7 @@ class EditProjectGigType extends AbstractType
                 ])
                 ->add(
                     'due_date',
-                    'date',
+                    DateType::class,
                     [
                         'label'  => 'Gig to be completed by',
                         'widget' => 'single_text',

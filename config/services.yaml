@@ -67,7 +67,18 @@ services:
         public: true
 
     hip_mandrill.dispatcher:
-        class: Hip\MandrillBundle\Dispatcher
+        class: Slot\MandrillBundle\Dispatcher
+        autowire: true
+        autoconfigure: true
+        arguments:
+            - "@slot_mandrill.client"
+            - "%slot_mandrill.default.sender%"
+            - "%slot_mandrill.default.sender_name%"
+            - "%slot_mandrill.default.subaccount%"
+            - "%slot_mandrill.disable_delivery%"
+            - "%slot_mandrill.proxy%"
+            - "%slot_mandrill.debug%"
+        public: true
 
     vocalizr_app.service.mandrill:
         class: App\Service\MandrillService

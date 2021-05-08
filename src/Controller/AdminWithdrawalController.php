@@ -2,7 +2,10 @@
 
 namespace App\Controller;
 
+use App\Model\UserInfoModel;
+use App\Service\PayPalApiService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -16,8 +19,13 @@ class AdminWithdrawalController extends AbstractController
 {
     /**
      * @Route("/admin/withdraw/approvals", name="admin_withdraw_approvals")
+     *
+     * @param Request            $request
+     * @param ContainerInterface $container
+     *
+     * @return Response
      */
-    public function adminWithdrawsList(Request $request)
+    public function adminWithdrawsList(Request $request, ContainerInterface $container)
     {
         // check the logged in user is an admin
         if (!$this->getUser()->getIsAdmin()) {
@@ -82,14 +90,14 @@ class AdminWithdrawalController extends AbstractController
             ];
         }
 
-        $paginator  = $this->get('knp_paginator');
+        $paginator  = $container->get('knp_paginator');
         $pagination = $paginator->paginate(
             $result,
-            $this->get('request')->query->get('page', 1)/*page number*/,
+            $request->query->get('page', 1)/*page number*/,
             20// items per page
         );
 
-        return $this->render('@VocalizrApp/Admin/withdrawels_waiting_for_approve.html.twig', [
+        return $this->render('Admin/withdrawels_waiting_for_approve.html.twig', [
             'pagination' => $pagination,
         ]);
     }
@@ -112,18 +120,18 @@ class AdminWithdrawalController extends AbstractController
         /** @var UserWithdraw $withdraw */
         $withdraw = $em->getRepository(UserWithdraw::class)->find($id);
         if (!$withdraw) {
-            $this->get('session')->setFlash('error', 'Withdraw not found');
+            $this->addFlash('error', 'Withdraw not found');
             return $this->redirect($this->generateUrl('admin_withdraw_approvals'));
         }
         if ($withdraw->getStatus() !== UserWithdraw::WITHDRAW_STATUS_WAITING_APPROVE) {
-            $this->get('session')->setFlash('error', 'Invalid withdraw status');
+            $this->addFlash('error', 'Invalid withdraw status');
             return $this->redirect($this->generateUrl('admin_withdraw_approvals'));
         }
 
         $withdraw->setStatus(UserWithdraw::WITHDRAW_STATUS_PENDING);
         $em->flush();
 
-        $this->get('session')->setFlash('notice', 'Withdraw approved.');
+        $this->addFlash('notice', 'Withdraw approved.');
         return $this->redirect($this->generateUrl('admin_withdraw_approvals'));
     }
 
@@ -144,7 +152,7 @@ class AdminWithdrawalController extends AbstractController
         $withdraws = $withdraws->getResult();
         
         if (!$withdraws) {
-            $this->get('session')->setFlash('error', 'Withdraws not found');
+            $this->addFlash('error', 'Withdraws not found');
             return $this->redirect($this->generateUrl('admin_withdraw_approvals'));
         }
 
@@ -155,23 +163,23 @@ class AdminWithdrawalController extends AbstractController
         }
         $em->flush();
 
-        $this->get('session')->setFlash('notice', 'Withdraws approved.');
+        $this->addFlash('notice', 'Withdraws approved.');
         return $this->redirect($this->generateUrl('admin_withdraw_approvals'));
     }
 
 
     /**
      * @param $id
+     * @param UserInfoModel     $userInfoModel
+     * @param PayPalApiService  $ppApiService
      * @return Response
-     *
-     * @throws \Doctrine\ORM\NonUniqueResultException
      *
      * @Route("/admin/withdraw/{id}/deny", name="admin_withdraw_deny")
      */
-    public function adminDenyWithdraw($id)
+    public function adminDenyWithdraw($id, UserInfoModel $userInfoModel, PayPalApiService $ppApiService)
     {
         // check the logged in user is an admin
-        if (!$this->getUser()->getIsAdmin()) {
+        if (!$this->getUser() || !$this->getUser()->getIsAdmin()) {
             throw new AccessDeniedException();
         }
         $em = $this->getDoctrine()->getManager();
@@ -179,11 +187,11 @@ class AdminWithdrawalController extends AbstractController
         /** @var UserWithdraw $withdraw */
         $withdraw = $em->getRepository(UserWithdraw::class)->find($id);
         if (!$withdraw) {
-            $this->get('session')->setFlash('error', 'Withdraw not found');
+            $this->addFlash('error', 'Withdraw not found');
             return $this->redirect($this->generateUrl('admin_withdraw_approvals'));
         }
         if ($withdraw->getStatus() !== UserWithdraw::WITHDRAW_STATUS_WAITING_APPROVE) {
-            $this->get('session')->setFlash('error', 'Invalid withdraw status');
+            $this->addFlash('error', 'Invalid withdraw status');
             return $this->redirect($this->generateUrl('admin_withdraw_approvals'));
         }
 
@@ -193,9 +201,9 @@ class AdminWithdrawalController extends AbstractController
             $projectCreatorDeposits = $em->getRepository(UserWalletTransaction::class)
                 ->findTransactionsByTypeAndUser(UserWalletTransaction::TYPE_DEPOSIT, $lastAwardedProject->getUserInfo());
 
-            $this->get('vocalizr_app.model.user_info')->deactivate($lastAwardedProject->getUserInfo());
+            $userInfoModel->deactivate($lastAwardedProject->getUserInfo());
 
-            $ppApiService = $this->get('vocalizr_app.paypal_api');
+//            $ppApiService = $this->get('vocalizr_app.paypal_api');
 
             foreach ($projectCreatorDeposits as $deposit) {
                 $txnId = explode('(',$deposit->getDescription());
@@ -204,11 +212,11 @@ class AdminWithdrawalController extends AbstractController
             }
         }
         $withdraw->setStatus(UserWithdraw::WITHDRAW_STATUS_CANCELLED);
-        $this->get('vocalizr_app.model.user_info')->deactivate($withdraw->getUserInfo());
+        $userInfoModel->deactivate($withdraw->getUserInfo());
 
         $em->flush();
 
-        $this->get('session')->setFlash('notice', 'Withdraw denies. Users are blocked. All U2 deposits refunded.');
+        $this->addFlash('notice', 'Withdraw denies. Users are blocked. All U2 deposits refunded.');
         return $this->redirect($this->generateUrl('admin_withdraw_approvals'));
     }
 

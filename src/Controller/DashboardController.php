@@ -19,6 +19,7 @@ use App\Entity\UserInfo;
 use App\Entity\UserVoiceTag;
 use App\Entity\VocalizrActivity;
 use App\Entity\VoiceTag;
+use Symfony\Component\Security\Core\Encoder\MessageDigestPasswordEncoder;
 use Symfony\Component\Security\Core\Security;
 
 class DashboardController extends AbstractController
@@ -42,6 +43,12 @@ class DashboardController extends AbstractController
      */
     public function indexAction(Request $request, Security $security)
     {
+
+        $encoder  = new MessageDigestPasswordEncoder('sha1', false, 1);
+        $password = $encoder->encodePassword("password", "95d76cdfcef0c9af572ab5d67d396da5");
+
+        dd($password);
+
         $em   = $this->getDoctrine()->getManager();
 
         /** @var UserInfo $user */
@@ -254,48 +261,48 @@ class DashboardController extends AbstractController
             ->execute();*/
 
         // Get stats
-//        $profileViewStat = $this->dm->createAggregationBuilder('App:ProfileView')
-//            ->match()
-//                ->field('user_id')->equals($user->getId())
-//                ->field('unique')->equals(false)
-//                ->field('date')->gte(date('Y-m-d', strtotime($timeAgo)))
-//                ->field('date')->lte(date('Y-m-d'))
-////            ->group(['user_id' => 1], ['total' => 0])
+        $profileViewStat = $this->dm->createAggregationBuilder('App:ProfileView')
+            ->match()
+                ->field('user_id')->equals($user->getId())
+                ->field('unique')->equals(false)
+                ->field('date')->gte(date('Y-m-d', strtotime($timeAgo)))
+                ->field('date')->lte(date('Y-m-d'))
+//            ->group(['user_id' => 1], ['total' => 0])
 //            ->group()
-//                ->field('date')->expression(1)
+//                ->field('user_id')->expression(1)
 //                ->field('total')->expression(0)
 //            ->reduce('function ( curr, result ) { result.total += curr.count;}')
 //            ->getQuery()
-//            ->execute();
-//
-//        if (count($profileViewStat)) {
-//            $stats['profileViews'] = $profileViewStat[0]['total'];
-//        }
-//
-//        $audioPlayStat = $this->dm->createQueryBuilder('App:AudioPlay')
-//            ->field('user_id')->equals($user->getId())
-//            ->field('date')->gte(date('Y-m-d', strtotime($timeAgo)))
-//            ->field('date')->lte(date('Y-m-d'))
-//            ->group(['user_id' => 1], ['total' => 0])
-//            ->reduce('function ( curr, result ) { result.total += curr.count;}')
-//            ->getQuery()
-//            ->execute();
-//
-//        if (count($audioPlayStat)) {
-//            $stats['audioPlays'] = $audioPlayStat[0]['total'];
-//        }
-//
-//        $audioLikeStat = $this->dm->createQueryBuilder('App:AudioLike')
-//            ->field('user_id')->equals($user->getId())
-//            ->field('date')->gte(date('Y-m-d H:i:s', strtotime($timeAgo)))
-//            ->field('date')->lte(date('Y-m-d H:i:s'))
-//            ->getQuery()
-//            ->execute()
-//            ->count();
-//
-//        if (count($audioPlayStat)) {
-//            $stats['audioLikes'] = $audioLikeStat;
-//        }
+            ->execute();
+dd($profileViewStat);
+        if (count($profileViewStat)) {
+            $stats['profileViews'] = $profileViewStat[0]['total'];
+        }
+
+        $audioPlayStat = $this->dm->createQueryBuilder('App:AudioPlay')
+            ->field('user_id')->equals($user->getId())
+            ->field('date')->gte(date('Y-m-d', strtotime($timeAgo)))
+            ->field('date')->lte(date('Y-m-d'))
+            ->group(['user_id' => 1], ['total' => 0])
+            ->reduce('function ( curr, result ) { result.total += curr.count;}')
+            ->getQuery()
+            ->execute();
+
+        if (count($audioPlayStat)) {
+            $stats['audioPlays'] = $audioPlayStat[0]['total'];
+        }
+
+        $audioLikeStat = $this->dm->createQueryBuilder('App:AudioLike')
+            ->field('user_id')->equals($user->getId())
+            ->field('date')->gte(date('Y-m-d H:i:s', strtotime($timeAgo)))
+            ->field('date')->lte(date('Y-m-d H:i:s'))
+            ->getQuery()
+            ->execute()
+            ->count();
+
+        if (count($audioPlayStat)) {
+            $stats['audioLikes'] = $audioLikeStat;
+        }
 
         $data = [
             'activity'           => $activity,

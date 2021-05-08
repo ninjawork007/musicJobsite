@@ -3,7 +3,9 @@
 namespace App\Form\Type\Admin;
 
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 use App\Object\SubscriptionIdsCsvObject;
 
@@ -30,7 +32,7 @@ class SubscriptionIdsCsvType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('file', 'file', [
+            ->add('file', FileType::class, [
                 'label' => 'CSV File',
                 'attr'  => [
                     'class' => 'form-control',
@@ -42,7 +44,7 @@ class SubscriptionIdsCsvType extends AbstractType
     /**
      * {@inheritdoc}
      */
-    public function setDefaultOptions(OptionsResolverInterface $resolver)
+    public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
             'data_class' => SubscriptionIdsCsvObject::class,

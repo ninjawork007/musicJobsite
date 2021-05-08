@@ -3,7 +3,10 @@
 namespace App\Form\Type\Admin;
 
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\DateType;
+use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 use App\Entity\UserSubscription;
 
@@ -12,7 +15,7 @@ class SubscriptionType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('paypalAccount', 'email', [
+            ->add('paypalAccount', EmailType::class, [
                 'label'    => 'PayPal Email',
                 'required' => false,
                 'attr'     => [
@@ -27,7 +30,7 @@ class SubscriptionType extends AbstractType
                 'label'    => 'Stripe Subscription ID',
                 'required' => false,
             ])
-            ->add('dateEnded', 'date', [
+            ->add('dateEnded', DateType::class, [
                 'label'    => 'Expiration Date',
                 'required' => true,
                 'data' => new \DateTime('+1 month')
@@ -38,7 +41,7 @@ class SubscriptionType extends AbstractType
     /**
      * {@inheritdoc}
      */
-    public function setDefaultOptions(OptionsResolverInterface $resolver)
+    public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
             'data_class' => UserSubscription::class,

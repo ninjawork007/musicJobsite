@@ -5,17 +5,18 @@ namespace App\Form\Type;
 use App\Entity\Article;
 use Doctrine\ORM\EntityRepository;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 
 class ArticleType extends AbstractType
 {
-    public function __construct(Article $article)
-    {
-        $this->article = $article;
-    }
+    public $article = null;
 
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
+        $this->article = $options['data'];
+//dd($this->article);
         $builder->add('title', null, [
             'attr' => [
                 'class' => 'form-control',
@@ -29,13 +30,13 @@ class ArticleType extends AbstractType
         ]);
         $builder->add('article_category', null, [
             'label'       => 'Category',
-            'empty_value' => '',
+//            'empty_value' => '',
             'attr'        => [
                 'class' => 'form-control',
             ],
         ]);
 
-        $builder->add('file', 'file', [
+        $builder->add('file', FileType::class, [
             'label' => 'Header Image - 1588 x 350',
             'attr'  => [
                 'class' => 'form-control',
@@ -59,7 +60,7 @@ class ArticleType extends AbstractType
             },
         ]);
 
-        $builder->add('short_desc', 'text', [
+        $builder->add('short_desc', TextType::class, [
             'attr' => [
                 'class' => 'form-control',
             ],

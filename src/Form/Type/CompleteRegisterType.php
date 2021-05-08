@@ -3,6 +3,8 @@
 namespace App\Form\Type;
 
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\PasswordType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 
 class CompleteRegisterType extends AbstractType
@@ -19,11 +21,11 @@ class CompleteRegisterType extends AbstractType
             'required' => false,
         ]);
 
-        $builder->add('referral_code', 'text', [
+        $builder->add('referral_code', TextType::class, [
             'label' => 'Beta Code',
         ]);
 
-        $builder->add('password', 'password', [
+        $builder->add('password', PasswordType::class, [
             'label' => 'Vocalizr Password',
         ]);
     }

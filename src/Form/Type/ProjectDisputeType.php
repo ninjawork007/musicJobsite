@@ -3,7 +3,9 @@
 namespace App\Form\Type;
 
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 use Symfony\Component\Validator\Constraints\NotBlank;
@@ -29,7 +31,7 @@ class ProjectDisputeType extends AbstractType
             $amountLabel = "Amount i'll accept";
             $maxAmount   = ($this->projectBid->getAmount() / 100);
         }
-        $builder->add('amount', 'text', [
+        $builder->add('amount', TextType::class, [
             'label' => $amountLabel,
             'attr'  => [
                 'class'       => 'form-control',
@@ -51,7 +53,7 @@ class ProjectDisputeType extends AbstractType
         ]);
     }
 
-    public function setDefaultOptions(OptionsResolverInterface $resolver)
+    public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
             'data_class' => 'App\Entity\ProjectDispute',
