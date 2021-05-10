@@ -404,7 +404,7 @@ class ProjectBidRepository extends EntityRepository
     {
         $q = $this->createQueryBuilder('pb')
             ->select('pb, ui, ua, uvt, vt, uvs, vs')
-            ->addSelect('(SELECT COUNT(ur.id) FROM VocalizrAppBundle:UserReview ur WHERE ur.user_info = ui.id) user_review_count')
+            ->addSelect('(SELECT COUNT(ur.id) FROM App:UserReview ur WHERE ur.user_info = ui.id) user_review_count')
             ->innerJoin('pb.user_info', 'ui')
             ->leftJoin('ui.user_audio', 'ua', 'WITH', 'ua.default_audio = 1')
             ->leftJoin('ui.user_voice_tags', 'uvt')

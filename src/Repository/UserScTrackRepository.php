@@ -27,7 +27,7 @@ class UserScTrackRepository extends EntityRepository
 
         foreach ($tracks as $track) {
             $entity   = new UserScTrack();
-            $userInfo = $this->_em->getReference('VocalizrAppBundle:UserInfo', $userInfoId);
+            $userInfo = $this->_em->getReference('App:UserInfo', $userInfoId);
             $entity->setUserInfo($userInfo);
             $entity->setScId($track->id);
             $entity->setTitle($track->title);
@@ -62,7 +62,7 @@ class UserScTrackRepository extends EntityRepository
     public function deleteByUserInfoId($userInfoId)
     {
         $q = $this->createQueryBuilder('t')
-                ->delete('VocalizrAppBundle:UserScTrack', 't')
+                ->delete('App:UserScTrack', 't')
                 ->where('t.user_info = :userInfoId')
                 ->setParameter(':userInfoId', $userInfoId);
         $query = $q->getQuery();

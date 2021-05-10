@@ -11,6 +11,7 @@ use Doctrine\ORM\Query;
 use App\Entity\UserAudio;
 use App\Entity\UserInfo;
 use Doctrine\Persistence\ManagerRegistry;
+use getID3;
 
 
 class UserAudioRepository extends ServiceEntityRepository
@@ -35,13 +36,13 @@ class UserAudioRepository extends ServiceEntityRepository
         $userAudios = $this->getProfileTracksByUser($userInfoId);
 
         // Check if file exists
-        $uploadDir = __DIR__ . '/../../../../tmp';
+        $uploadDir = __DIR__ . '/../../tmp';
         if (!file_exists($uploadDir . DIRECTORY_SEPARATOR . $fileName)) {
             echo $uploadDir . DIRECTORY_SEPARATOR . $fileName;
             return false;
         }
 
-        $userInfo = $em->getReference('VocalizrAppBundle:UserInfo', $userInfoId);
+        $userInfo = $em->getReference('App:UserInfo', $userInfoId);
 
         $userAudio = new UserAudio();
         $userAudio->setUserInfo($userInfo);
@@ -55,7 +56,7 @@ class UserAudioRepository extends ServiceEntityRepository
         }
 
         // Calculate length
-        $getID3   = new \getid3();
+        $getID3   = new getid3();
         $fileInfo = $getID3->analyze($uploadDir . DIRECTORY_SEPARATOR . $fileName);
         if (isset($fileInfo['playtime_seconds'])) {
             $milliseconds = $fileInfo['playtime_seconds'] * 1000;
@@ -217,7 +218,7 @@ class UserAudioRepository extends ServiceEntityRepository
         }
 
         $entity = new UserAudio();
-        $entity->setUserInfo($em->getReference('VocalizrAppBundle:UserInfo', $userInfoId));
+        $entity->setUserInfo($em->getReference('App:UserInfo', $userInfoId));
         $entity->setScId($scTrack->getScId());
         $entity->setDuration($scTrack->getDuration());
         $entity->setDurationString($scTrack->getDuration());

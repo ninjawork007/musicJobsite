@@ -18,7 +18,7 @@
         <p>0{{ loop.index }}.</p>
         <span class="play js-play-btn play-btn">
             <span class="play-shape"></span>
-{#            <img src="{{ asset('/bundles/vocalizrapp/bootstrap4/img/icon_play.svg') }}" alt="play">#}
+{#            <img src="{{ asset('bootstrap4/img/icon_play.svg') }}" alt="play">#}
         </span>
     </span>
     <div class="lists__tb-3 lists__name-track">
@@ -43,7 +43,7 @@
         }) }}" class="lists__heart-like {{ isAudioLiked ? 'liked' }}">
 
             <img class="img-svg"
-                 src="{{ asset('/bundles/vocalizrapp/bootstrap4/img/icon_heart.svg') }}"
+                 src="{{ asset('bootstrap4/img/icon_heart.svg') }}"
                  alt="heart">
         </a>
         <span class="lists__value likes-count">{{ audio.totalLikes }}</span>

@@ -2,6 +2,7 @@
 
 namespace App\Handler;
 
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry as Doctrine;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -28,12 +29,10 @@ use App\Model\UserActionAuditModel;
  */
 class AuthenticationHandler implements AuthenticationSuccessHandlerInterface, AuthenticationFailureHandlerInterface, LogoutSuccessHandlerInterface
 {
-    /** @var \Doctrine\ORM\EntityManager */
+    /** @var EntityManagerInterface */
     private $em;
 
     private $router;
-
-    private $securityContext;
 
     private $container;
     private $tokenInterface;
@@ -46,23 +45,20 @@ class AuthenticationHandler implements AuthenticationSuccessHandlerInterface, Au
     /**
      * Constructor
      *
-     * @param Doctrine $doctrine
-     * @param AuthorizationCheckerInterface $securityContext
-     * @param ContainerInterface $container
-     * @param RouterInterface $router
-     * @param UserActionAuditModel $userActionAuditSecurity
-     * @param TokenStorageInterface $tokenInterface
+     * @param EntityManagerInterface $entityManager
+     * @param ContainerInterface     $container
+     * @param RouterInterface        $router
+     * @param UserActionAuditModel   $userActionAuditSecurity
+     * @param TokenStorageInterface  $tokenInterface
      */
-    public function __construct(Doctrine $doctrine,
-                                AuthorizationCheckerInterface $securityContext,
+    public function __construct(EntityManagerInterface $entityManager,
                                 ContainerInterface $container,
                                 RouterInterface $router,
                                 UserActionAuditModel $userActionAuditSecurity,
                                 TokenStorageInterface $tokenInterface
     )
     {
-        $this->em              = $doctrine->getManager();
-        $this->securityContext = $securityContext;
+        $this->em              = $entityManager;
         $this->container       = $container;
         $this->router          = $router;
         $this->userActionAudit = $userActionAuditSecurity;

@@ -338,7 +338,7 @@ class VocalizrEventSubscriber implements EventSubscriber
         if (isset($changeSet['connected_at']) && $changeSet['connected_at'][1]) {
             // Remove notification for invite
             $qb = $em->createQueryBuilder();
-            $qb->delete('VocalizrAppBundle:Notification', 'n');
+            $qb->delete('App:Notification', 'n');
             $qb->andWhere('n.notify_type = :notifyType');
             $qb->andWhere('n.actioned_user_info = :actionedUser');
             $qb->andWhere('n.user_info = :user');
@@ -384,7 +384,7 @@ class VocalizrEventSubscriber implements EventSubscriber
         // User connect invite was ignored
         if (isset($changeSet['status']) && !$changeSet['status'][1]) {
             $qb = $em->createQueryBuilder();
-            $qb->delete('VocalizrAppBundle:Notification', 'n');
+            $qb->delete('App:Notification', 'n');
             $qb->andWhere('n.notify_type = :notifyType');
             $qb->andWhere('n.actioned_user_info = :actionedUser');
             $qb->andWhere('n.user_info = :user');
@@ -1014,7 +1014,7 @@ class VocalizrEventSubscriber implements EventSubscriber
         $from = $entity->getFrom();
 
         $qb = $em->getRepository('App:Notification')->createQueryBuilder('n');
-        $qb->delete('VocalizrAppBundle:Notification', 'n');
+        $qb->delete('App:Notification', 'n');
         $qb->where('( (n.user_info = :to AND n.actioned_user_info = :from) OR (n.user_info = :from AND n.actioned_user_info = :to) )');
         $qb->andWhere("(n.notify_type = 'connect_invite')");
         $qb->setParameter('to', $user);
@@ -1030,7 +1030,7 @@ class VocalizrEventSubscriber implements EventSubscriber
         // If user connection was approved, update both connect counts
         if ($entity->getConnectedAt()) {
             $qb = $em->getRepository('App:UserConnect')->createQueryBuilder('uc');
-            $qb->delete('VocalizrAppBundle:UserConnect', 'uc');
+            $qb->delete('App:UserConnect', 'uc');
             $qb->where('(uc.to = :to AND uc.from = :from) OR (uc.to = :from AND uc.from = :to)');
             $qb->setParameter('to', $user);
             $qb->setParameter('from', $from);

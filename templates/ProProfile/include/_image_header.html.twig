@@ -12,13 +12,13 @@
 
             <a class="header__link member-favourite roll-alt" href="{{ path('user_favorite', {username: user.username}) }}" data-role="ajax-trigger" data-after="refresh">
                 <span class="img-wrp">
-                    <img class="img-svg" src="{{ asset('/bundles/vocalizrapp/bootstrap4/img/logged/icon_favourites.svg') }}" alt="+">
+                    <img class="img-svg" src="{{ asset('bootstrap4/img/logged/icon_favourites.svg') }}" alt="+">
                 </span>{% if isUserFavorite %}Remove Favourite{% else %}Add To Favourites{% endif %}
             </a>
 
             <a class="header__link member-block roll-alt" href="{{ path('user_block', {username: user.username}) }}" data-role="ajax-trigger" data-after="refresh">
                 <span class="img-wrp">
-                    <img class="img-svg" src="{{ asset('/bundles/vocalizrapp/bootstrap4/img/logged/icon_block.svg') }}" alt="-">
+                    <img class="img-svg" src="{{ asset('bootstrap4/img/logged/icon_block.svg') }}" alt="-">
                 </span>{% if isUserBlocked %}Unblock{% else %}Block{% endif %}
             </a>
 

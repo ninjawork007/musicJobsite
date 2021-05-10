@@ -442,10 +442,10 @@ class ProjectController extends AbstractController
             }
         }
 
-        return [
+        return $this->render('Project/newHire.html.twig', [
             'form'     => $form->createView(),
             'hireUser' => $hireUser,
-        ];
+        ]);
     }
 
 //     * @Secure(roles="ROLE_USER")
@@ -1875,9 +1875,9 @@ class ProjectController extends AbstractController
     public function inviteToGigButtonAction($userInfo, $projects = null, $hasProjects = true)
     {
         if (!$hasProjects) {
-            return [
+            return $this->render('Project/inviteToGigButton.html.twig', [
                 'projects' => false,
-            ];
+            ]);
         }
 
         $em   = $this->getDoctrine()->getManager();
@@ -1889,10 +1889,10 @@ class ProjectController extends AbstractController
                     ->getProjectsToInvite($user->getId(), $userInfo->getId());
         }
 
-        return [
+        return $this->render('Project/inviteToGigButton.html.twig', [
             'userInfo' => $userInfo,
             'projects' => $projects,
-        ];
+        ]);
     }
 
 //     * @Secure(roles="ROLE_USER")

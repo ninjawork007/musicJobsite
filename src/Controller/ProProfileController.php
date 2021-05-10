@@ -23,7 +23,7 @@ class ProProfileController extends AbstractController
 {
     /**
      * @Route(name="user_pro_profile_index", path="/pro/{username}")
-     * @ParamConverter("user", class="VocalizrAppBundle:UserInfo")
+     * @ParamConverter("user", class="App:UserInfo")
      * @param UserInfo $profileUser
      * @return Response
      */

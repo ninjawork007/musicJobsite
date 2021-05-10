@@ -3,10 +3,12 @@
 namespace App\EventListener\StripeWebhook;
 
 use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Templating\EngineInterface;
 use App\Event\StripeWebhookEvent;
 use App\Exception\WebhookProcessingException;
 use App\Service\MandrillService;
+use Twig\Environment;
 
 /**
  * Class InvoiceListener
@@ -15,7 +17,7 @@ use App\Service\MandrillService;
 class InvoiceListener
 {
     /**
-     * @var EntityManager
+     * @var EntityManagerInterface
      */
     private $em;
 
@@ -31,11 +33,11 @@ class InvoiceListener
 
     /**
      * InvoiceListener constructor.
-     * @param EntityManager $em
-     * @param EngineInterface $twig
+     * @param EntityManagerInterface $em
+     * @param Environment $twig
      * @param MandrillService $mandrill
      */
-    public function __construct(EntityManager $em, EngineInterface $twig, MandrillService $mandrill)
+    public function __construct(EntityManagerInterface $em, Environment $twig, MandrillService $mandrill)
     {
         $this->em       = $em;
         $this->twig     = $twig;
@@ -81,7 +83,7 @@ class InvoiceListener
             throw new WebhookProcessingException('Subscription not found for user with failed payment.');
         }
 
-        $body = $this->twig->render('VocalizrAppBundle:Mail:stripeFailedCharge.html.twig', [
+        $body = $this->twig->render('Mail:stripeFailedCharge.html.twig', [
             'user'                 => $user,
             'next_payment_attempt' => isset($object['next_payment_attempt']) ? $object['next_payment_attempt'] : 0,
         ]);

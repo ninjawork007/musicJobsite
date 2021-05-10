@@ -28,8 +28,8 @@ class EngineOrderAssetRepository extends EntityRepository
             return false;
         }
 
-        $userInfo = $em->getReference('VocalizrAppBundle:UserInfo', $userInfoId);
-        $project  = $em->getReference('VocalizrAppBundle:EngineOrder', $engineOrderId);
+        $userInfo = $em->getReference('App:UserInfo', $userInfoId);
+        $project  = $em->getReference('App:EngineOrder', $engineOrderId);
 
         $pa = new EngineOrderAsset();
         $pa->setUserInfo($userInfo);

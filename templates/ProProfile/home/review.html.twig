@@ -24,9 +24,9 @@
         <div class="reviews__card-star">
             {% for i in 1..5 %}
                 {% if i > review.rating %}
-                    <img src="{{ asset('/bundles/vocalizrapp/bootstrap4/img/icon_star_gray.png') }}" alt="Star">
+                    <img src="{{ asset('bootstrap4/img/icon_star_gray.png') }}" alt="Star">
                 {% else %}
-                    <img src="{{ asset('/bundles/vocalizrapp/bootstrap4/img/icon_star.png') }}" alt="Star">
+                    <img src="{{ asset('bootstrap4/img/icon_star.png') }}" alt="Star">
                 {% endif %}
             {% endfor %}
         </div>

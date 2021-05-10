@@ -27,106 +27,106 @@
 <!--        </service>-->
 
         <!-- LISTENERS -->
-        <service id="event.subscriber.vocalizr_event_subscriber" class="App\EventListener\VocalizrEventSubscriber">
-            <argument type="service" id="service_container" />
-            <tag name="doctrine.event_subscriber" connection="default" />
-        </service>
-        <service id="event.listener.vocalizr_controller_listener" class="App\EventListener\ControllerListener">
-            <argument type="service" id="service_container" />
-            <tag name="kernel.event_listener" event="kernel.controller"/>
-        </service>
+<!--        <service id="event.subscriber.vocalizr_event_subscriber" class="App\EventListener\VocalizrEventSubscriber">-->
+<!--            <argument type="service" id="service_container" />-->
+<!--            <tag name="doctrine.event_subscriber" connection="default" />-->
+<!--        </service>-->
+<!--        <service id="event.listener.vocalizr_controller_listener" class="App\EventListener\ControllerListener">-->
+<!--            <argument type="service" id="service_container" />-->
+<!--            <tag name="kernel.event_listener" event="kernel.controller"/>-->
+<!--        </service>-->
 
-        <service id="event.listener.user_wallet" class="App\EventListener\UserWalletListener">
-            <argument type="service" id="service_container" />
-            <tag name="doctrine.event_listener" event="prePersist" />
-        </service>
-        <service id="event.listener.user_review" class="App\EventListener\UserReviewListener">
-            <argument type="service" id="service_container" />
-            <tag name="doctrine.event_listener" event="prePersist" />
-        </service>
-        <service id="event.listener.just_created" class="App\EventListener\GigContestCreateListener">
-            <argument type="service" id="hip_mandrill.dispatcher" />
-            <argument type="service" id="router" />
-            <tag name="kernel.event_listener" event="contest_or_gig.just_created" method="onCreateAction" />
-        </service>
-        <service id="event.listener.withdraw_status" class="App\EventListener\WithdrawStatusListener">
-            <argument type="service" id="vocalizr_app.service.mandrill" />
-            <argument type="service" id="service_container" />
-            <tag name="doctrine.event_listener" event="onFlush" />
-        </service>
-        <service id="event.subscriber.access_request" class="App\EventListener\AccessRequestSubscriber">
-            <argument type="service" id="service_container" />
-            <tag name="kernel.event_subscriber" />
-        </service>
-        <service id="event.listener.payment.project" class="App\EventListener\Payment\ProjectPaymentListener">
-            <argument type="service" id="vocalizr_app.model.project" />
-            <argument type="service" id="vocalizr_app.model.wallet_transaction" />
-            <argument type="service" id="vocalizr_app.stripe_configuration_provider" />
-            <argument type="service" id="vocalizr_app.project_price_calculator" />
-            <tag name="kernel.event_listener" event="vocalizr_app.payment.completed" method="onPaymentSessionCompleted" />
+<!--        <service id="event.listener.user_wallet" class="App\EventListener\UserWalletListener">-->
+<!--            <argument type="service" id="service_container" />-->
+<!--            <tag name="doctrine.event_listener" event="prePersist" />-->
+<!--        </service>-->
+<!--        <service id="event.listener.user_review" class="App\EventListener\UserReviewListener">-->
+<!--            <argument type="service" id="service_container" />-->
+<!--            <tag name="doctrine.event_listener" event="prePersist" />-->
+<!--        </service>-->
+<!--        <service id="event.listener.just_created" class="App\EventListener\GigContestCreateListener">-->
+<!--            <argument type="service" id="hip_mandrill.dispatcher" />-->
+<!--            <argument type="service" id="router" />-->
+<!--            <tag name="kernel.event_listener" event="contest_or_gig.just_created" method="onCreateAction" />-->
+<!--        </service>-->
+<!--        <service id="event.listener.withdraw_status" class="App\EventListener\WithdrawStatusListener">-->
+<!--            <argument type="service" id="vocalizr_app.service.mandrill" />-->
+<!--            <argument type="service" id="service_container" />-->
+<!--            <tag name="doctrine.event_listener" event="onFlush" />-->
+<!--        </service>-->
+<!--        <service id="event.subscriber.access_request" class="App\EventListener\AccessRequestSubscriber">-->
+<!--            <argument type="service" id="service_container" />-->
+<!--            <tag name="kernel.event_subscriber" />-->
+<!--        </service>-->
+<!--        <service id="event.listener.payment.project" class="App\EventListener\Payment\ProjectPaymentListener">-->
+<!--            <argument type="service" id="vocalizr_app.model.project" />-->
+<!--            <argument type="service" id="vocalizr_app.model.wallet_transaction" />-->
+<!--            <argument type="service" id="vocalizr_app.stripe_configuration_provider" />-->
+<!--            <argument type="service" id="vocalizr_app.project_price_calculator" />-->
+<!--            <tag name="kernel.event_listener" event="vocalizr_app.payment.completed" method="onPaymentSessionCompleted" />-->
 
-        </service>
-        <service id="event.listener.payment.user_upgrade" class="App\EventListener\Payment\UserUpgradeListener">
-            <argument type="service" id="vocalizr_app.stripe_configuration_provider" />
-            <argument type="service" id="doctrine.orm.entity_manager" />
-            <argument type="service" id="vocalizr_app.model.wallet_transaction" />
-            <tag name="kernel.event_listener" event="vocalizr_app.payment.completed" method="onPaymentSessionCompleted" />
-        </service>
-        <service id="event.listener.payment.project_bid" class="App\EventListener\Payment\ProjectBidPaymentListener">
-            <argument type="service" id="vocalizr_app.model.wallet_transaction" />
-            <argument type="service" id="vocalizr_app.stripe_configuration_provider" />
-            <tag name="kernel.event_listener" event="vocalizr_app.payment.completed" method="onPaymentSessionCompleted" />
-        </service>
-        <service id="event.listener.payment.user_certification" class="App\EventListener\UserCertificationListener">
-            <argument type="service" id="doctrine.orm.entity_manager" />
-            <tag name="kernel.event_listener" event="vocalizr_app.payment.completed" method="onPaymentCertificationCompleted" />
-        </service>
+<!--        </service>-->
+<!--        <service id="event.listener.payment.user_upgrade" class="App\EventListener\Payment\UserUpgradeListener">-->
+<!--            <argument type="service" id="vocalizr_app.stripe_configuration_provider" />-->
+<!--            <argument type="service" id="doctrine.orm.entity_manager" />-->
+<!--            <argument type="service" id="vocalizr_app.model.wallet_transaction" />-->
+<!--            <tag name="kernel.event_listener" event="vocalizr_app.payment.completed" method="onPaymentSessionCompleted" />-->
+<!--        </service>-->
+<!--        <service id="event.listener.payment.project_bid" class="App\EventListener\Payment\ProjectBidPaymentListener">-->
+<!--            <argument type="service" id="vocalizr_app.model.wallet_transaction" />-->
+<!--            <argument type="service" id="vocalizr_app.stripe_configuration_provider" />-->
+<!--            <tag name="kernel.event_listener" event="vocalizr_app.payment.completed" method="onPaymentSessionCompleted" />-->
+<!--        </service>-->
+<!--        <service id="event.listener.payment.user_certification" class="App\EventListener\UserCertificationListener">-->
+<!--            <argument type="service" id="doctrine.orm.entity_manager" />-->
+<!--            <tag name="kernel.event_listener" event="vocalizr_app.payment.completed" method="onPaymentCertificationCompleted" />-->
+<!--        </service>-->
 
-        <service id="event.listener.stripe.webhook.identity" class="App\EventListener\StripeWebhook\IdentityListener">
-            <argument type="service" id="doctrine.orm.entity_manager" />
-            <tag name="kernel.event_listener" event="vocalizr_app.stripe.webhook" method="onWebhook" />
-        </service>
+<!--        <service id="event.listener.stripe.webhook.identity" class="App\EventListener\StripeWebhook\IdentityListener">-->
+<!--            <argument type="service" id="doctrine.orm.entity_manager" />-->
+<!--            <tag name="kernel.event_listener" event="vocalizr_app.stripe.webhook" method="onWebhook" />-->
+<!--        </service>-->
 
-        <service id="event.listener.stripe.webhook.checkout_session" class="App\EventListener\StripeWebhook\CheckoutSessionListener">
-            <argument type="service" id="service_container" />
-            <argument type="service" id="doctrine.orm.entity_manager" />
-            <tag name="kernel.event_listener" event="vocalizr_app.stripe.webhook" method="onWebhook" />
-        </service>
+<!--        <service id="event.listener.stripe.webhook.checkout_session" class="App\EventListener\StripeWebhook\CheckoutSessionListener">-->
+<!--            <argument type="service" id="service_container" />-->
+<!--            <argument type="service" id="doctrine.orm.entity_manager" />-->
+<!--            <tag name="kernel.event_listener" event="vocalizr_app.stripe.webhook" method="onWebhook" />-->
+<!--        </service>-->
 
-        <service id="event.listener.stripe.webhook.subscription" class="App\EventListener\StripeWebhook\SubscriptionListener">
-            <argument type="service" id="doctrine.orm.entity_manager" />
-            <argument type="service" id="templating" />
-            <argument type="service" id="vocalizr_app.service.mandrill" />
-            <argument type="service" id="vocalizr_app.model.user_subscription" />
-            <tag name="kernel.event_listener" event="vocalizr_app.stripe.webhook" method="onWebhook" />
-        </service>
+<!--        <service id="event.listener.stripe.webhook.subscription" class="App\EventListener\StripeWebhook\SubscriptionListener">-->
+<!--            <argument type="service" id="doctrine.orm.entity_manager" />-->
+<!--            <argument type="service" id="templating" />-->
+<!--            <argument type="service" id="vocalizr_app.service.mandrill" />-->
+<!--            <argument type="service" id="vocalizr_app.model.user_subscription" />-->
+<!--            <tag name="kernel.event_listener" event="vocalizr_app.stripe.webhook" method="onWebhook" />-->
+<!--        </service>-->
 
-        <service id="event.listener.stripe.webhook.charge" class="App\EventListener\StripeWebhook\ChargeListener">
-            <argument type="service" id="doctrine.orm.entity_manager" />
-            <tag name="kernel.event_listener" event="vocalizr_app.stripe.webhook" method="onWebhook" />
-        </service>
+<!--        <service id="event.listener.stripe.webhook.charge" class="App\EventListener\StripeWebhook\ChargeListener">-->
+<!--            <argument type="service" id="doctrine.orm.entity_manager" />-->
+<!--            <tag name="kernel.event_listener" event="vocalizr_app.stripe.webhook" method="onWebhook" />-->
+<!--        </service>-->
 
-        <service id="event.listener.stripe.webhook.invoice" class="App\EventListener\StripeWebhook\InvoiceListener">
-            <argument type="service" id="doctrine.orm.entity_manager" />
-            <argument type="service" id="templating" />
-            <argument type="service" id="vocalizr_app.service.mandrill" />
-            <tag name="kernel.event_listener" event="vocalizr_app.stripe.webhook" method="onWebhook" />
-        </service>
+<!--        <service id="event.listener.stripe.webhook.invoice" class="App\EventListener\StripeWebhook\InvoiceListener">-->
+<!--            <argument type="service" id="doctrine.orm.entity_manager" />-->
+<!--            <argument type="service" id="templating" />-->
+<!--            <argument type="service" id="vocalizr_app.service.mandrill" />-->
+<!--            <tag name="kernel.event_listener" event="vocalizr_app.stripe.webhook" method="onWebhook" />-->
+<!--        </service>-->
         <!-- END LISTENERS -->
 
-        <service id="service.mail" class="App\Service\MailService">
-            <argument type="service" id="doctrine" />
-            <argument type="service" id="service_container" />
-            <argument type="service" id="templating" />
-        </service>
+<!--        <service id="service.mail" class="App\Service\MailService">-->
+<!--            <argument type="service" id="doctrine" />-->
+<!--            <argument type="service" id="service_container" />-->
+<!--            <argument type="service" id="templating" />-->
+<!--        </service>-->
 
-        <service id="authentication_handler" class="App\Handler\AuthenticationHandler">
-            <argument type="service" id="doctrine" />
-            <argument type="service" id="security.context" />
-            <argument type="service" id="service_container" />
-            <argument type="service" id="router" />
-            <argument type="service" id="vocalizr_app.model.user_audit" />
-        </service>
+<!--        <service id="authentication_handler" class="App\Handler\AuthenticationHandler">-->
+<!--            <argument type="service" id="doctrine" />-->
+<!--            <argument type="service" id="security.context" />-->
+<!--            <argument type="service" id="service_container" />-->
+<!--            <argument type="service" id="router" />-->
+<!--            <argument type="service" id="vocalizr_app.model.user_audit" />-->
+<!--        </service>-->
 
 <!--        <service id="service.sc" class="App\Service\SoundcloudService">-->
 <!--            <argument type="service" id="doctrine" />-->

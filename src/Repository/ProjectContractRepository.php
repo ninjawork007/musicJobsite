@@ -28,8 +28,8 @@ class ProjectContractRepository extends EntityRepository
             return false;
         }
 
-        $userInfo = $em->getReference('VocalizrAppBundle:UserInfo', $userInfoId);
-        $project  = $em->getReference('VocalizrAppBundle:Project', $projectId);
+        $userInfo = $em->getReference('App:UserInfo', $userInfoId);
+        $project  = $em->getReference('App:Project', $projectId);
 
         $pc = new ProjectContract();
         $pc->setUserInfo($userInfo);
@@ -57,7 +57,7 @@ class ProjectContractRepository extends EntityRepository
      */
     public function deleteByUserAndSlug($userInfoId, $slug)
     {
-        $q = $this->_em->createQuery('DELETE FROM VocalizrAppBundle:ProjectContract pc 
+        $q = $this->_em->createQuery('DELETE FROM App:ProjectContract pc 
             WHERE pc.user_info = :userInfoId AND pc.slug = :slug');
         $q->setParameters([
             ':userInfoId' => $userInfoId,

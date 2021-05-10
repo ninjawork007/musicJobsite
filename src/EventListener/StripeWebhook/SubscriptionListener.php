@@ -3,6 +3,7 @@
 namespace App\EventListener\StripeWebhook;
 
 use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\OptimisticLockException;
 use Symfony\Component\Templating\EngineInterface;
 use App\Entity\UserSubscription;
@@ -11,6 +12,7 @@ use App\Exception\WebhookProcessingException;
 use App\Model\UserSubscriptionModel;
 use App\Service\MandrillService;
 use App\Service\PayPalService;
+use Twig\Environment;
 
 /**
  * Class SubscriptionListener
@@ -19,7 +21,7 @@ use App\Service\PayPalService;
 class SubscriptionListener
 {
     /**
-     * @var EntityManager
+     * @var EntityManagerInterface
      */
     private $em;
 
@@ -39,25 +41,29 @@ class SubscriptionListener
 
     /**
      * SubscriptionListener constructor.
-     * @param EntityManager $em
-     * @param EngineInterface $twig
-     * @param MandrillService $mandrillService
-     * @param UserSubscriptionModel $subscriptionModel
+     *
+     * @param EntityManagerInterface $em
+     * @param Environment            $twig
+     * @param MandrillService        $mandrillService
+     * @param UserSubscriptionModel  $subscriptionModel
      */
     public function __construct(
-        EntityManager $em,
-        EngineInterface $twig,
-        MandrillService $mandrillService,
-        UserSubscriptionModel $subscriptionModel
+        EntityManagerInterface $em,
+        Environment            $twig,
+        MandrillService        $mandrillService,
+        UserSubscriptionModel  $subscriptionModel
     ) {
-        $this->em = $em;
-        $this->twig = $twig;
-        $this->mandrillService = $mandrillService;
+        $this->em                = $em;
+        $this->twig              = $twig;
+        $this->mandrillService   = $mandrillService;
         $this->subscriptionModel = $subscriptionModel;
     }
 
     /**
      * @param StripeWebhookEvent $event
+     *
+     * @throws OptimisticLockException
+     * @throws WebhookProcessingException
      */
     public function onWebhook(StripeWebhookEvent $event)
     {
@@ -80,7 +86,9 @@ class SubscriptionListener
 
     /**
      * @param StripeWebhookEvent $event
+     *
      * @return string
+     *
      * @throws WebhookProcessingException
      * @throws OptimisticLockException
      */
@@ -113,6 +121,15 @@ class SubscriptionListener
         return ('ok subscription ' . $action . '. Message ' . ($sendMessage ? '' : 'not ') . 'sent');
     }
 
+    /**
+     * @param StripeWebhookEvent $event
+     * @return string
+     * @throws WebhookProcessingException
+     *
+     * @throws \Twig\Error\LoaderError
+     * @throws \Twig\Error\RuntimeError
+     * @throws \Twig\Error\SyntaxError
+     */
     private function processDelete(StripeWebhookEvent $event)
     {
         $user = $event->getUser();
@@ -148,7 +165,7 @@ class SubscriptionListener
 
         $this->em->flush();
 
-        $body = $this->twig->render('VocalizrAppBundle:Mail:membershipCancelled.html.twig', [
+        $body = $this->twig->render('Mail:membershipCancelled.html.twig', [
             'user' => $user,
         ]);
 

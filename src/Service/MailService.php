@@ -5,12 +5,14 @@ namespace App\Service;
 use Doctrine\Bundle\DoctrineBundle\Registry as Doctrine;
 //use Doctrine\RegistryInterface as Doctrine;
 use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Swift_Message;
 use Symfony\Bundle\TwigBundle\TwigEngine;
 use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use App\Entity\Project;
 use App\Entity\UserInfo;
+use Twig\Environment;
 
 class MailService
 {
@@ -26,19 +28,19 @@ class MailService
     /** @var EntityManager */
     private $em;
 
-    /** @var TwigEngine */
+    /** @var Environment */
     private $templating;
 
     /**
      * MailService constructor.
      *
-     * @param Doctrine           $doctrine
-     * @param ContainerInterface $container
-     * @param TwigEngine         $templating
+     * @param EntityManagerInterface $entityManager
+     * @param ContainerInterface     $container
+     * @param Environment            $templating
      */
-    public function __construct($doctrine, $container, $templating)
+    public function __construct(EntityManagerInterface $entityManager, ContainerInterface $container, Environment $templating)
     {
-        $this->em         = $doctrine->getEntityManager();
+        $this->em         = $entityManager;
         $this->container  = $container;
         $this->mailer     = $container->get('mailer');
         $this->message    = Swift_Message::newInstance();
@@ -81,8 +83,8 @@ class MailService
     {
         $this->message->setSubject($this->container->getParameter('mail_subject_activation'))
                 ->setTo($vars['userInfo']->getEmail())
-                ->setBody($this->templating->render('VocalizrAppBundle:Mail:registerActivate.html.twig', $vars), 'text/html')
-                ->addPart($this->templating->render('VocalizrAppBundle:Mail:registerActivate.txt.twig', $vars), 'text/plain')
+                ->setBody($this->templating->render('Mail:registerActivate.html.twig', $vars), 'text/html')
+                ->addPart($this->templating->render('Mail:registerActivate.txt.twig', $vars), 'text/plain')
         ;
 
         $this->send();
@@ -102,8 +104,8 @@ class MailService
     {
         $this->message->setSubject($this->container->getParameter('mail_subject_reset_pass'))
                 ->setTo($vars['userInfo']->getEmail())
-                ->setBody($this->templating->render('VocalizrAppBundle:Mail:resetPass.html.twig', $vars), 'text/html')
-                ->addPart($this->templating->render('VocalizrAppBundle:Mail:resetPass.txt.twig', $vars), 'text/plain')
+                ->setBody($this->templating->render('Mail:resetPass.html.twig', $vars), 'text/html')
+                ->addPart($this->templating->render('Mail:resetPass.txt.twig', $vars), 'text/plain')
         ;
 
         $this->send();
@@ -126,8 +128,8 @@ class MailService
     {
         $this->message->setSubject($this->container->getParameter('mail_subject_change_email'))
                 ->setTo($vars['emailRequest']->getEmail())
-                ->setBody($this->templating->render('VocalizrAppBundle:Mail:changeEmail.html.twig', $vars), 'text/html')
-                ->addPart($this->templating->render('VocalizrAppBundle:Mail:changeEmail.txt.twig', $vars), 'text/plain')
+                ->setBody($this->templating->render('Mail:changeEmail.html.twig', $vars), 'text/html')
+                ->addPart($this->templating->render('Mail:changeEmail.txt.twig', $vars), 'text/plain')
         ;
 
         $this->send($this->message);
@@ -147,8 +149,8 @@ class MailService
 
         $this->message->setSubject('Congratulations! You have been awarded a gig')
                 ->setTo($emailTo)
-                ->setBody($this->templating->render('VocalizrAppBundle:Mail:projectAwardedNotification.html.twig', $vars), 'text/html')
-                ->addPart($this->templating->render('VocalizrAppBundle:Mail:projectAwardedNotification.txt.twig', $vars), 'text/plain')
+                ->setBody($this->templating->render('Mail:projectAwardedNotification.html.twig', $vars), 'text/html')
+                ->addPart($this->templating->render('Mail:projectAwardedNotification.txt.twig', $vars), 'text/plain')
         ;
 
         $this->send();
@@ -169,8 +171,8 @@ class MailService
 
         $this->message->setSubject($user->getUsername() . ' ' . $action . ' your gig')
                 ->setTo($owner->getEmail())
-                ->setBody($this->templating->render('VocalizrAppBundle:Mail:projectBidResponseToOwner.html.twig', $vars), 'text/html')
-                ->addPart($this->templating->render('VocalizrAppBundle:Mail:projectBidResponseToOwner.txt.twig', $vars), 'text/plain')
+                ->setBody($this->templating->render('Mail:projectBidResponseToOwner.html.twig', $vars), 'text/html')
+                ->addPart($this->templating->render('Mail:projectBidResponseToOwner.txt.twig', $vars), 'text/plain')
         ;
 
         $this->send();
@@ -194,8 +196,8 @@ class MailService
     {
         $this->message->setSubject($vars['project']->getUserInfo()->getUsername() . ' has asked for assets')
                 ->setTo($vars['user']->getEmail())
-                ->setBody($this->templating->render('VocalizrAppBundle:Mail:projectPromptAssets.html.twig', $vars), 'text/html')
-                ->addPart($this->templating->render('VocalizrAppBundle:Mail:projectPromptAssets.txt.twig', $vars), 'text/plain')
+                ->setBody($this->templating->render('Mail:projectPromptAssets.html.twig', $vars), 'text/html')
+                ->addPart($this->templating->render('Mail:projectPromptAssets.txt.twig', $vars), 'text/plain')
         ;
 
         $this->send();
@@ -222,8 +224,8 @@ class MailService
         extract($vars);
         $this->message->setSubject($from->getUsername() . ' has uploaded assets for gig ' . $project->getTitle())
                 ->setTo($to->getEmail())
-                ->setBody($this->templating->render('VocalizrAppBundle:Mail:projectUploadedAssetsNotification.html.twig', $vars), 'text/html')
-                ->addPart($this->templating->render('VocalizrAppBundle:Mail:projectUploadedAssetsNotification.txt.twig', $vars), 'text/plain')
+                ->setBody($this->templating->render('Mail:projectUploadedAssetsNotification.html.twig', $vars), 'text/html')
+                ->addPart($this->templating->render('Mail:projectUploadedAssetsNotification.txt.twig', $vars), 'text/plain')
         ;
 
         $this->send();
@@ -247,8 +249,8 @@ class MailService
         extract($vars);
         $this->message->setSubject($project->getUserInfo()->getUsername() . ' has released your payment')
                 ->setTo($user->getEmail())
-                ->setBody($this->templating->render('VocalizrAppBundle:Mail:projectPaymentRelease.html.twig', $vars), 'text/html')
-                ->addPart($this->templating->render('VocalizrAppBundle:Mail:projectPaymentRelease.txt.twig', $vars), 'text/plain')
+                ->setBody($this->templating->render('Mail:projectPaymentRelease.html.twig', $vars), 'text/html')
+                ->addPart($this->templating->render('Mail:projectPaymentRelease.txt.twig', $vars), 'text/plain')
         ;
 
         $this->send();
@@ -266,8 +268,8 @@ class MailService
         extract($vars);
         $this->message->setSubject($dispute->getUserInfo()->getUsername() . ' responded to your dispute')
                 ->setTo($dispute->getFromUserInfo()->getEmail())
-                ->setBody($this->templating->render('VocalizrAppBundle:Mail:projectDisputeResponse.html.twig', $vars), 'text/html')
-                ->addPart($this->templating->render('VocalizrAppBundle:Mail:projectDisputeResponse.txt.twig', $vars), 'text/plain')
+                ->setBody($this->templating->render('Mail:projectDisputeResponse.html.twig', $vars), 'text/html')
+                ->addPart($this->templating->render('Mail:projectDisputeResponse.txt.twig', $vars), 'text/plain')
         ;
 
         $this->send();

@@ -62,7 +62,7 @@ class HintController extends AbstractController
      */
     public function showAction()
     {
-        //return $this->render('VocalizrAppBundle:Hint:hint.html.twig', ['amount' => 12313, 'type'=>1]);
+        //return $this->render('Hint:hint.html.twig', ['amount' => 12313, 'type'=>1]);
         /** @var Session $session */
         $session = $this->get('session');
         $bag     = $session->getFlashBag();

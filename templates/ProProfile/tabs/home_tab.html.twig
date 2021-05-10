@@ -50,14 +50,14 @@
                 </div>
                 <div class="col-6">
                     <ul class="about-me__ul">
-                        <li><img src="{{ asset('/bundles/vocalizrapp/bootstrap4/img/icon_persone.svg') }}"
+                        <li><img src="{{ asset('bootstrap4/img/icon_persone.svg') }}"
                                  alt="persone">
                             <p class="about-me__ul-name">Gender: <span class="gray">{{  user.gender == 'm' ? 'Male' : 'Female' }}</span></p></li>
-                        <li><img src="{{ asset('/bundles/vocalizrapp/bootstrap4/img/icon_world.svg') }}"
+                        <li><img src="{{ asset('bootstrap4/img/icon_world.svg') }}"
                                  alt="world">
                             <p class="about-me__ul-name">Country: <span class="gray">{{ user.country|countryName }}</span></p>
                         </li>
-                        <li><img src="{{ asset('/bundles/vocalizrapp/bootstrap4/img/icon_message.svg') }}"
+                        <li><img src="{{ asset('bootstrap4/img/icon_message.svg') }}"
                                  alt="message">
                             <p class="about-me__ul-name">Languages: <span class="gray">{{ user.userLanguages|join(', ') }}</span></p>
                         </li>

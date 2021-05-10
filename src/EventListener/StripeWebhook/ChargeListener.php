@@ -7,6 +7,7 @@ use App\Entity\PaymentSessionData;
 use App\Entity\StripeCharge;
 use App\Event\StripeWebhookEvent;
 use App\Exception\WebhookProcessingException;
+use Doctrine\ORM\EntityManagerInterface;
 
 /**
  * Class ChargeListener
@@ -15,17 +16,19 @@ use App\Exception\WebhookProcessingException;
 class ChargeListener
 {
     /**
-     * @var EntityManager
+     * @var EntityManagerInterface
      */
     private $em;
 
-    public function __construct(EntityManager $em)
+    public function __construct(EntityManagerInterface $em)
     {
         $this->em = $em;
     }
 
     /**
      * @param StripeWebhookEvent $event
+     *
+     * @throws WebhookProcessingException
      */
     public function onWebhook(StripeWebhookEvent $event)
     {
@@ -55,7 +58,7 @@ class ChargeListener
                 $paymentSessionData->setStripeCharge($charge);
             } else {
                 $paymentSessionData = $this->em->getRepository('App:PaymentSessionData')
-                    ->findOneBy(['user' => $user], ['id' => 'DESC']);
+                    ->findOneBy(['user' => $user]);
                 if ($paymentSessionData && !$paymentSessionData->getStripeCharge()) {
                     $paymentSessionData->setStripeCharge($charge);
                 }

@@ -137,7 +137,7 @@
 
 
                                     <div class="gig-agreement">
-                                            {{ render(controller('VocalizrAppBundle:Contest:agreement', {'project': project, projectBid: bid})) }}
+                                            {{ render(controller('App\\Controller\\ContestController:agreementAction', {'project': project, projectBid: bid})) }}
                                     </div>
 
                                     <form id="signature-form" action="{{ path('contest_award', {uuid: project.uuid, bidUuid: bid.uuid} ) }}" method="post">

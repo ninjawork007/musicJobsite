@@ -2,7 +2,11 @@
 
 namespace App\EventListener\StripeWebhook;
 
+use App\Model\UserInfoModel;
+use App\Service\StripeConfigurationProvider;
+use App\Service\StripeManager;
 use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\OptimisticLockException;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
@@ -25,16 +29,16 @@ class CheckoutSessionListener
     private $container;
 
     /**
-     * @var EntityManager
+     * @var EntityManagerInterface
      */
     private $em;
 
     /**
      * CheckoutSessionListener constructor.
      * @param ContainerInterface $container
-     * @param EntityManager $em
+     * @param EntityManagerInterface $em
      */
-    public function __construct(ContainerInterface $container, EntityManager $em)
+    public function __construct(ContainerInterface $container, EntityManagerInterface $em)
     {
         $this->em        = $em;
         $this->container = $container;
@@ -58,20 +62,33 @@ class CheckoutSessionListener
     }
 
     /**
-     * @param StripeWebhookEvent $event
+     * @param StripeWebhookEvent            $event
+     * @param EventDispatcherInterface      $eventDispatcher
+     * @param StripeManager                 $stripeManager
+     * @param StripeConfigurationProvider   $configuration
+     * @param StripeManager                 $stripe
+     * @param UserInfoModel                 $userModel
+     *
      * @return string
      * @throws WebhookProcessingException
-     * @throws OptimisticLockException
+     * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    private function processCheckout(StripeWebhookEvent $event)
+    private function processCheckout(StripeWebhookEvent          $event,
+                                     EventDispatcherInterface    $eventDispatcher,
+                                     StripeManager               $stripeManager,
+                                     StripeConfigurationProvider $configuration,
+                                     StripeManager               $stripe,
+                                     UserInfoModel               $userModel
+    )
     {
+
         $object = $event->getPayloadObject();
 
-        /** @var EventDispatcherInterface $eventDispatcher */
-        $eventDispatcher = $this->get('event_dispatcher');
+//        /** @var EventDispatcherInterface $eventDispatcher */
+//        $eventDispatcher = $this->get('event_dispatcher');
 
         $em = $this->em;
-        $stripeManager = $this->get('vocalizr_app.stripe_manager');
+//        $stripeManager = $this->get('vocalizr_app.stripe_manager');
 
         $charge         = new StripeCharge();
         $charge->amount = $object['amount_total'];
@@ -100,9 +117,9 @@ class CheckoutSessionListener
             $em->persist($sessionData);
         }
 
-        $configuration = $this->get('vocalizr_app.stripe_configuration_provider');
-        $stripe        = $this->get('vocalizr_app.stripe_manager');
-        $userModel     = $this->get('vocalizr_app.model.user_info');
+//        $configuration = $this->get('vocalizr_app.stripe_configuration_provider');
+//        $stripe        = $this->get('vocalizr_app.stripe_manager');
+//        $userModel     = $this->get('vocalizr_app.model.user_info');
         $user          = $event->getUser();
 
         $event = new PaymentSessionCompletedEvent(

@@ -35,7 +35,7 @@ class UserSubscriptionRepository extends EntityRepository
         $entity = new UserSubscription();
         $entity->setDateCommenced(new \DateTime());
         $entity->setIsActive(true);
-        $entity->setUserInfo($this->_em->getReference('VocalizrAppBundle:UserInfo', $userInfoId));
+        $entity->setUserInfo($this->_em->getReference('App:UserInfo', $userInfoId));
         $entity->setSubscriptionPlan($subscriptionPlan);
 
         $this->_em->persist($entity);

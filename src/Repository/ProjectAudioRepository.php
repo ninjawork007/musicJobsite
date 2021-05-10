@@ -31,8 +31,8 @@ class ProjectAudioRepository extends EntityRepository
                 return false;
             }
 
-            $project  = $em->getReference('VocalizrAppBundle:Project', $projectId);
-            $userInfo = $em->getReference('VocalizrAppBundle:UserInfo', $userInfoId);
+            $project  = $em->getReference('AppApp:Project', $projectId);
+            $userInfo = $em->getReference('App:UserInfo', $userInfoId);
 
             $projectAudio = new ProjectAudio();
             $projectAudio->setUserInfo($userInfo);

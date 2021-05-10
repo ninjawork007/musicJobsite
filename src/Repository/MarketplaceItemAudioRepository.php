@@ -34,9 +34,9 @@ class MarketplaceItemAudioRepository extends EntityRepository
             return false;
         }
 
-        $marketplaceItem = $em->getReference('VocalizrAppBundle:MarketplaceItem', $marketplaceItemId);
+        $marketplaceItem = $em->getReference('App:MarketplaceItem', $marketplaceItemId);
 
-        $userInfo = $em->getReference('VocalizrAppBundle:UserInfo', $userInfoId);
+        $userInfo = $em->getReference('App:UserInfo', $userInfoId);
 
         $marketplaceItemAudio = new MarketplaceItemAudio();
         $marketplaceItemAudio->setUserInfo($userInfo);

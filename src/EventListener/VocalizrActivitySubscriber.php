@@ -43,6 +43,7 @@ class VocalizrActivitySubscriber implements EventSubscriber
                 $activityMessage = new VocalizrActivity();
                 $activityMessage->setActivityType(VocalizrActivity::ACTIVITY_TYPE_NEW_MEMBER);
                 $jsonData              = [];
+                $userInfo = $entity;
                 $jsonData['user_info'] = ['id' => $userInfo->getId(),
                     'username'                 => $entity->getUsername(),
                     'gender'                   => $entity->getGender(),

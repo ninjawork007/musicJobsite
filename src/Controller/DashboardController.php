@@ -636,8 +636,10 @@ class DashboardController extends AbstractController
             // Save audio and move uploaded file, if failed return error
             if (!$userAudio = $em->getRepository('App:UserAudio')
                             ->saveUploadedFile($user->getId(), $title, $fileName)) {
-                return new JsonResponse(['success' => false,
-                    'message'                      => 'There was a problem when uploading your file. Please try again', ]);
+                return new JsonResponse([
+                    'success' => false,
+                    'message' => 'There was a problem when uploading your file. Please try again',
+                ]);
             }
         }
         $this->checkProfileCompleteness();

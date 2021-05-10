@@ -28,8 +28,8 @@ class ProjectAssetRepository extends EntityRepository
             return false;
         }
 
-        $userInfo = $em->getReference('VocalizrAppBundle:UserInfo', $userInfoId);
-        $project  = $em->getReference('VocalizrAppBundle:Project', $projectId);
+        $userInfo = $em->getReference('App:UserInfo', $userInfoId);
+        $project  = $em->getReference('App:Project', $projectId);
 
         $pa = new ProjectAsset();
         $pa->setUserInfo($userInfo);

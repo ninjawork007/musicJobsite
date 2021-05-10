@@ -3,6 +3,7 @@
 namespace App\EventListener\StripeWebhook;
 
 use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\OptimisticLockException;
 use App\Entity\UserStripeIdentity;
 use App\Event\StripeWebhookEvent;
@@ -15,11 +16,11 @@ use App\Exception\WebhookProcessingException;
 class IdentityListener
 {
     /**
-     * @var EntityManager
+     * @var EntityManagerInterface
      */
     private $em;
 
-    public function __construct(EntityManager $em)
+    public function __construct(EntityManagerInterface $em)
     {
         $this->em = $em;
     }

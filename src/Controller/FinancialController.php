@@ -200,7 +200,7 @@ class FinancialController extends AbstractController
 
                 if (in_array($newWithdraw->getPaypalEmail(), $blocked) || in_array($user->getWithdrawEmail(), $blocked)) {
                     error_log("WITHDRAW: User from blocklist tried to make withdraw");
-                    $body = $this->container->get('templating')->render('VocalizrAppBundle:Mail:paypalAlertWithdraw.html.twig', [
+                    $body = $container->get('twig')->render('Mail:paypalAlertWithdraw.html.twig', [
                         'user' => $user,
                         'paymentEmail' => $newWithdraw->getPaypalEmail(),
                         'paymentAmount' => $newWithdraw->getAmount(),

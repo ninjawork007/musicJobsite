@@ -243,10 +243,10 @@
                     
             
             <div id="project-status-widget" class="col-sm-4">
-                {{ controller('VocalizrAppBundle:Contest:projectStatusWidget', {
+                {{ render(controller('App\\Controller\\ContestController:projectStatusWidgetAction', {
                     'uuid': project.uuid,
                     'fromPage' : 'edit'
-                }) }}
+                })) }}
                 
             </div>
         </div>

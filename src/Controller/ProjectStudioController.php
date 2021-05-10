@@ -195,7 +195,7 @@ class ProjectStudioController extends AbstractController
                 }
             }
 
-            return $this->render('VocalizrAppBundle:ProjectStudio:signAgreement.html.twig', [
+            return $this->render('ProjectStudio:signAgreement.html.twig', [
                 'project'    => $project,
                 'projectBid' => $projectBid,
                 'form'       => $form->createView(),
@@ -306,7 +306,7 @@ class ProjectStudioController extends AbstractController
 
                     $em->flush();
 
-                    return $this->forward('VocalizrAppBundle:ProjectStudio:feed', [
+                    return $this->forward('App:ProjectStudio:feed', [
                         'uuid' => $project->getUuid(),
                     ], [
                         'lastFeedId' => $request->get('lastFeedId'),

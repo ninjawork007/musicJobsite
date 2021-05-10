@@ -48,6 +48,156 @@ services:
             - "%slot_mandrill.debug%"
 # END: create dependency injection for service
 
+# START: Event Listeners
+#    event.subscriber.vocalizr_event_subscriber:
+#        class: App\EventListener\VocalizrEventSubscriber
+#        arguments:
+#            - '@service_container'
+#        tags:
+#            - { name: 'kernel.event_listener' }
+
+    event.listener.vocalizr_controller_listener:
+        class: App\EventListener\ControllerListener
+        arguments:
+            - '@service_container'
+        tags:
+            - { name: kernel.event_listener, event: onKernelController }
+
+    event.listener.user_wallet:
+        class: App\EventListener\UserWalletListener
+        arguments:
+            - '@service_container'
+        tags:
+            - { name: doctrine.event_listener, event: prePersist }
+
+    event.listener.user_review:
+        class: App\EventListener\UserReviewListener
+        arguments:
+            - '@service_container'
+        tags:
+            - { name: doctrine.event_listener, event: prePersist }
+
+    event.listener.just_created:
+        class: App\EventListener\GigContestCreateListener
+        arguments:
+            - '@hip_mandrill.dispatcher'
+            - '@router'
+        tags:
+            - { name: kernel.event_listener, event: contest_or_gig.just_created, method: onCreateAction }
+
+    event.listener.withdraw_status:
+        class: App\EventListener\WithdrawStatusListener
+        arguments:
+            - '@vocalizr_app.service.mandrill'
+            - '@service_container'
+        tags:
+            - { name: doctrine.event_listener, event: onFlush }
+
+    event.subscriber.access_request:
+        class: App\EventListener\AccessRequestSubscriber
+        arguments:
+            - '@service_container'
+        tags:
+            - { name: kernel.event_subscriber }
+
+    event.listener.payment.project:
+        class: App\EventListener\Payment\ProjectPaymentListener
+        arguments:
+            - '@vocalizr_app.model.project'
+            - '@vocalizr_app.model.wallet_transaction'
+            - '@vocalizr_app.stripe_configuration_provider'
+            - '@vocalizr_app.project_price_calculator'
+        tags:
+            - { name: kernel.event_listener, event: vocalizr_app.payment.completed, method: onPaymentSessionCompleted }
+
+    event.listener.payment.user_upgrade:
+        class: App\EventListener\Payment\UserUpgradeListener
+        arguments:
+            - '@vocalizr_app.stripe_configuration_provider'
+            - '@doctrine.orm.entity_manager'
+            - '@vocalizr_app.model.wallet_transaction'
+        tags:
+            - { name: kernel.event_listener, event: vocalizr_app.payment.completed, method: onPaymentSessionCompleted }
+
+    event.listener.payment.project_bid:
+        class: App\EventListener\Payment\ProjectBidPaymentListener
+        arguments:
+            - '@vocalizr_app.model.wallet_transaction'
+            - '@vocalizr_app.stripe_configuration_provider'
+        tags:
+            - { name: kernel.event_listener, event: vocalizr_app.payment.completed, method: onPaymentSessionCompleted }
+
+    event.listener.payment.user_certification:
+        class: App\EventListener\UserCertificationListener
+        arguments:
+            - '@doctrine.orm.entity_manager'
+        tags:
+            - { name: kernel.event_listener, event: vocalizr_app.payment.completed, method: onPaymentSessionCompleted }
+
+    event.listener.stripe.webhook.identity:
+        class: App\EventListener\StripeWebhook\IdentityListener
+        arguments:
+            - '@doctrine.orm.entity_manager'
+        tags:
+            - { name: kernel.event_listener, event: vocalizr_app.stripe.webhook, method: onWebhook }
+
+    event.listener.stripe.webhook.checkout_session:
+        class: App\EventListener\StripeWebhook\CheckoutSessionListener
+        arguments:
+            - '@service_container'
+            - '@doctrine.orm.entity_manager'
+        tags:
+            - { name: kernel.event_listener, event: vocalizr_app.stripe.webhook, method: onWebhook }
+
+    event.listener.stripe.webhook.subscription:
+        class: App\EventListener\StripeWebhook\SubscriptionListener
+        arguments:
+            - '@doctrine.orm.entity_manager'
+            - '@twig'
+            - '@vocalizr_app.service.mandrill'
+            - '@vocalizr_app.model.user_subscription'
+        tags:
+            - { name: kernel.event_listener, event: vocalizr_app.stripe.webhook, method: onWebhook }
+
+    event.listener.stripe.webhook.charge:
+        class: App\EventListener\StripeWebhook\ChargeListener
+        arguments:
+            - '@doctrine.orm.entity_manager'
+        tags:
+            - { name: kernel.event_listener, event: vocalizr_app.stripe.webhook, method: onWebhook }
+
+    event.listener.stripe.webhook.invoice:
+        class: App\EventListener\StripeWebhook\InvoiceListener
+        arguments:
+            - '@doctrine.orm.entity_manager'
+            - '@twig'
+            - '@vocalizr_app.service.mandrill'
+        tags:
+            - { name: kernel.event_listener, event: vocalizr_app.stripe.webhook, method: onWebhook }
+
+
+# END: Event Listeners
+    service.mail:
+        class: App\Service\MailService
+        autowire: true
+        autoconfigure: true
+        arguments:
+            - '@doctrine.orm.entity_manager'
+            - '@service_container'
+            - '@twig'
+        public: true
+
+    authentication_handler:
+        class: App\Handler\AuthenticationHandler
+        autowire: true
+        autoconfigure: true
+        arguments:
+            - '@doctrine.orm.entity_manager'
+            - '@service_container'
+            - '@router'
+            - '@vocalizr_app.model.user_audit'
+        public: true
+
     vocalizr_app.service.membership_source_helper:
         class: App\Service\MembershipSourceHelper
         autowire: true

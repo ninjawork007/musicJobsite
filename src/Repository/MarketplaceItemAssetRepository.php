@@ -28,8 +28,8 @@ class MarketplaceItemAssetRepository extends EntityRepository
             return false;
         }
 
-        $userInfo        = $em->getReference('VocalizrAppBundle:UserInfo', $userInfoId);
-        $marketplaceItem = $em->getReference('VocalizrAppBundle:MarketplaceItem', $marketplaceItemId);
+        $userInfo        = $em->getReference('App:UserInfo', $userInfoId);
+        $marketplaceItem = $em->getReference('App:MarketplaceItem', $marketplaceItemId);
 
         $itemAsset = new MarketplaceItemAsset();
         $itemAsset->setUserInfo($userInfo);
