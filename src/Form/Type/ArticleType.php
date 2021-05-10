@@ -16,7 +16,7 @@ class ArticleType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $this->article = $options['data'];
-//dd($this->article);
+
         $builder->add('title', null, [
             'attr' => [
                 'class' => 'form-control',
