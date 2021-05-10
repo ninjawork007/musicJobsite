@@ -31,7 +31,7 @@ class EmailGetCertifiedCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $this->container  = $container  = $this->getContainer();
-        $this->em         = $container->get('doctrine')->getEntityManager();
+        $this->em         = $container->get('doctrine')->getManager();
         $this->dispatcher = $container->get('hip_mandrill.dispatcher');
         $checkDateStart   = new \DateTime('-10 minutes');
 

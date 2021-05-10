@@ -105,9 +105,9 @@ class HintController extends AbstractController
 
         switch ($hintType) {
             case HintModel::HINT_GIG:
-                return $this->render('VocalizrAppBundle:Hint:gig_hint.html.twig', $parameters);
+                return $this->render('App:Hint:gig_hint.html.twig', $parameters);
             case HintModel::HINT_CONTEST:
-                return $this->render('VocalizrAppBundle:Hint:contest_hint.html.twig', $parameters);
+                return $this->render('App:Hint:contest_hint.html.twig', $parameters);
             default:
                 return new Response();
         }

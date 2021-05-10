@@ -14,17 +14,19 @@ use App\Entity\UserInfo;
 use App\Entity\UserWalletTransaction;
 use App\Service\MembershipSourceHelper;
 use App\Service\RevenueManager;
+use Symfony\Component\HttpFoundation\Response;
 
 class AdminRevenueController extends AbstractController
 {
     /**
      * @Route("/admin/revenue", name="admin_revenue")
+     * @param RevenueManager $revenueManager
+     *
+     * @return Response
      */
     public function indexAction(RevenueManager $revenueManager)
     {
         $this->checkAdmin();
-
-//        $revenueManager = $this->get('vocalizr_app.revenue_manager');
 
         $revenueCurrentMonth = $revenueManager->revenueCurrentMonth();
         $revenueAllTime = $revenueManager->revenueAllTime();

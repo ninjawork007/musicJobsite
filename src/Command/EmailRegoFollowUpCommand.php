@@ -20,7 +20,7 @@ class EmailRegoFollowUpCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $this->container  = $container  = $this->getContainer();
-        $this->em         = $container->get('doctrine')->getEntityManager();
+        $this->em         = $container->get('doctrine')->getManager();
         $this->dispatcher = $container->get('hip_mandrill.dispatcher');
 
         echo "SCRIPT START - Email Rego Follow Up\n";
@@ -118,7 +118,7 @@ class EmailRegoFollowUpCommand extends Command
         if (count($recipients) > 0) {
             foreach ($recipients as $recipient) {
                 $message->addTo($recipient->getEmail());
-                $body = $this->container->get('templating')->render('VocalizrAppBundle:Mail:' . $template . 'connection.html.twig', [
+                $body = $this->container->get('twig')->render('Mail:' . $template . 'connection.html.twig', [
                     'userInfo' => $recipient,
                 ]);
                 $message->addMergeVar($recipient->getEmail(), 'BODY', $body);

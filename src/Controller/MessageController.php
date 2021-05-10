@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use Slot\MandrillBundle\Message;
 use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -226,7 +227,7 @@ class MessageController extends AbstractController
                 ->getForm();
 
         if ($request->isMethod('POST')) {
-            $form->bind($request);
+            $form->handleRequest($request);
             $data = $form->getData();
 
             if ($messageThread->getEmployer() == $user) {
@@ -352,7 +353,7 @@ class MessageController extends AbstractController
             $messageThread->setNumBidderUnread($messageThread->getNumBidderUnread() + 1);
             $toUser->setNumUnreadMessages($toUser->getNumUnreadMessages() + 1);
 
-            $form->bind($request);
+            $form->handleRequest($request);
             $data = $form->getData();
 
             $message->setContent(strip_tags($data->getContent()));
@@ -386,7 +387,7 @@ class MessageController extends AbstractController
                     'message'       => $message,
                 ]);
 
-                $message = new \Hip\MandrillBundle\Message();
+                $message = new Message();
                 $message->setSubject($subject);
                 $message->setFromEmail('noreply@vocalizr.com');
                 $message->setFromName('Vocalizr');
@@ -519,7 +520,7 @@ class MessageController extends AbstractController
             $messageThread->setNumBidderUnread($messageThread->getNumBidderUnread() + 1);
             $toUser->setNumUnreadMessages($toUser->getNumUnreadMessages() + 1);
 
-            $form->bind($request);
+            $form->handleRequest($request);
             $data = $form->getData();
 
             $message->setContent(strip_tags($data->getContent()));
@@ -549,7 +550,7 @@ class MessageController extends AbstractController
                     'message'       => $message,
                 ]);
 
-                $message = new \Hip\MandrillBundle\Message();
+                $message = new Message();
                 $message->setSubject($subject);
                 $message->setFromEmail('noreply@vocalizr.com');
                 $message->setFromName('Vocalizr');
@@ -585,9 +586,9 @@ class MessageController extends AbstractController
      *
      * @Route("/message/markAllRead", name="message_mark_all_read")
      *
-     * @param \Symfony\Component\HttpFoundation\Request $request
+     * @param Request $request
      *
-     * @return \Symfony\Component\HttpFoundation\Response
+     * @return Response
      */
     public function markAllAsReadAction(Request $request)
     {
@@ -674,6 +675,8 @@ class MessageController extends AbstractController
 
     /**
      * @Route("/message/file/{slug}/download", name="message_download")
+     *
+     * @param Request $request
      */
     public function downloadFileAction(Request $request)
     {
@@ -714,6 +717,8 @@ class MessageController extends AbstractController
 
     /**
      * @Route("/messages/thread/close/{uuid}", name="message_thread_close")
+     * @param Request $request
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
      */
     public function closeThreadAction(Request $request)
     {
@@ -744,14 +749,13 @@ class MessageController extends AbstractController
      *
      * @Route("/message/warning/{projectUuid}/{userId}", name="message_warning")
      *
-     * @param \Symfony\Component\HttpFoundation\Request $request
-     * @param string                                    $projectUuid
-     * @param string                                    $userId
+     * @param Request $request
+     * @param string  $projectUuid
+     * @param string  $userId
      * @Template()
      */
-    public function warningAction($projectUuid, $userId)
+    public function warningAction($projectUuid, $userId, Request $request)
     {
-        $request = $this->getRequest();
         $session = $request->getSession();
         /** @var Project $project */
         $project = $this->getDoctrine()->getRepository(Project::class)->findOneBy(['uuid' => $projectUuid]);
@@ -771,13 +775,12 @@ class MessageController extends AbstractController
      *
      * @Route("/message/private/warn/{userId}", name="message_warning_private")
      *
-     * @param \Symfony\Component\HttpFoundation\Request $request
-     * @param string                                    $userId
+     * @param Request $request
+     * @param string  $userId
      * @Template()
      */
-    public function warningPrivateAction($userId)
+    public function warningPrivateAction(Request $request, $userId)
     {
-        $request = $this->getRequest();
         $session = $request->getSession();
         $em      = $this->getDoctrine()->getManager();
         $user    = $this->getUser();

@@ -21,7 +21,5 @@
 {% block body_end_trackers %}
 {% endblock %}
 {% block javascript %}
-    {% javascripts 'Resources/public/js/gleam.js' %}
-        <script type="text/javascript" src="{{ asset_url }}"></script>
-    {% endjavascripts %}
+    <script type="text/javascript" src="{{ asset('js/gleam.js') }}"></script>
 {% endblock %}

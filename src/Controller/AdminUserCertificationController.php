@@ -13,11 +13,13 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Entity\PaymentSessionData;
 use App\Entity\UserCertification;
 use App\Entity\UserInfo;
+use GuzzleHttp\Exception\GuzzleException;
 
 class AdminUserCertificationController extends AbstractController
 {
@@ -27,7 +29,7 @@ class AdminUserCertificationController extends AbstractController
      * @param Request            $request
      * @param ContainerInterface $container
      *
-     * @return \Symfony\Component\HttpFoundation\Response
+     * @return Response
      */
     public function userConfirmationListAction(Request $request, ContainerInterface $container)
     {
@@ -74,7 +76,6 @@ class AdminUserCertificationController extends AbstractController
     /**
      * @Route("/admin/user_confirmation/approve_all", name="userConfirmationApproveAll")
      * @return RedirectResponse
-     * @throws OptimisticLockException
      */
     public function userConfirmationApproveAllAction()
     {
@@ -97,7 +98,7 @@ class AdminUserCertificationController extends AbstractController
      * @param $id
      * @param StripeManager $stripeManager
      * @return RedirectResponse
-     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws GuzzleException
      */
     public function userConfirmationDenyAction($id, StripeManager $stripeManager)
     {

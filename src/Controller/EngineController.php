@@ -107,10 +107,10 @@ class EngineController extends AbstractController
             }
         }
 
-        $form = $this->createForm(new EngineOrderType(), $engineOrder);
+        $form = $this->createForm(EngineOrderType::class, $engineOrder);
 
         if ($request->isMethod('POST')) {
-            $form->bind($request);
+            $form->handleRequest($request);
             if ($form->isValid()) {
                 $engineOrder = $form->getData();
                 $engineOrder->setUserInfo($user);
@@ -154,14 +154,14 @@ class EngineController extends AbstractController
             $assets = $engineOrder->getAssets();
         }
 
-        return [
+        return $this->render('Engine/edit.html.twig', [
             'product'     => $product,
             'assets'      => $assets,
             'form'        => $form->createView(),
             'paypal'      => $paypal,
             'engineOrder' => $engineOrder,
             'proProduct'  => $proProduct,
-        ];
+        ]);
     }
 
     /**

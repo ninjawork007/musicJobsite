@@ -28,7 +28,7 @@ class AdminWithdrawalController extends AbstractController
     public function adminWithdrawsList(Request $request, ContainerInterface $container)
     {
         // check the logged in user is an admin
-        if (!$this->getUser()->getIsAdmin()) {
+        if (!$this->getUser() || !$this->getUser()->getIsAdmin()) {
             $responseData = ['success' => false,
                 'message'              => 'Invalid Access', ];
             return new Response(json_encode($responseData));

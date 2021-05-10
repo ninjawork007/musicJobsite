@@ -52,10 +52,10 @@ class MarketplaceController extends AbstractController
 
         $defaultItemAudio = null;
 
-        $form = $this->createForm(new MarketplaceItemType(), $marketplaceItem);
+        $form = $this->createForm(MarketplaceItemType::class, $marketplaceItem);
 
         if ($request->isMethod('POST')) {
-            $form->bind($request);
+            $form->handleRequest($request);
             if ($form->isValid()) {
                 $marketplaceItem = $form->getData();
                 $marketplaceItem->setUserInfo($user);
@@ -145,10 +145,10 @@ class MarketplaceController extends AbstractController
             'flag'             => MarketplaceItemAudio::FLAG_FEATURED,
         ]);
 
-        $form = $this->createForm(new MarketplaceItemType(), $marketplaceItem);
+        $form = $this->createForm(MarketplaceItemType::class, $marketplaceItem);
 
         if ($request->isMethod('POST')) {
-            $form->bind($request);
+            $form->handleRequest($request);
             if ($form->isValid()) {
                 $marketplaceItem = $form->getData();
                 $marketplaceItem->setUserInfo($user);
@@ -246,7 +246,6 @@ class MarketplaceController extends AbstractController
         $uuid    = $request->get('uuid');
         $em      = $this->getDoctrine()->getManager();
         $user    = $this->getUser();
-        $request = $this->getRequest();
         $helper  = $this->get('service.helper');
 
         $marketplaceItem = $em->getRepository('App:MarketplaceItem')
@@ -525,9 +524,9 @@ class MarketplaceController extends AbstractController
             throw $this->createNotFoundException('Item not found');
         }
 
-        return [
+        return $this->render('Marketplace/itemStatusWidget.html.twig', [
             'marketplaceItem' => $marketplaceItem,
-        ];
+        ]);
     }
 
     /**
@@ -544,8 +543,8 @@ class MarketplaceController extends AbstractController
         // load the marketplace item
         $items = $em->getRepository('App:MarketplaceItem')->findAll([], ['created_at' => 'DESC', 'updated_at' => 'DESC']);
 
-        return [
+        return $this->render('Marketplace/userMarketplace.html.twig', [
             'items' => $items,
-        ];
+        ]);
     }
 }

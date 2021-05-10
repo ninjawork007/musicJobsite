@@ -25,7 +25,7 @@ class GenerateStatisticsCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $this->container = $container = $this->getContainer();
-        $this->em        = $container->get('doctrine')->getEntityManager();
+        $this->em        = $container->get('doctrine')->getManager();
 
         echo "SCRIPT START\n\n";
         $today = new \DateTime();

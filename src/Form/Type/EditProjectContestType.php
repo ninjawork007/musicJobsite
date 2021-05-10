@@ -8,17 +8,19 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\UrlType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class EditProjectContestType extends AbstractType
 {
-    public function __construct($defaultLanguage)
-    {
-        $this->defaultLanguage = $defaultLanguage;
-    }
 
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $defaultLanguage = $this->defaultLanguage;
+        $defaultLanguage = $options['english'];
+        $budgets         = [];
+
+        foreach ($options['budget'] as $value => $label) {
+            $budgets[$label] = $value;
+        }
 
         $builder->add('royalty', null, [
                     'label' => 'Royalty %',
@@ -151,6 +153,14 @@ class EditProjectContestType extends AbstractType
                     'multiple'      => false,
                     'expanded'      => true,
                 ]);
+    }
+
+    public function configureOptions(OptionsResolver $resolver): void
+    {
+        $resolver->setDefaults([
+            'english' => 'App\Entity\Language',
+            'budget' => [],
+        ]);
     }
 
     public function getDefaultOptions(array $options)

@@ -282,6 +282,19 @@ class AppFixtures extends Fixture
         $freeSp->setHidden(0);
         $manager->persist($freeSp);
         $this->addReference('free-subscription-plan', $freeSp);
+
+        $proSp = new SubscriptionPlan();
+        $proSp->setTitle('PRO Membership');
+        $proSp->setDescription('Pro Membership');
+        $proSp->setPrice('0');
+        $proSp->setUserAudioLimit(2);
+        $proSp->setProjectPercentAdded(3);
+        $proSp->setPaymentPercentTaken(10);
+        $proSp->setStaticKey('PRO');
+        $proSp->setUniqueKey(uniqid());
+        $proSp->setHidden(0);
+        $manager->persist($proSp);
+        $this->addReference('pro-subscription-plan', $proSp);
 //        LoadSubscriptionPlanData End
 
 

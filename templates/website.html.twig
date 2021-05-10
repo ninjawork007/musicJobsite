@@ -53,14 +53,6 @@
 {#            <meta name="description" content="{{ _titleBlock }}. Connect with vocalists and producers from around the world.">#}
 {#        {% endif %}#}
 
-{#        {% stylesheets#}
-{#            '@VocalizrAppBundle/Resources/public/css/bootstrap.min.css'#}
-{#            '@VocalizrAppBundle/Resources/public/css/font-awesome.min.css'#}
-{#            '@VocalizrAppBundle/Resources/public/css/website.css'#}
-{#        %}#}
-{#            <link rel="stylesheet" href="{{ asset_url }}" />#}
-{#        {% endstylesheets %}#}
-
         <link rel="stylesheet" href="{{ asset('css/bootstrap.min.css') }}" />
         <link rel="stylesheet" href="{{ asset('css/font-awesome.min.css') }}" />
         <link rel="stylesheet" href="{{ asset('css/website.css') }}" />
@@ -72,14 +64,6 @@
         {% block body %}{% endblock %}
         <!-- special IE-only canvas fix -->
         <!--[if IE]><script type="text/javascript" src="{{ asset('js/excanvas.js') }}"></script><![endif]-->
-        
-       {# {% javascripts
-            '@VocalizrAppBundle/Resources/public/js/jquery.js'
-            '@VocalizrAppBundle/Resources/public/js/bootstrap.min.js'
-            '@VocalizrAppBundle/Resources/public/js/website.js'
-         %}
-            <script type="text/javascript" src="{{ asset_url }}"></script>
-        {% endjavascripts %} #}
 
         <script type="text/javascript" src="{{ asset('js/jquery.js') }}"></script>
         <script type="text/javascript" src="{{ asset('js/bootstrap.js') }}"></script>

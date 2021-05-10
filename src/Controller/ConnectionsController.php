@@ -9,6 +9,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 class ConnectionsController extends AbstractController
 {
@@ -43,17 +44,16 @@ class ConnectionsController extends AbstractController
         return $this->render('Connections/index.html.twig', [
             'pendingRequests' => $pendingRequests,
         ]);
-
-        return [
-            'pendingRequests' => $pendingRequests,
-        ];
     }
 
     /**
      * @Route("/connections/list", name="connect_list")
      * @Template()
      *
-     * @param Request $reqest
+     * @param Request            $request
+     * @param ContainerInterface $container
+     *
+     * @return Response
      */
     public function connectRowsAction(Request $request, ContainerInterface $container)
     {

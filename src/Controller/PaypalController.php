@@ -27,7 +27,9 @@ class PaypalController extends AbstractController
      *
      * @param Request $request
      *
+     * @param PayPalService $payPalService
      * @return JsonResponse
+     * @throws \Doctrine\ORM\OptimisticLockException
      */
     public function paypalIpnAction(Request $request, PayPalService $payPalService)
     {

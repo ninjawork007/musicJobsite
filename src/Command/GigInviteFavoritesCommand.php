@@ -117,7 +117,7 @@ EOT
                         $message = new \Hip\MandrillBundle\Message();
                     }
                     $message->addTo($favUserInfo->getEmail());
-                    $body = $container->get('templating')->render('VocalizrAppBundle:Mail:projectInvite.html.twig', [
+                    $body = $container->get('twig')->render('Mail:projectInvite.html.twig', [
                         'userInfo' => $favUserInfo,
                         'project'  => $project,
                         'user'     => $user,

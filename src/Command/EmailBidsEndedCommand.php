@@ -6,12 +6,25 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * @property string _timeAgo
  */
 class EmailBidsEndedCommand extends Command
 {
+    private $container;
+
+    /**
+     * DeferredSubscriptionCancelCommand constructor.
+     * @param ContainerInterface $container
+     */
+    public function __construct(ContainerInterface $container)
+    {
+        parent::__construct();
+        $this->container = $container;
+    }
+
     protected function configure()
     {
         // How often do we run this script
@@ -30,9 +43,9 @@ class EmailBidsEndedCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $container  = $this->getContainer();
+        $container  = $this->container;
         $doctrine   = $container->get('doctrine');
-        $em         = $doctrine->getEntityManager();
+        $em         = $doctrine->getManager();
         $dispatcher = $container->get('hip_mandrill.dispatcher');
 
         $q = $em
@@ -71,7 +84,7 @@ class EmailBidsEndedCommand extends Command
                     $templateName = 'contestEntriesEnded';
                     $subject      = 'Award your Contest!';
                 }
-                $body = $container->get('templating')->render('VocalizrAppBundle:Mail:' . $templateName . 'connection.html.twig', [
+                $body = $container->get('twig')->render('Mail:' . $templateName . 'connection.html.twig', [
                     'userInfo' => $userInfo,
                     'project'  => $project,
                 ]);

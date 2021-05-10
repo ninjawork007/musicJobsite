@@ -21,7 +21,7 @@ class EmailNotificationsCommand extends Command
     {
         $container = $this->getContainer();
         $doctrine  = $container->get('doctrine');
-        $em        = $doctrine->getEntityManager();
+        $em        = $doctrine->getManager();
         $userPr    = $doctrine->getRepository('App:ProjectFeed');
 
         /**

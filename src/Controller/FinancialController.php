@@ -344,9 +344,9 @@ class FinancialController extends AbstractController
             return $this->redirect($this->generateUrl('user_financial'));
         }
 
-        return [
+        return $this->render('Financial/refund.html.twig', [
             'project' => $project,
-        ];
+        ]);
     }
 
     /**

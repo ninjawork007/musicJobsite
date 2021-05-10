@@ -13,6 +13,7 @@ use Slot\MandrillBundle\Message;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -35,6 +36,7 @@ use App\Form\Type\Admin\SubscriptionType;
 use App\Object\SubscriptionIdsCsvObject;
 use App\Service\MembershipSourceHelper;
 
+
 /**
  * Class AdminController
  * @package App\Controller
@@ -46,11 +48,13 @@ class AdminController extends AbstractController
     /**
      * @Route("/admin", name="admin")
      * @Template()
+     *
+     * @return RedirectResponse|Response
      */
-    public function indexAction(Request $request)
+    public function indexAction()
     {
         // check the logged in user is an admin
-        if (!$this->getUser()->getIsAdmin()) {
+        if (!$this->getUser() || !$this->getUser()->getIsAdmin()) {
             return $this->redirect($this->generateUrl('dashboard'));
         }
 
@@ -146,6 +150,8 @@ class AdminController extends AbstractController
     /**
      * @Route("/admin/users", name="admin_users")
      * @Template()
+     * @param Request $request
+     * @return RedirectResponse|Response
      */
     public function adminUsersAction(Request $request)
     {
@@ -164,12 +170,14 @@ class AdminController extends AbstractController
     /**
      * @Route("/admin/users/search", name="admin_users_search")
      * @Template()
+     * @param Request $request
+     * @return Response
      */
     public function adminUserSearchAction(Request $request)
     {
 
         // check the logged in user is an admin
-        if (!$this->getUser()->getIsAdmin()) {
+        if (!$this->getUser() || !$this->getUser()->getIsAdmin()) {
             $responseData = [
                 'success' => false,
                 'message' => 'Invalid Access',
@@ -274,11 +282,15 @@ class AdminController extends AbstractController
     /**
      * @Route("/admin/user/activate/{id}", name="admin_user_activate")
      * @Route("/admin/user/deactivate/{id}", name="admin_user_deactivate")
+     * @param Request $request
+     * @param $id
+     * @param UserInfoModel $userModel
+     * @return JsonResponse|Response
      */
     public function adminUserActivateAction(Request $request, $id, UserInfoModel $userModel)
     {
         // check the logged in user is an admin
-        if (!$this->getUser()->getIsAdmin()) {
+        if (!$this->getUser() || !$this->getUser()->getIsAdmin()) {
             return new JsonResponse([
                 'success' => false,
                 'message' => 'Invalid Access',
@@ -336,8 +348,9 @@ class AdminController extends AbstractController
     /**
      * @Route("/admin/user/upgrade/{id}", name="admin_user_upgrade")
      * @Route("/admin/user/downgrade/{id}", name="admin_user_downgrade")
-     * @param Request $request
-     * @param int $id
+     * @param Request       $request
+     * @param int           $id
+     * @param UserInfoModel $userModel
      * @return JsonResponse
      */
     public function adminUserProAction(Request $request, $id, UserInfoModel $userModel)
@@ -355,9 +368,9 @@ class AdminController extends AbstractController
             $subscription = new UserSubscription();
             $type         = $this->createForm(SubscriptionType::class, $subscription);
             $type->handleRequest($request);
+            $plan = $em->getRepository('App:SubscriptionPlan')->findOneBy(['static_key' => 'PRO']);
             $subscription
-                ->setSubscriptionPlan($plan = $em->getRepository('App:SubscriptionPlan')
-                    ->findOneBy(['static_key' => 'PRO']))
+                ->setSubscriptionPlan($plan)
                 ->setIsActive(true)
                 ->setUserInfo($user)
                 ->setNextPaymentDate($subscription->getDateEnded())
@@ -395,12 +408,18 @@ class AdminController extends AbstractController
 
     /**
      * @Route("/admin/user/certify/{id}/{from}", defaults={"from" = "admin"}, name="admin_user_certify")
+     * @param Request            $request
+     * @param $id
+     * @param $from
+     * @param StripeManager      $stripeManager
+     * @param ContainerInterface $container
+     * @return Response
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
     public function adminUserCertifyAction(Request $request, $id, $from, StripeManager $stripeManager, ContainerInterface $container)
     {
         // check the logged in user is an admin
-        if (!$this->getUser()->getIsAdmin()) {
+        if (!$this->getUser() || !$this->getUser()->getIsAdmin()) {
             $responseData = ['success' => false,
                 'message'              => 'Invalid Access', ];
         }
@@ -476,11 +495,13 @@ class AdminController extends AbstractController
     /**
      * @Route("/admin/gigs", name="admin_projects")
      * @Template()
+     * @param Request $request
+     * @return RedirectResponse|Response
      */
     public function adminProjectsAction(Request $request)
     {
         // check the logged in user is an admin
-        if (!$this->getUser()->getIsAdmin()) {
+        if (!$this->getUser() || !$this->getUser()->getIsAdmin()) {
             return $this->redirect($this->generateUrl('dashboard'));
         }
 
@@ -497,10 +518,11 @@ class AdminController extends AbstractController
     {
 
         // check the logged in user is an admin
-        if (!$this->getUser()->getIsAdmin()) {
+        if (!$this->getUser() || !$this->getUser()->getIsAdmin()) {
             $responseData = [
-                'success'  => false,
-                'message'  => 'Invalid Access', ];
+                    'success'  => false,
+                    'message'  => 'Invalid Access',
+                ];
             return new Response(json_encode($responseData));
         }
 
@@ -530,11 +552,16 @@ class AdminController extends AbstractController
     /**
      * @Route("/admin/project/activate/{id}", name="admin_project_activate")
      * @Route("/admin/project/deactivate/{id}", name="admin_project_deactivate")
+     * @param Request $request
+     * @param $id
+     * @return JsonResponse|Response
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
      */
     public function adminProjectActivateAction(Request $request, $id)
     {
         // check the logged in user is an admin
-        if (!$this->getUser()->getIsAdmin()) {
+        if (!$this->getUser() || !$this->getUser()->getIsAdmin()) {
             $responseData = ['success' => false, 'message' => 'Invalid Access'];
             return new JsonResponse($responseData);
         }
@@ -628,7 +655,9 @@ class AdminController extends AbstractController
 
     /**
      * @param Project $project
-     * @param bool    $isDeactivate
+     * @param bool $isDeactivate
+     *
+     * @param UserInfoModel $userInfoModel
      *
      * @return \App\Entity\UserWalletTransaction
      */
@@ -667,7 +696,7 @@ class AdminController extends AbstractController
      *
      * @return bool
      */
-    private function checkFundsForProject($project, $subscriptionPlan)
+    private function checkFundsForProject(Project $project, array $subscriptionPlan)
     {
         // Workout total of project and if they have enough in their wallet
         $projectPrice = $project->getBudgetTo() * 100;
@@ -687,7 +716,7 @@ class AdminController extends AbstractController
      *
      * @return int
      */
-    private function calculateProjectFee($project, $subscriptionPlan)
+    private function calculateProjectFee(Project $project, array $subscriptionPlan)
     {
         $projectPrice = 0;
         if ($project->getPublishType() == Project::PUBLISH_PRIVATE) {
@@ -725,10 +754,10 @@ class AdminController extends AbstractController
      *
      * @throws \Doctrine\ORM\OptimisticLockException
      */
-    public function adminProjectResendEmployerReceipt(Request $request, $id)
+    public function adminProjectResendEmployerReceipt(Request $request, int $id)
     {
         // check the logged in user is an admin
-        if (!$this->getUser()->getIsAdmin()) {
+        if (!$this->getUser() || !$this->getUser()->getIsAdmin()) {
             $responseData = ['success' => false, 'message' => 'Invalid Access'];
             return new JsonResponse($responseData);
         }
@@ -780,10 +809,10 @@ class AdminController extends AbstractController
      *
      * @throws \Doctrine\ORM\OptimisticLockException
      */
-    public function adminProjectPublishType(Request $request, $id)
+    public function adminProjectPublishType(Request $request, int $id)
     {
         // check the logged in user is an admin
-        if (!$this->getUser()->getIsAdmin()) {
+        if (!$this->getUser() || !$this->getUser()->getIsAdmin()) {
             $responseData = ['success' => false, 'message' => 'Invalid Access'];
             return new JsonResponse($responseData);
         }
@@ -896,14 +925,14 @@ class AdminController extends AbstractController
      * @Route("/admin/accountingReport", name="admin_accounting_report")
      * @Template()
      *
-     * @param \Symfony\Component\HttpFoundation\Request $request
+     * @param Request $request
      *
-     * @return \Symfony\Component\HttpFoundation\Response
+     * @return Response
      */
     public function adminAccountingReportAction(Request $request)
     {
         // check the logged in user is an admin
-        if (!$this->getUser()->getIsAdmin()) {
+        if (!$this->getUser() || !$this->getUser()->getIsAdmin()) {
             return $this->redirect($this->generateUrl('dashboard'));
         }
 
@@ -912,7 +941,8 @@ class AdminController extends AbstractController
                 ->add('startDate', DateType::class, [
                     'widget'      => 'single_text',
                     'constraints' => [
-                        new \Symfony\Component\Validator\Constraints\NotBlank(), ],
+                            new NotBlank(),
+                        ],
                     'attr' => [
                         'class' => 'form-control ',
                     ],
@@ -920,7 +950,8 @@ class AdminController extends AbstractController
                 ->add('endDate', DateType::class, [
                     'widget'      => 'single_text',
                     'constraints' => [
-                        new \Symfony\Component\Validator\Constraints\NotBlank(), ],
+                            new NotBlank(),
+                        ],
                     'attr' => [
                         'class' => 'form-control ',
                     ],
@@ -1067,13 +1098,16 @@ class AdminController extends AbstractController
                         echo 'cannot save image';
                     }
 
-                    $simpleImage = new \SimpleImage();
-                    $simpleImage->load($article->getAbsolutePath());
-                    $simpleImage->fit_to_width(1600);
-                    $simpleImage->save($article->getAbsolutePath(), null, 80);
+
+                    $image = new \claviska\SimpleImage();
+                    // Magic! ✨
+                    $image->fromFile($article->getAbsolutePath());
+                    $image->resize(1600, 1600);             // resize to SIZE X SIZE pixels
+                    $image->toFile($article->getAbsolutePath(), 'image/png');  // convert to PNG and save a copy to new-image.png
+
                     // create small one
-                    $simpleImage->fit_to_width(600);
-                    $simpleImage->save($article->getUploadRootDir() . '/small/' . $article->getPath(), null, 80);
+                    $image->resize(600, 600);             // resize to SIZE X SIZE pixels
+                    $image->toFile($article->getUploadRootDir() . '/small/' . $article->getPath(), 'image/png');
 
                     $article->setUpdatedAt(new \DateTime());
                 }
@@ -1103,9 +1137,9 @@ class AdminController extends AbstractController
      * @Route("/admin/vmag/article/{id}/delete", name="admin_vmag_article_delete")
      * @Template()
      *
-     * @param \Symfony\Component\HttpFoundation\Request $request
+     * @param Request $request
      *
-     * @return \Symfony\Component\HttpFoundation\Response
+     * @return Response
      */
     public function vmagArticleDeleteAction(Request $request, $id)
     {
@@ -1137,9 +1171,9 @@ class AdminController extends AbstractController
      * @Route("/admin/vmag/upload/image", name="admin_vmag_upload_image")
      * @Template()
      *
-     * @param \Symfony\Component\HttpFoundation\Request $request
+     * @param Request $request
      *
-     * @return \Symfony\Component\HttpFoundation\Response
+     * @return Response
      */
     public function vmagImageUploadAction(Request $request)
     {
@@ -1174,9 +1208,9 @@ class AdminController extends AbstractController
         $em->persist($ai);
         $em->flush();
 
-        return [
+        return $this->render('Admin,vmagImageUpload.html.twig', [
             'ai' => $ai,
-        ];
+        ]);
     }
 
     /**
@@ -1184,9 +1218,9 @@ class AdminController extends AbstractController
      *
      * @Route("/admin/vmag/upload/image/delete/{id}", name="admin_vmag_delete_image")
      *
-     * @param \Symfony\Component\HttpFoundation\Request $request
+     * @param Request $request
      *
-     * @return \Symfony\Component\HttpFoundation\Response
+     * @return Response
      */
     public function vmagImageDeleteAction(Request $request)
     {
@@ -1214,14 +1248,14 @@ class AdminController extends AbstractController
      * @Route("/admin/vmag/images", name="admin_vmag_images")
      * @Template()
      *
-     * @param \Symfony\Component\HttpFoundation\Request $request
+     * @param Request $request
      *
-     * @return \Symfony\Component\HttpFoundation\Response
+     * @return Response
      */
     public function vmagImagesAction(Request $request)
     {
         // check the logged in user is an admin
-        if (!$this->getUser()->getIsAdmin()) {
+        if (!$this->getUser() || !$this->getUser()->getIsAdmin()) {
             return $this->redirect($this->generateUrl('dashboard'));
         }
 
@@ -1240,14 +1274,14 @@ class AdminController extends AbstractController
      * @Route("/admin/vmag/author/{id}", name="admin_vmag_author", defaults={"id" = ""})
      * @Template()
      *
-     * @param \Symfony\Component\HttpFoundation\Request $request
+     * @param Request $request
      *
-     * @return \Symfony\Component\HttpFoundation\Response
+     * @return Response
      */
     public function vmagAuthorAction(Request $request)
     {
         // check the logged in user is an admin
-        if (!$this->getUser()->getIsAdmin()) {
+        if (!$this->getUser() || !$this->getUser()->getIsAdmin()) {
             return $this->redirect($this->generateUrl('dashboard'));
         }
         $id = $request->get('id');
@@ -1294,7 +1328,7 @@ class AdminController extends AbstractController
     public function vmagAuthorListAction(Request $request, ContainerInterface $container)
     {
         // check the logged in user is an admin
-        if (!$this->getUser()->getIsAdmin()) {
+        if (!$this->getUser() || !$this->getUser()->getIsAdmin()) {
             return $this->redirect($this->generateUrl('dashboard'));
         }
 
@@ -1330,7 +1364,7 @@ class AdminController extends AbstractController
     public function userJsonAction(Request $request)
     {
         // check the logged in user is an admin
-        if (!$this->getUser()->getIsAdmin()) {
+        if (!$this->getUser() || !$this->getUser()->getIsAdmin()) {
             return $this->redirect($this->generateUrl('dashboard'));
         }
 
@@ -1366,12 +1400,14 @@ class AdminController extends AbstractController
     /**
      * @Route("/admin/withdrawels", name="admin_withdrawels")
      * @Template()
+     * @param Request $request
+     * @return Response
      */
     public function adminWithdrawelsAction(Request $request)
     {
 
         // check the logged in user is an admin
-        if (!$this->getUser()->getIsAdmin()) {
+        if (!$this->getUser() || !$this->getUser()->getIsAdmin()) {
             $responseData = ['success' => false,
                 'message'              => 'Invalid Access', ];
             return new Response(json_encode($responseData));
@@ -1392,12 +1428,16 @@ class AdminController extends AbstractController
     /**
      * @Route("/admin/withdraws", name="admin_withdraws")
      * @Template()
+     *
+     * @param Request $request
+     *
+     * @return array|Response
      */
     public function adminWithdrawsAction(Request $request)
     {
 
         // check the logged in user is an admin
-        if (!$this->getUser()->getIsAdmin()) {
+        if (!$this->getUser() || !$this->getUser()->getIsAdmin()) {
             $responseData = ['success' => false,
                 'message'              => 'Invalid Access', ];
             return new Response(json_encode($responseData));
@@ -1420,14 +1460,17 @@ class AdminController extends AbstractController
             20// limit per page
         );
 
-        return [
+        return $this->render('Admin/adminWithdraws.html.twig', [
             'pagination' => $pagination,
-        ];
+        ]);
     }
 
     /**
      * @Route("/admin/cancelWithdrawel/{id}", name="admin_cancel_withdrawel")
      * @Template()
+     * @param Request $request
+     * @param $id
+     * @return RedirectResponse|Response
      */
     public function adminCancelWithdrawelProcessAction(Request $request, $id)
     {
@@ -1482,6 +1525,11 @@ class AdminController extends AbstractController
     /**
      * @Route("/admin/withdrawel/{id}", name="admin_withdrawel")
      * @Template()
+     *
+     * @param Request $request
+     * @param $id
+     *
+     * @return array|RedirectResponse|Response
      */
     public function adminWithdrawelProcessAction(Request $request, $id)
     {
@@ -1560,6 +1608,7 @@ class AdminController extends AbstractController
             $em->flush();
 
             $this->addFlash('notice', 'Withdrawel Request has been completed successfully');
+
             return $this->redirect($this->generateUrl('admin_withdrawels'));
         }
 
@@ -1572,6 +1621,10 @@ class AdminController extends AbstractController
     /**
      * @Route("/admin/marketplace", name="admin_marketplace")
      * @Template()
+     *
+     * @param Request $request
+     *
+     * @return array
      */
     public function marketplaceAction(Request $request)
     {
@@ -1601,6 +1654,11 @@ class AdminController extends AbstractController
     /**
      * @Route("/admin/marketplace/{uuid}", name="admin_marketplace_review")
      * @Template()
+     *
+     * @param Request $request
+     * @param $uuid
+     *
+     * @return array
      */
     public function marketplaceReviewAction(Request $request, $uuid)
     {
@@ -1611,7 +1669,7 @@ class AdminController extends AbstractController
         }
         $em = $this->getDoctrine()->getManager();
 
-        $marketplaceItem = $em->getRepository('App:MarketplaceItem')->findOneByUuid($uuid);
+        $marketplaceItem = $em->getRepository('App:MarketplaceItem')->findOneBy(['uuid' => $uuid]);
         if (!$marketplaceItem) {
             throw $this->createNotFoundException('Item not found');
         }
@@ -1624,6 +1682,11 @@ class AdminController extends AbstractController
     /**
      * @Route("/admin/marketplace/{uuid}/approve", name="admin_marketplace_approve")
      * @Template()
+     *
+     * @param Request $request
+     * @param $uuid
+     *
+     * @return RedirectResponse
      */
     public function marketplaceApproveAction(Request $request, $uuid)
     {
@@ -1633,7 +1696,7 @@ class AdminController extends AbstractController
         }
         $em = $this->getDoctrine()->getManager();
 
-        $marketplaceItem = $em->getRepository('App:MarketplaceItem')->findOneByUuid($uuid);
+        $marketplaceItem = $em->getRepository('App:MarketplaceItem')->findOneBy(['uuid' => $uuid]);
         if (!$marketplaceItem) {
             throw $this->createNotFoundException('Page not found');
         }
@@ -1642,7 +1705,7 @@ class AdminController extends AbstractController
         $em->flush();
 
         $dispatcher = $this->get('hip_mandrill.dispatcher');
-        $message    = new \Hip\MandrillBundle\Message();
+        $message    = new Message();
         $message->setSubject('Vocalizr - Marketplace Item status updated');
         $message->setPreserveRecipients(false);
         $message->setTrackOpens(true)
@@ -1672,7 +1735,7 @@ class AdminController extends AbstractController
         }
         $em = $this->getDoctrine()->getManager();
 
-        $marketplaceItem = $em->getRepository('App:MarketplaceItem')->findOneByUuid($uuid);
+        $marketplaceItem = $em->getRepository('App:MarketplaceItem')->findOneBy(['uuid' => $uuid]);
         if (!$marketplaceItem) {
             throw $this->createNotFoundException('Page not found');
         }
@@ -1727,11 +1790,12 @@ class AdminController extends AbstractController
      * @Route("/admin/engine", name="admin_engine")
      * @Template()
      *
-     * @param \Symfony\Component\HttpFoundation\Request $request
+     * @param Request            $request
+     * @param ContainerInterface $container
      *
-     * @return \Symfony\Component\HttpFoundation\Response
+     * @return Response
      */
-    public function engineAction(Request $request)
+    public function engineAction(Request $request, ContainerInterface $container)
     {
         // check the logged in user is an admin
         if (!$this->getUser() || !$this->getUser()->getIsAdmin()) {
@@ -1749,16 +1813,16 @@ class AdminController extends AbstractController
 
         $query = $q->getQuery();
 
-        $paginator  = $this->get('knp_paginator');
+        $paginator  = $container->get('knp_paginator');
         $pagination = $paginator->paginate(
             $query,
-            $this->get('request')->query->get('page', 1)/*page number*/,
+            $request->query->get('page', 1)/*page number*/,
             20// limit per page
         );
 
-        return [
+        return $this->render('Admin/engine.html.twig', [
             'pagination' => $pagination,
-        ];
+        ]);
     }
 
     /**
@@ -1767,9 +1831,9 @@ class AdminController extends AbstractController
      * @Route("/admin/engine/order/{uid}", name="admin_engine_order")
      * @Template()
      *
-     * @param \Symfony\Component\HttpFoundation\Request $request
+     * @param Request $request
      *
-     * @return \Symfony\Component\HttpFoundation\Response
+     * @return Response
      */
     public function engineOrderAction(Request $request, $uid)
     {
@@ -1792,9 +1856,9 @@ class AdminController extends AbstractController
             $request->query->set('notice', 'Changes saved');
         }
 
-        return [
+        return $this->render('Admin/engineOrder.html.twig', [
             'order' => $engineOrder,
-        ];
+        ]);
     }
 
     /**
@@ -1942,8 +2006,8 @@ class AdminController extends AbstractController
     /**
      * @Route("/admin/withdraw_email_lock/list", name="admin_withdraw_email_lock_list")
      *
-     * @param Request $request
-     * @param string $criteria
+     * @param Request                $request
+     * @param UserRestrictionService $restrictionService
      * @return JsonResponse
      */
     public function adminWithdrawEmailLockList(Request $request, UserRestrictionService $restrictionService)

@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\UserPref;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use GuzzleHttp\Client;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Routing\Annotation\Route;
@@ -21,6 +22,7 @@ use App\Entity\VocalizrActivity;
 use App\Entity\VoiceTag;
 use Symfony\Component\Security\Core\Encoder\MessageDigestPasswordEncoder;
 use Symfony\Component\Security\Core\Security;
+use Doctrine\ODM\MongoDB\MongoDBException;
 
 class DashboardController extends AbstractController
 {
@@ -40,10 +42,15 @@ class DashboardController extends AbstractController
     /**
      * @Route("/dashboard", name="dashboard")
      * @Template()
+     *
+     * @param Request  $request
+     * @param Security $security
+     *
+     * @return Response
+     * @throws MongoDBException
      */
     public function indexAction(Request $request, Security $security)
     {
-
         $em   = $this->getDoctrine()->getManager();
 
         /** @var UserInfo $user */
@@ -79,14 +86,6 @@ class DashboardController extends AbstractController
             $activity->setActivityRead(true);
             $em->flush();
         }
-//        $q->update()
-//                ->set('va.activity_read', true)
-//                ->where('va.user_info = :user_info');
-//        $params = [
-//            ':user_info' => $this->getUser(),
-//        ];
-//        $q->setParameters($params);
-//        $q->getQuery()->execute();
 
         $activityMessage = new VocalizrActivity();
         $messageForm     = $this->createFormBuilder($activityMessage)
@@ -244,60 +243,60 @@ class DashboardController extends AbstractController
             'audioPlays'   => 0,
         ];
         $timeAgo = '-30 days';
-
-       /* $profileViewStat = $this->dm->createQueryBuilder('App:ProfileView')
-            ->field('user_id')->equals($user->getId())
-            ->field('unique')->equals(false)
-            ->field('date')->gte(date('Y-m-d', strtotime($timeAgo)))
-            ->field('date')->lte(date('Y-m-d'))
-            ->group(['user_id' => 1], ['total' => 0])
-            ->reduce('function ( curr, result ) { result.total += curr.count;}')
-            ->getQuery()
-            ->execute();*/
-
-        // Get stats
-        $profileViewStat = $this->dm->createAggregationBuilder('App:ProfileView')
-            ->match()
-                ->field('user_id')->equals($user->getId())
-                ->field('unique')->equals(false)
-                ->field('date')->gte(date('Y-m-d', strtotime($timeAgo)))
-                ->field('date')->lte(date('Y-m-d'))
+//
+//       /* $profileViewStat = $this->dm->createQueryBuilder('App:ProfileView')
+//            ->field('user_id')->equals($user->getId())
+//            ->field('unique')->equals(false)
+//            ->field('date')->gte(date('Y-m-d', strtotime($timeAgo)))
+//            ->field('date')->lte(date('Y-m-d'))
 //            ->group(['user_id' => 1], ['total' => 0])
-//            ->group()
-//                ->field('user_id')->expression(1)
-//                ->field('total')->expression(0)
 //            ->reduce('function ( curr, result ) { result.total += curr.count;}')
 //            ->getQuery()
-            ->execute();
-dd($profileViewStat);
-        if (count($profileViewStat)) {
-            $stats['profileViews'] = $profileViewStat[0]['total'];
-        }
-
-        $audioPlayStat = $this->dm->createQueryBuilder('App:AudioPlay')
-            ->field('user_id')->equals($user->getId())
-            ->field('date')->gte(date('Y-m-d', strtotime($timeAgo)))
-            ->field('date')->lte(date('Y-m-d'))
-            ->group(['user_id' => 1], ['total' => 0])
-            ->reduce('function ( curr, result ) { result.total += curr.count;}')
-            ->getQuery()
-            ->execute();
-
-        if (count($audioPlayStat)) {
-            $stats['audioPlays'] = $audioPlayStat[0]['total'];
-        }
-
-        $audioLikeStat = $this->dm->createQueryBuilder('App:AudioLike')
-            ->field('user_id')->equals($user->getId())
-            ->field('date')->gte(date('Y-m-d H:i:s', strtotime($timeAgo)))
-            ->field('date')->lte(date('Y-m-d H:i:s'))
-            ->getQuery()
-            ->execute()
-            ->count();
-
-        if (count($audioPlayStat)) {
-            $stats['audioLikes'] = $audioLikeStat;
-        }
+//            ->execute();*/
+//
+//        // Get stats
+//        $profileViewStat = $this->dm->createAggregationBuilder('App:ProfileView')
+//            ->match()
+//                ->field('user_id')->equals($user->getId())
+//                ->field('unique')->equals(false)
+//                ->field('date')->gte(date('Y-m-d', strtotime($timeAgo)))
+//                ->field('date')->lte(date('Y-m-d'))
+////            ->group(['user_id' => 1], ['total' => 0])
+////            ->group()
+////                ->field('user_id')->expression(1)
+////                ->field('total')->expression(0)
+////            ->reduce('function ( curr, result ) { result.total += curr.count;}')
+////            ->getQuery()
+//            ->execute();
+//
+//        if (count($profileViewStat)) {
+//            $stats['profileViews'] = $profileViewStat[0]['total'];
+//        }
+//
+//        $audioPlayStat = $this->dm->createQueryBuilder('App:AudioPlay')
+//            ->field('user_id')->equals($user->getId())
+//            ->field('date')->gte(date('Y-m-d', strtotime($timeAgo)))
+//            ->field('date')->lte(date('Y-m-d'))
+//            ->group(['user_id' => 1], ['total' => 0])
+//            ->reduce('function ( curr, result ) { result.total += curr.count;}')
+//            ->getQuery()
+//            ->execute();
+//
+//        if (count($audioPlayStat)) {
+//            $stats['audioPlays'] = $audioPlayStat[0]['total'];
+//        }
+//
+//        $audioLikeStat = $this->dm->createQueryBuilder('App:AudioLike')
+//            ->field('user_id')->equals($user->getId())
+//            ->field('date')->gte(date('Y-m-d H:i:s', strtotime($timeAgo)))
+//            ->field('date')->lte(date('Y-m-d H:i:s'))
+//            ->getQuery()
+//            ->execute()
+//            ->count();
+//
+//        if (count($audioPlayStat)) {
+//            $stats['audioLikes'] = $audioLikeStat;
+//        }
 
         $data = [
             'activity'           => $activity,
@@ -403,13 +402,15 @@ dd($profileViewStat);
     /**
      * @Route("/dashboard/updateSoundsLike", name="dashboard_sounds_like")
      *
-     * @param \Symfony\Component\HttpFoundation\Request $request
+     * @param Request $request
      */
     public function updateUserSoundsLike(Request $request)
     {
         if (!$request->isMethod('POST')) {
-            return new JsonResponse(['success' => false,
-                'message'                      => 'Invalid request', ]);
+            return new JsonResponse([
+                    'success' => false,
+                    'message' => 'Invalid request',
+                ]);
         }
 
         $em   = $this->getDoctrine()->getManager();
@@ -779,9 +780,9 @@ dd($profileViewStat);
      *
      * @Route("/dataPing/{extra}/{uuid}", name="data_ping")
      *
-     * @param \Symfony\Component\HttpFoundation\Request $request
+     * @param Request $request
      *
-     * @return \Symfony\Component\HttpFoundation\Response
+     * @return Response
      */
     public function dataPingAction(Request $request, $extra = null, $uuid = null)
     {
@@ -833,9 +834,10 @@ dd($profileViewStat);
                                     ->findUnreadForThread($activeThread, $user);
                     $responseData['threadOpen'] = $activeThread->getIsOpen();
                     $responseData['messages']   = $this->renderView(
-                        'App:Message:message.html.twig',
-                        ['thread'      => $activeThread,
-                            'messages' => $messages, ]
+                        'App:Message:message.html.twig',[
+                                'thread'   => $activeThread,
+                                'messages' => $messages,
+                            ]
                     );
 
                     // update the thread
@@ -869,11 +871,12 @@ dd($profileViewStat);
                 }
 
                 $responseData['threadsHtml'] = $this->renderView(
-                    'Message:threadList.html.twig',
-                    ['threads'         => $threads,
-                        'countThreads' => $countThreads,
-                        'maxResults'   => $maxResults,
-                        'activeThread' => $activeThread, ]
+                    'Message:threadList.html.twig', [
+                            'threads'      => $threads,
+                            'countThreads' => $countThreads,
+                            'maxResults'   => $maxResults,
+                            'activeThread' => $activeThread,
+                        ]
                 );
             }
         }
@@ -896,7 +899,7 @@ dd($profileViewStat);
         $activity = $this->getDoctrine()->getRepository('App:VocalizrActivity')
             ->findActivity(
                 $this->getUser(),
-                ['filter' => $request->getSession()->get('activity_filter')],
+                [ 'filter' => $request->getSession()->get('activity_filter') ],
                 $limit,
                 $first
             );
@@ -904,9 +907,9 @@ dd($profileViewStat);
         $userAudios = $this->getUserAudios($activity);
 
         $html = $this->renderView('Dashboard/activity.html.twig', [
-            'activity' => $activity,
-            'audioLikes' => $this->getUserLikes($userAudios),
-            'audiosByUser' => $userAudios,
+            'activity'        => $activity,
+            'audioLikes'      => $this->getUserLikes($userAudios),
+            'audiosByUser'    => $userAudios,
             'audiosByProject' => $this->getFeaturedProjectAudios($activity),
         ]);
 
@@ -972,9 +975,6 @@ dd($profileViewStat);
         if (!$user) {
             return $audioLikes;
         }
-
-//        /** @var DocumentManager $dm */
-//        $dm = $this->get('doctrine_mongodb')->getManager();
 
         $audioIds = [];
         foreach ($userAudios as $audio) {

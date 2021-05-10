@@ -24,7 +24,7 @@ class EmailVocalistRecommendationsCommand_1 extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $this->container  = $container  = $this->getContainer();
-        $this->em         = $container->get('doctrine')->getEntityManager();
+        $this->em         = $container->get('doctrine')->getManager();
         $this->dispatcher = $container->get('hip_mandrill.dispatcher');
 
         $this->message = new \Hip\MandrillBundle\Message();

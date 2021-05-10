@@ -16,10 +16,10 @@ class NewProjectContestType extends AbstractType
 
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $defaultLanguage = $options['english'];
+        $defaultLanguage = $options['data']['english'];
         $budgets         = [];
 
-        foreach ($options['budget'] as $value => $label) {
+        foreach ($options['data']['budget'] as $value => $label) {
             $budgets[$label] = $value;
         }
 

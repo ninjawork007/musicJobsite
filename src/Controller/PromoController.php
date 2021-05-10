@@ -27,7 +27,7 @@ class PromoController extends AbstractController
         $userSource->setSource(MembershipSourceHelper::SUB_SOURCE_STAYHOME_PROMO);
         $sourceHelper->setSource($userSource);
 
-        return $this->render('@VocalizrApp/Promo/stayHome.html.twig', [
+        return $this->render('Promo/stayHome.html.twig', [
             'user_source' => $userSource,
             'button_id'   => $this->container->getParameter('paypal_stayhome_button_id'),
         ]);
@@ -40,6 +40,6 @@ class PromoController extends AbstractController
      */
     public function giveawayAction()
     {
-        return $this->render('@VocalizrApp/Promo/giveaway.html.twig');
+        return $this->render('Promo/giveaway.html.twig');
     }
 }

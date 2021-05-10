@@ -41,7 +41,7 @@ class EmailEmployerRecommendationsCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $container        = $this->getContainer();
-        $this->em         = $container->get('doctrine')->getEntityManager();
+        $this->em         = $container->get('doctrine')->getManager();
         $this->dispatcher = $container->get('hip_mandrill.dispatcher');
 
         $this->message = new Message();

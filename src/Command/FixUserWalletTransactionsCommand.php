@@ -208,7 +208,7 @@ class FixUserWalletTransactionsCommand extends Command
         $qb = $transactionRepo->createQueryBuilder('uwt');
         $qb
             ->select('uwt.id')
-            ->leftJoin('VocalizrAppBundle:UserWithdraw', 'uw', Join::WITH, 'uw.created_at = uwt.created_at')
+            ->leftJoin('App:UserWithdraw', 'uw', Join::WITH, 'uw.created_at = uwt.created_at')
 
             ->where('uw is null')
             ->andWhere('uwt.user_info = :user_id')
@@ -235,7 +235,7 @@ class FixUserWalletTransactionsCommand extends Command
         $qb = $transactionRepo->createQueryBuilder('uwt');
         $qb
             ->select('uw.id')
-            ->join('VocalizrAppBundle:UserWithdraw', 'uw', Join::WITH, 'uw.created_at = uwt.created_at')
+            ->join('App:UserWithdraw', 'uw', Join::WITH, 'uw.created_at = uwt.created_at')
 
             ->where('uw.user_info = :user_id')
             ->andWhere('uwt.user_info = :user_id')

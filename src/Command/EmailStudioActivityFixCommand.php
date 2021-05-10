@@ -27,7 +27,7 @@ class EmailStudioActivityFixCommand extends Command
     {
         $container        = $this->getContainer();
         $doctrine         = $container->get('doctrine');
-        $em               = $doctrine->getEntityManager();
+        $em               = $doctrine->getManager();
         $this->dispatcher = $container->get('hip_mandrill.dispatcher');
 
         $q = $em->getRepository('App:ProjectFeed')
@@ -60,7 +60,7 @@ class EmailStudioActivityFixCommand extends Command
                     $content = null;
                 }
 
-                $content .= $container->get('templating')->render('VocalizrAppBundle:Mail:projectFeedRow.html.twig', [
+                $content .= $container->get('twig')->render('Mail:projectFeedRow.html.twig', [
                     'pf' => $pf,
                 ]);
                 $prevPf = $pf;

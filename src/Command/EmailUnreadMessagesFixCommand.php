@@ -23,7 +23,7 @@ class EmailUnreadMessagesFixCommand extends Command
     {
         $this->container  = $container  = $this->getContainer();
         $doctrine         = $container->get('doctrine');
-        $em               = $doctrine->getEntityManager();
+        $em               = $doctrine->getManager();
         $this->dispatcher = $container->get('hip_mandrill.dispatcher');
 
         $q = $em->getRepository('App:Message')
@@ -82,7 +82,7 @@ class EmailUnreadMessagesFixCommand extends Command
                 ->setTrackClicks(true);
 
             $message->addTo($toUserInfo->getEmail());
-            $body = $container->get('templating')->render('VocalizrAppBundle:Mail:unreadMessages.html.twig', [
+            $body = $container->get('twig')->render('Mail:unreadMessages.html.twig', [
                 'toUserInfo'    => $toUserInfo,
                 'fromUserInfo'  => $fromUserInfo,
                 'project'       => $project,

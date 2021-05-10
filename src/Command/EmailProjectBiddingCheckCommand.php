@@ -27,7 +27,7 @@ class EmailProjectBiddingCheckCommand extends Command
     {
         $container        = $this->getContainer();
         $doctrine         = $container->get('doctrine');
-        $em               = $doctrine->getEntityManager();
+        $em               = $doctrine->getManager();
         $this->dispatcher = $container->get('hip_mandrill.dispatcher');
 
         $q = $em->getRepository('App:Project')
@@ -61,7 +61,7 @@ class EmailProjectBiddingCheckCommand extends Command
                     ->setTrackClicks(true);
 
                 $message->addTo($user->getEmail());
-                $body = $container->get('templating')->render('VocalizrAppBundle:Mail:projectBiddingCheck.html.twig', [
+                $body = $container->get('twig')->render('Mail:projectBiddingCheck.html.twig', [
                     'userInfo'  => $user,
                     'project'   => $project,
                     'totalBids' => count($project->getProjectBids()),

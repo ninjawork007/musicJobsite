@@ -20,7 +20,7 @@ class PaypalIPNSimulateCommand extends Command
     {
         $container     = $this->getContainer();
         $doctrine      = $container->get('doctrine');
-        $em            = $doctrine->getEntityManager();
+        $em            = $doctrine->getManager();
         $payPalService = $container->get('service.paypal');
 
         $simulateUrl = $container->getParameter('paypal_ipn_simulator_url');

@@ -21,7 +21,7 @@ class UpdatingBalanceTransactionListCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $em = $this->getContainer()->get('doctrine')->getEntityManager();
+        $em = $this->getContainer()->get('doctrine')->getManager();
         $stripeManager = $this->getContainer()->get('vocalizr_app.stripe_manager');
         /** @var StripeChargeRepository $stripeChargeRepository */
         $stripeChargeRepository = $em->getRepository('App:StripeCharge');

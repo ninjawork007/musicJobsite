@@ -3,10 +3,13 @@
 namespace App\Controller;
 
 //use JMS\SecurityExtraBundle\Annotation\Secure;
+use App\Form\Type\EditProjectContestType;
 use App\Service\PayPalService;
 use App\Service\ProjectPriceCalculator;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
+use Slot\MandrillBundle\Message;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -754,7 +757,7 @@ class ContestController extends AbstractController
             }
         }
 
-        return [
+        return $this->render('Contest/view.html.twig', [
             'project'              => $project,
             'projectAwarded'       => $projectAwarded,
             'defaultProjectAudio'  => $defaultProjectAudio,
@@ -768,7 +771,7 @@ class ContestController extends AbstractController
             'bidVotes'             => $bidVotes,
             'entryBid'             => $entryBid,
             'subscriptionPlan'     => $subscriptionPlan,
-        ];
+        ]);
     }
 
     /**
@@ -779,9 +782,8 @@ class ContestController extends AbstractController
      *
      * @param Request $request
      */
-    public function bidsAction($uuid, $page, $filter, $dir)
+    public function bidsAction($uuid, $page, $filter, $dir, Request $request)
     {
-        $request = $this->getRequest();
         $user    = $this->getUser();
         $em      = $this->getDoctrine()->getManager();
 
@@ -865,7 +867,7 @@ class ContestController extends AbstractController
             }
         }
 
-        return $this->render('@VocalizrApp/Contest/bids.html.twig', [
+        return $this->render('Contest/bids.html.twig', [
             'project'   => $project,
             'bids'      => $bids,
             'totalBids' => $totalBids,
@@ -885,9 +887,8 @@ class ContestController extends AbstractController
      *
      * @param Request $request
      */
-    public function ownerBidsAction($uuid, $page, $filter, $dir)
+    public function ownerBidsAction($uuid, $page, $filter, $dir, Request $request)
     {
-        $request = $this->getRequest();
         $user    = $this->getUser();
         $em      = $this->getDoctrine()->getManager();
 
@@ -971,7 +972,7 @@ class ContestController extends AbstractController
             }
         }
 
-        return [
+        return $this->render('Contest/ownerBids.html.twig', [
             'project'   => $project,
             'bids'      => $bids,
             'totalBids' => $totalBids,
@@ -981,7 +982,7 @@ class ContestController extends AbstractController
             'dir'       => $dir,
             'bidVotes'  => $bidVotes,
             'projectAwarded' => (bool)$project->getAwardedAt()
-        ];
+        ]);
     }
 
 //     * @Secure(roles="ROLE_USER")
@@ -995,7 +996,6 @@ class ContestController extends AbstractController
      */
     public function editAction(Request $request)
     {
-        $this->request    = $request;
         $uuid             = $request->get('uuid', false);
         $user             = $this->user             = $this->getUser();
         $em               = $this->em               = $this->getDoctrine()->getManager();
@@ -1051,11 +1051,14 @@ class ContestController extends AbstractController
         $file       = $this->getParameter('kernel.project_dir') . '/config/packages/project.yml';
         $projectYml = $ymlParser->parse(file_get_contents($file));
 
-        $form         = $this->createForm(new \App\Form\Type\EditProjectContestType($english), $project);
-        $locationForm = $this->createForm(new LocationType());
+        $form         = $this->createForm(EditProjectContestType::class, $project, [
+                            'english' => $english,
+                            'budget'  => $projectYml['contest_budget']
+                        ]);
+        $locationForm = $this->createForm(LocationType::class);
 
         // Edit lyrics form
-        $lyricForm = $this->createForm(new ProjectLyricType(), $project);
+        $lyricForm = $this->createForm(ProjectLyricType::class, $project);
 
         /**
          * Handle owner saving functions
@@ -1068,8 +1071,8 @@ class ContestController extends AbstractController
             if ($request->get('save') == 'requirements') {
                 $updatedAt = $project->getUpdatedAt();
 
-                $form->bind($request);
-                $locationForm->bind($request);
+                $form->handleRequest($request);
+                $locationForm->handleRequest($request);
 
                 if ($request->get('location')) {
                     if (!$locationForm->get('city')->getData()) {
@@ -1168,7 +1171,7 @@ class ContestController extends AbstractController
             'created_at' => 'DESC',
         ]);
 
-        return [
+        return $this->render('Contest/edit.html.twig', [
             'form'                => $form->createView(),
             'locationForm'        => $locationForm->createView(),
             'lyricForm'           => $lyricForm->createView(),
@@ -1179,14 +1182,14 @@ class ContestController extends AbstractController
             'bidStats'            => $bidStats,
             'favoriteCount'       => $favoriteCount,
             'bids'                => $bids,
-        ];
+        ]);
     }
 
     /**
      * Show the widget that has information about the projects current status
      *
-     * @param \Symfony\Component\HttpFoundation\Request $request
-     * @param type                                      $uuid
+     * @param Request $request
+     * @param type    $uuid
      * @Template()
      */
     public function projectStatusWidgetAction(Request $request, $uuid)
@@ -1214,7 +1217,7 @@ class ContestController extends AbstractController
         $bidStats = $em->getRepository('App:ProjectBid')->getBidStats($project->getId());
 
         $publishForm = $this->createFormBuilder($project)
-            ->add('publish_type', 'choice', [
+            ->add('publish_type', ChoiceType::class, [
                 'label'   => 'PUBLISHING OPTIONS',
                 'choices' => [Project::PUBLISH_PUBLIC => ucwords(Project::PUBLISH_PUBLIC),
                     Project::PUBLISH_PRIVATE          => ucwords(Project::PUBLISH_PRIVATE), ],
@@ -1300,7 +1303,7 @@ class ContestController extends AbstractController
             $jsonResponse = [
                 'success' => true,
                 'html'    => $this->renderView(
-                    'VocalizrAppBundle:Contest:projectStatusWidget.html.twig',
+                    'Contest:projectStatusWidget.html.twig',
                     $templateData
                 ),
             ];
@@ -1340,10 +1343,12 @@ class ContestController extends AbstractController
         }
 
         $publishForm = $this->createFormBuilder($project)
-            ->add('publish_type', 'choice', [
+            ->add('publish_type', ChoiceType::class, [
                 'label'   => 'PUBLISHING OPTIONS',
-                'choices' => [Project::PUBLISH_PUBLIC => ucwords(Project::PUBLISH_PUBLIC),
-                    Project::PUBLISH_PRIVATE          => ucwords(Project::PUBLISH_PRIVATE), ],
+                'choices' => [
+                        Project::PUBLISH_PUBLIC  => ucwords(Project::PUBLISH_PUBLIC),
+                        Project::PUBLISH_PRIVATE => ucwords(Project::PUBLISH_PRIVATE),
+                    ],
                 'expanded' => true,
                 'multiple' => false,
             ])
@@ -1358,7 +1363,7 @@ class ContestController extends AbstractController
             ->getForm();
 
         if ($request->isMethod('POST')) {
-            $publishForm->bind($request);
+            $publishForm->handleRequest($request);
 
             if ($publishForm->isValid()) {
                 if ($project->getPublishType() == Project::PUBLISH_PRIVATE) {
@@ -1383,7 +1388,7 @@ class ContestController extends AbstractController
      * @Route("/contest/{uuid}/publish", name="contest_publish")
      * @IsGranted("ROLE_USER")
      *
-     * @param \Symfony\Component\HttpFoundation\Request $request
+     * @param Request $request
      */
     public function publishProjectAction(Request $request, $uuid)
     {
@@ -1408,10 +1413,12 @@ class ContestController extends AbstractController
         }
 
         $publishForm = $this->createFormBuilder($project)
-            ->add('publish_type', 'choice', [
+            ->add('publish_type', ChoiceType::class, [
                 'label'   => 'PUBLISHING OPTIONS',
-                'choices' => [Project::PUBLISH_PUBLIC => ucwords(Project::PUBLISH_PUBLIC),
-                    Project::PUBLISH_PRIVATE          => ucwords(Project::PUBLISH_PRIVATE), ],
+                'choices' => [
+                        Project::PUBLISH_PUBLIC => ucwords(Project::PUBLISH_PUBLIC),
+                        Project::PUBLISH_PRIVATE          => ucwords(Project::PUBLISH_PRIVATE),
+                    ],
                 'expanded' => true,
                 'multiple' => false,
                 'data'     => Project::PUBLISH_PUBLIC,
@@ -1427,7 +1434,7 @@ class ContestController extends AbstractController
             ->getForm();
 
         if ($request->isMethod('POST')) {
-            $publishForm->bind($request);
+            $publishForm->handleRequest($request);
 
             if ($publishForm->isValid()) {
                 if ($project->getPublishType() == Project::PUBLISH_PRIVATE) {
@@ -1478,7 +1485,7 @@ class ContestController extends AbstractController
                 $em->flush();
 
                 return $this->forward(
-                    'VocalizrAppBundle:Contest:projectStatusWidget',
+                    'Contest:projectStatusWidget',
                     [
                         'uuid'     => $project->getUuid(),
                         'fromPage' => $request->get('fromPage'), ]
@@ -1508,7 +1515,7 @@ class ContestController extends AbstractController
         // Make sure user is logged in
         $securityContext = $this->container->get('security.context');
         if (!$securityContext->isGranted('IS_AUTHENTICATED_FULLY')) {
-            return $this->forward('VocalizrAppBundle:Default:error', [
+            return $this->forward('App:Default:error', [
                 'error' => 'You need to be logged in to place a bid',
             ]);
         }
@@ -1517,12 +1524,12 @@ class ContestController extends AbstractController
                     ->getProjectByUuid($uuid);
 
         if (!$project) {
-            return $this->forward('VocalizrAppBundle:Default:error', [
+            return $this->forward('App:Default:error', [
                 'error' => 'Invalid contest',
             ]);
         }
         if ($project->getProRequired() && !$user->getIsCertified()) {
-            return $this->forward('VocalizrAppBundle:Default:error', [
+            return $this->forward('App:Default:error', [
                 'error' => 'This Job is locket to Certified Pro only.',
             ]);
         }
@@ -1559,7 +1566,7 @@ class ContestController extends AbstractController
         } else {
             // If time has past
             if (time() > $project->getBidsDue()->getTimestamp()) {
-                return $this->forward('VocalizrAppBundle:Default:error', [
+                return $this->forward('App:Default:error', [
                     'error' => 'Sorry. Entries on this contest is now closed',
                 ]);
             }
@@ -1569,13 +1576,13 @@ class ContestController extends AbstractController
         if ($userBid) {
             // If time has past
             if (time() > $project->getBidsDue()->getTimestamp()) {
-                return $this->forward('VocalizrAppBundle:Default:error', [
+                return $this->forward('App:Default:error', [
                     'error' => 'Sorry. Entries on this contest is now closed',
                 ]);
             }
 
             if ($project->getSfs()) {
-                return $this->forward('VocalizrAppBundle:Default:error', [
+                return $this->forward('App:Default:error', [
                     'error' => 'You have already submitted an entry for this contest',
                 ]);
             }
@@ -1588,7 +1595,7 @@ class ContestController extends AbstractController
                     'user_info' => $user->getId(),
                 ]);
         if ($restrictBid && !$projectInvite) {
-            return $this->forward('VocalizrAppBundle:Default:error', [
+            return $this->forward('App:Default:error', [
                 'error' => 'Sorry. Entries on this contewst are restricted to members who meet the contest requirements.',
             ]);
         }
@@ -1713,7 +1720,7 @@ class ContestController extends AbstractController
                 ])->getForm();
 
         if ($request->getMethod() == 'POST' && $request->get('award')) {
-            $form->bind($request);
+            $form->handleRequest($request);
 
             if ($form->isValid()) {
                 /** @var ProjectBid $projectBid */
@@ -1734,7 +1741,7 @@ class ContestController extends AbstractController
                 // Send email to bidder saying payment has been made and awarded
                 $dispatcher = $this->get('hip_mandrill.dispatcher');
 
-                $message = new \Hip\MandrillBundle\Message();
+                $message = new Message();
                 $message->setSubject('Congratulations! Your entry won on the contest on: ' . $project->getTitle());
                 $message->setFromEmail('noreply@vocalizr.com');
                 $message->setFromName('Vocalizr');
@@ -1743,7 +1750,7 @@ class ContestController extends AbstractController
                     ->setTrackClicks(true);
 
                 $message->addTo($projectBid->getUserInfo()->getEmail());
-                $body = $this->container->get('templating')->render('VocalizrAppBundle:Mail:contestAward.html.twig', [
+                $body = $this->container->get('templating')->render('Mail:contestAward.html.twig', [
                     'userInfo'   => $projectBid->getUserInfo(),
                     'project'    => $project,
                     'projectBid' => $projectBid,
@@ -1851,13 +1858,13 @@ class ContestController extends AbstractController
                 ->findOneBy(['uuid' => $uuid]);
 
         if (!$project) {
-            return $this->forward('VocalizrAppBundle:Default:error', [
+            return $this->forward('App:Default:error', [
                 'error' => 'Invalid contest',
             ]);
         }
 
         if ($project->getProjectType() != Project::PROJECT_TYPE_CONTEST) {
-            return $this->forward('VocalizrAppBundle:Default:error', [
+            return $this->forward('App:Default:error', [
                 'error' => 'Permission denied',
             ]);
         }
@@ -1868,7 +1875,7 @@ class ContestController extends AbstractController
             'flag'    => ProjectAudio::FLAG_FEATURED,
         ]);
         if (!$audio) {
-            return $this->forward('VocalizrAppBundle:Default:error', [
+            return $this->forward('App:Default:error', [
                 'error' => 'Invalid audio',
             ]);
         }
@@ -1918,13 +1925,13 @@ class ContestController extends AbstractController
                 ->findOneBy(['uuid' => $uuid, 'sfs' => true]);
 
         if (!$project) {
-            return $this->forward('VocalizrAppBundle:Default:error', [
+            return $this->forward('App:Default:error', [
                 'error' => 'Invalid contest',
             ]);
         }
 
         if ($project->getProjectType() != Project::PROJECT_TYPE_CONTEST) {
-            return $this->forward('VocalizrAppBundle:Default:error', [
+            return $this->forward('App:Default:error', [
                 'error' => 'Permission denied',
             ]);
         }
@@ -1939,7 +1946,7 @@ class ContestController extends AbstractController
             'flag'    => ProjectAudio::FLAG_FEATURED,
         ]);
         if (!$audio) {
-            return $this->forward('VocalizrAppBundle:Default:error', [
+            return $this->forward('App:Default:error', [
                 'error' => 'Invalid audio',
             ]);
         }
@@ -1978,7 +1985,7 @@ class ContestController extends AbstractController
     {
         $request = $this->getRequest();
         if (!$request->isXmlHttpRequest()) {
-            return $this->forward('VocalizrAppBundle:Default:error', [
+            return $this->forward('App:Default:error', [
                 'error' => 'Invalid request',
             ]);
         }
@@ -2077,7 +2084,7 @@ class ContestController extends AbstractController
 
         if ($userInfoFavs) {
             $dispatcher = $this->get('hip_mandrill.dispatcher');
-            $message    = new \Hip\MandrillBundle\Message();
+            $message    = new Message();
 
             $favorites = $userInfoFavs[0]->getFavorites();
             foreach ($favorites as $favUserInfo) {
@@ -2104,10 +2111,10 @@ class ContestController extends AbstractController
                 $userPref = $favUserInfo->getUserPref();
                 if (is_null($userPref) || ($userPref && $userPref->getEmailProjectInvites())) {
                     if (!isset($message)) {
-                        $message = new \Hip\MandrillBundle\Message();
+                        $message = new Message();
                     }
                     $message->addTo($favUserInfo->getEmail());
-                    $body = $this->container->get('templating')->render('VocalizrAppBundle:Mail:contestInvite.html.twig', [
+                    $body = $this->container->get('templating')->render('App:Mail:contestInvite.html.twig', [
                         'userInfo' => $favUserInfo,
                         'project'  => $project,
                     ]);

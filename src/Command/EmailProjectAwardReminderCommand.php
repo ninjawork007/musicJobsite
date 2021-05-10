@@ -28,7 +28,7 @@ class EmailProjectAwardReminderCommand extends Command
     {
         $container        = $this->getContainer();
         $doctrine         = $container->get('doctrine');
-        $em               = $doctrine->getEntityManager();
+        $em               = $doctrine->getManager();
         $this->dispatcher = $container->get('hip_mandrill.dispatcher');
 
         $output->writeln(sprintf("\n## BEGIN TASK: %s", $this->getName()));
@@ -70,7 +70,7 @@ class EmailProjectAwardReminderCommand extends Command
                     ->setTrackClicks(true);
 
                 $message->addTo($user->getEmail());
-                $body = $container->get('templating')->render('VocalizrAppBundle:Mail:' . $template . 'connection.html.twig', [
+                $body = $container->get('twig')->render('Mail:' . $template . 'connection.html.twig', [
                     'userInfo' => $user,
                     'project'  => $project,
                 ]);

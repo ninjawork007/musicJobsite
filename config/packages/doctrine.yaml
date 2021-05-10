@@ -20,5 +20,6 @@ doctrine:
         dql:
             string_functions:
                 IFELSE: DoctrineExtensions\Query\Mysql\IfElse
+                date_format: App\DQL\DateFormat
             numeric_functions:
                 Rand: App\Doctrine\Rand

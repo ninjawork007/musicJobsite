@@ -58,7 +58,8 @@ class ProjectController extends AbstractController
         if (!$request->isXmlHttpRequest()) {
             return $this->redirect($this->generateUrl('project_new'));
         }
-        return $this->render('Project/start.html.twig',[]);
+
+        return $this->render('Project/start.html.twig', []);
     }
 
     /**
@@ -357,7 +358,7 @@ class ProjectController extends AbstractController
                 if (!$request->get('audio_file')) {
                     $request->query->set('error', 'Audio file is required');
                     return $this->render(
-                        'VocalizrAppBundle:Project:newHire.html.twig',
+                        'Project:newHire.html.twig',
                         [
                             'form'                => $form->createView(),
                             'project'             => $project,
@@ -410,7 +411,7 @@ class ProjectController extends AbstractController
 
                 // Send hire now email
                 $dispatcher = $this->get('hip_mandrill.dispatcher');
-                $message    = new \Hip\MandrillBundle\Message();
+                $message    = new Message();
                 $message
                         ->setTrackOpens(true)
                         ->setTrackClicks(true);
@@ -423,7 +424,7 @@ class ProjectController extends AbstractController
                 }
 
                 $body = $this->container->get('templating')->render(
-                    'VocalizrAppBundle:Mail:projectHire.html.twig',
+                    'Mail:projectHire.html.twig',
                     [
                         'hireUser' => $hireUser,
                         'project'  => $project,
@@ -1217,7 +1218,7 @@ class ProjectController extends AbstractController
         // Make sure user is logged in
         $securityContext = $this->container->get('security.context');
         if (!$securityContext->isGranted('IS_AUTHENTICATED_FULLY')) {
-            return $this->forward('VocalizrAppBundle:Default:error', [
+            return $this->forward('App:Default:error', [
                 'error' => 'You need to be logged in to place a bid',
             ]);
         }
@@ -1229,12 +1230,12 @@ class ProjectController extends AbstractController
                 ->getProjectByUuid($uuid);
 
         if (!$project) {
-            return $this->forward('VocalizrAppBundle:Default:error', [
+            return $this->forward('App:Default:error', [
                 'error' => 'Invalid gig',
             ]);
         }
         if ($project->getProRequired() && !$user->getIsCertified()) {
-            return $this->forward('VocalizrAppBundle:Default:error', [
+            return $this->forward('App:Default:error', [
                 'error' => 'This Job is locket to Certified Pro only.',
             ]);
         }
@@ -1276,12 +1277,12 @@ class ProjectController extends AbstractController
         if ($userBid && !$resubmit) {
             // If time has past
             if (time() > $project->getBidsDue()->getTimestamp()) {
-                return $this->forward('VocalizrAppBundle:Default:error', [
+                return $this->forward('App:Default:error', [
                     'error' => 'Sorry. Bidding on this gig is now closed',
                 ]);
             }
 
-            return $this->forward('VocalizrAppBundle:Default:error', [
+            return $this->forward('App:Default:error', [
                 'error' => 'You have already submitted a bid for this gig',
             ]);
         }
@@ -1293,7 +1294,7 @@ class ProjectController extends AbstractController
                     'user_info' => $user->getId(),
                 ]);
         if ($restrictBid && !$projectInvite) {
-            return $this->forward('VocalizrAppBundle:Default:error', [
+            return $this->forward('App:Default:error', [
                 'error' => 'Sorry. Bidding on this gig is restricted to users who meet the gig requirements.',
             ]);
         }
@@ -1376,7 +1377,7 @@ class ProjectController extends AbstractController
                     ]));
                 } else {
                     $this->get('session')->getFlashBag()->add('notice', 'Successfully placed your bid.');
-                    if ($this->getRequest()->isXmlHttpRequest()) {
+                    if ($request->isXmlHttpRequest()) {
                         return new Response(json_encode([
                             'success'  => true,
                             'redirect' => $this->generateUrl('project_view', ['uuid' => $project->getUuid()]),
@@ -1385,7 +1386,7 @@ class ProjectController extends AbstractController
                     return $this->redirect($this->generateUrl('project_view', ['uuid' => $project->getUuid()]));
                 }
             } else {
-                if ($this->getRequest()->isXmlHttpRequest()) {
+                if ($request->isXmlHttpRequest()) {
                     return new Response(json_encode([
                         'success'  => true,
                         'redirect' => $this->generateUrl('project_view', ['uuid' => $project->getUuid()]),
@@ -1400,7 +1401,7 @@ class ProjectController extends AbstractController
         $bidStats                 = $em->getRepository('App:ProjectBid')->getBidStats($project->getId());
         $bidStats['avgBidAmount'] = $bidStats['avgBidAmount'] / 100;
 
-        return $this->render('@VocalizrApp/Project/bid.html.twig', [
+        return $this->render('Project/bid.html.twig', [
             'resubmit'  => $resubmit,
             'project'   => $project,
             'bidForm'   => $bidForm->createView(),
@@ -1483,7 +1484,7 @@ class ProjectController extends AbstractController
         ])->getForm();
 
         if ($request->getMethod() == 'POST' && $request->get('award')) {
-            $form->bind($request);
+            $form->handleRequest($request);
 
             if ($form->isValid()) {
                 $projectBid = $projectBid[0];
@@ -1558,7 +1559,7 @@ class ProjectController extends AbstractController
 
                 // Send email to bidder saying payment has been made and awarded
                 $dispatcher = $this->get('hip_mandrill.dispatcher');
-                $message    = new \Hip\MandrillBundle\Message();
+                $message    = new Message();
                 $message
                         ->addTo($projectBid->getUserInfo()->getEmail())
                         ->addGlobalMergeVar('USER', $projectBid->getUserInfo()->getUsernameOrFirstName())
@@ -1605,14 +1606,14 @@ class ProjectController extends AbstractController
             }
         }
 
-        return [
+        return $this->render('Project/award.html.twig', [
             'project'          => $project,
             'bid'              => $projectBid,
             'bidStats'         => $bidStats,
             'subscriptionPlan' => $subscriptionPlan,
             'paypal'           => $paypal,
             'form'             => $form->createView(),
-        ];
+        ]);
     }
 
     /**
@@ -1663,12 +1664,12 @@ class ProjectController extends AbstractController
         $subscriptionPlan = $em->getRepository('App:SubscriptionPlan')->getActiveSubscription($user->getId());
         $paypal           = $this->get('service.paypal');
 
-        return [
+        return $this->render('Project/awardConfirm.html.twig', [
             'project'          => $project,
             'bid'              => $projectBid,
             'subscriptionPlan' => $subscriptionPlan,
             'paypal'           => $paypal,
-        ];
+        ]);
     }
 
     /**
@@ -1849,12 +1850,12 @@ class ProjectController extends AbstractController
 
             $message->addTo($userInfo->getEmail());
             if ($project->getProjectType() == 'contest') {
-                $body = $this->container->get('templating')->render('VocalizrAppBundle:Mail:contestInvite.html.twig', [
+                $body = $this->container->get('templating')->render('App:Mail:contestInvite.html.twig', [
                     'userInfo' => $userInfo,
                     'project'  => $project,
                 ]);
             } else {
-                $body = $this->container->get('templating')->render('VocalizrAppBundle:Mail:projectInvite.html.twig', [
+                $body = $this->container->get('templating')->render('App:Mail:projectInvite.html.twig', [
                     'userInfo' => $userInfo,
                     'project'  => $project,
                 ]);
@@ -1970,8 +1971,7 @@ class ProjectController extends AbstractController
     {
         $uuid    = $request->get('uuid');
         $em      = $this->getDoctrine()->getManager();
-        $user    = $this->getUser();
-        $request = $this->getRequest();
+        $user    = $this->getUser();;
         $helper  = $this->get('service.helper');
 
         $project = $em->getRepository('App:Project')
@@ -1996,8 +1996,6 @@ class ProjectController extends AbstractController
         // redirect to actual file
         header('Location: /a/project/' . $projectAudio->getId() . '/' . $projectAudio->getPath());
         exit;
-
-        $helper->streamAudio($file);
     }
 
     /**
@@ -2005,14 +2003,14 @@ class ProjectController extends AbstractController
      */
     public function ownerBidsAction($bids, $project, $hiddenBids, $shortlistBids, $projectAwarded, $freePlan)
     {
-        return [
+        return $this->render('Project/ownerBids.html.twig', [
             'bids'           => $bids,
             'project'        => $project,
             'shortlistBids'  => $shortlistBids,
             'hiddenBids'     => $hiddenBids,
             'projectAwarded' => $projectAwarded,
             'freePlan'       => $freePlan,
-        ];
+        ]);
     }
 
     // HELPER FUNCTIONS
@@ -2196,9 +2194,9 @@ class ProjectController extends AbstractController
         $user = $this->getUser();
         $em   = $this->getDoctrine()->getManager();
 
-        return [
+        return $this->render('Project/collabAgreement.html.twig', [
             'project' => $project,
-        ];
+        ]);
     }
 
     /**

@@ -24,7 +24,7 @@ class FixSubsCommand extends Command
     {
         $container  = $this->getContainer();
         $doctrine   = $container->get('doctrine');
-        $em         = $doctrine->getEntityManager();
+        $em         = $doctrine->getManager();
         $dispatcher = $container->get('hip_mandrill.dispatcher');
 
         $this->processResults();

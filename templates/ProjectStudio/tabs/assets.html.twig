@@ -50,7 +50,7 @@
                         {% else %}
                             {% if projectAsset.previewPath and projectAsset.previewPath|projectAssetExists(project.id) %}
                                 <div class="playlist asset-audio middle-player-container">
-                                    {% include '@VocalizrApp/Project/view/include/waveformed_player.html.twig' with {
+                                    {% include 'Project/view/include/waveformed_player.html.twig' with {
                                         audio: projectAsset,
                                         audioUrl: path('gig_asset_stream', {uuid: project.uuid, slug: projectAsset.slug}),
                                         useCdnUrl: false,

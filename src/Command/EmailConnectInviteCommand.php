@@ -2,12 +2,26 @@
 
 namespace App\Command;
 
+use Slot\MandrillBundle\Message;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class EmailConnectInviteCommand extends Command
 {
+    private $container;
+
+    /**
+     * DeferredSubscriptionCancelCommand constructor.
+     * @param ContainerInterface $container
+     */
+    public function __construct(ContainerInterface $container)
+    {
+        parent::__construct();
+        $this->container = $container;
+    }
+
     protected function configure()
     {
         // How often do we run this script
@@ -21,10 +35,9 @@ class EmailConnectInviteCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $this->container  = $container  = $this->getContainer();
-        $doctrine         = $container->get('doctrine');
-        $em               = $doctrine->getEntityManager();
-        $this->dispatcher = $container->get('hip_mandrill.dispatcher');
+        $doctrine         = $this->container->get('doctrine');
+        $em               = $doctrine->getManager();
+        $this->dispatcher = $this->container->get('hip_mandrill.dispatcher');
 
         $q = $em->getRepository('App:UserConnectInvite')
                 ->createQueryBuilder('uc')
@@ -49,7 +62,7 @@ class EmailConnectInviteCommand extends Command
         foreach ($results as $result) {
             $subject = $result->getTo()->getUsernameOrFirstName() . ', I would like to connect on Vocalizr';
 
-            $message = new \Hip\MandrillBundle\Message();
+            $message = new Message();
             $message->setSubject($subject);
             $message->setFromEmail('noreply@vocalizr.com');
             $message->setFromName('Vocalizr');
@@ -58,7 +71,7 @@ class EmailConnectInviteCommand extends Command
                 ->setTrackClicks(true);
 
             $message->addTo($result->getTo()->getEmail());
-            $body = $container->get('templating')->render('VocalizrAppBundle:Mail:connectInvite.html.twig', [
+            $body = $this->container->get('twig')->render('Mail:connectInvite.html.twig', [
                 'result' => $result,
             ]);
             $message->addGlobalMergeVar('BODY', $body);

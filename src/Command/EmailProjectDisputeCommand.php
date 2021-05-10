@@ -50,7 +50,7 @@ class EmailProjectDisputeCommand extends Command
     {
         $container        = $this->getContainer();
         $doctrine         = $container->get('doctrine');
-        $this->em         = $doctrine->getEntityManager();
+        $this->em         = $doctrine->getManager();
         $this->dispatcher = $container->get('hip_mandrill.dispatcher');
         $this->mandrill   = $container->get('vocalizr_app.service.mandrill');
 
@@ -71,7 +71,7 @@ class EmailProjectDisputeCommand extends Command
         echo 'First reminder: ' . count($disputes) . "\n";
 
         foreach ($disputes as $dispute) {
-            $this->sendReminderMessage($dispute, 'VocalizrAppBundle:Mail:projectDisputeFirstReminder.html.twig');
+            $this->sendReminderMessage($dispute, 'Mail:projectDisputeFirstReminder.html.twig');
 
             $dispute->setRemindersSentCount(1);
             $this->em->persist($dispute);
@@ -91,7 +91,7 @@ class EmailProjectDisputeCommand extends Command
         echo 'Second reminder: ' . count($disputes) . "\n";
 
         foreach ($disputes as $dispute) {
-            $this->sendReminderMessage($dispute, 'VocalizrAppBundle:Mail:projectDisputeSecondReminder.html.twig');
+            $this->sendReminderMessage($dispute, 'Mail:projectDisputeSecondReminder.html.twig');
 
             $dispute->setRemindersSentCount(2);
             $this->em->persist($dispute);
@@ -124,7 +124,7 @@ class EmailProjectDisputeCommand extends Command
                 $this->sendMessage(
                     $dispute->getFromUserInfo()->getEmail(),
                     'Project dispute closed in your favor for ' . $dispute->getProject()->getTitle(),
-                    'VocalizrAppBundle:Mail:projectDisputeClosedAwardEmployee.html.twig',
+                    'Mail:projectDisputeClosedAwardEmployee.html.twig',
                     ['result' => $dispute]
                 );
 
@@ -132,7 +132,7 @@ class EmailProjectDisputeCommand extends Command
                 $this->sendMessage(
                     $dispute->getUserInfo()->getEmail(),
                     'Project dispute closed in other parties favor for ' . $dispute->getProject()->getTitle(),
-                    'VocalizrAppBundle:Mail:projectDisputeClosedLostEmployer.html.twig',
+                    'Mail:projectDisputeClosedLostEmployer.html.twig',
                     ['result' => $dispute]
                 );
             } else {
@@ -142,7 +142,7 @@ class EmailProjectDisputeCommand extends Command
                 $this->sendMessage(
                     $dispute->getFromUserInfo()->getEmail(),
                     'Project dispute closed in other parties favor for ' . $dispute->getProject()->getTitle(),
-                    'VocalizrAppBundle:Mail:projectDisputeClosedLostEmployee.html.twig',
+                    'Mail:projectDisputeClosedLostEmployee.html.twig',
                     ['result' => $dispute]
                 );
 
@@ -150,7 +150,7 @@ class EmailProjectDisputeCommand extends Command
                 $this->sendMessage(
                     $dispute->getUserInfo()->getEmail(),
                     'Project dispute closed in your favor for ' . $dispute->getProject()->getTitle(),
-                    'VocalizrAppBundle:Mail:projectDisputeClosedAwardEmployer.html.twig',
+                    'Mail:projectDisputeClosedAwardEmployer.html.twig',
                     ['result' => $dispute]
                 );
             }
@@ -309,7 +309,7 @@ class EmailProjectDisputeCommand extends Command
      */
     private function sendMessage($to, $subject, $twigTemplate, $twigVars)
     {
-        $body = $this->getContainer()->get('templating')->render($twigTemplate, $twigVars);
+        $body = $this->getContainer()->get('twig')->render($twigTemplate, $twigVars);
 
         $message = new Message();
         $message

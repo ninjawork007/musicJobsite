@@ -148,14 +148,14 @@ class StatsController extends AbstractController
             }
 
             $audioPlayStat = [];
-//            $audioPlayStat = $dm->createQueryBuilder('App:AudioPlay')
-//                ->field('user_id')->equals($user->getId())
-//                ->field('date')->gte($startDate->format('Y-m-d'))
-//                ->field('date')->lte($endDate->format('Y-m-d'))
-//                ->group(['date' => 1, 'audio_id' => 1], ['date' => 1, 'total' => 0])
-//                ->reduce('function ( curr, result ) { result.total += curr.count; result.date = curr.date }')
-//                ->getQuery()
-//                ->toArray();
+            $audioPlayStat = $dm->createQueryBuilder('App:AudioPlay')
+                ->field('user_id')->equals($user->getId())
+                ->field('date')->gte($startDate->format('Y-m-d'))
+                ->field('date')->lte($endDate->format('Y-m-d'))
+                ->group(['date' => 1, 'audio_id' => 1], ['date' => 1, 'total' => 0])
+                ->reduce('function ( curr, result ) { result.total += curr.count; result.date = curr.date }')
+                ->getQuery()
+                ->toArray();
 
             $stats = [];
             foreach ($audioPlayStat as $row) {
@@ -179,18 +179,18 @@ class StatsController extends AbstractController
 
         // Get who has been playing the audio
         $audioPlayUsers =[];
-//        $audioPlayUsers = $dm->createQueryBuilder('App:AudioPlayUser')
-//            ->field('user_id')->equals($user->getId())
-//            ->field('date')->gte(date('Y-m-d', strtotime('-90 days')))
-//            ->field('date')->lte(date('Y-m-d'))
-//            ->sort([
-//                'date' => 'desc',
-//            ])
-//            ->group(['from_user_id' => 1], ['from_user_id' => 1])
-//            ->reduce('function ( curr, result ) { result.from_user_id = curr.from_user_id; result.date = curr.date; result.created_at = curr.created_at; }')
-//            ->limit(12)
-//            ->getQuery()
-//            ->toArray();
+        $audioPlayUsers = $dm->createQueryBuilder('App:AudioPlayUser')
+            ->field('user_id')->equals($user->getId())
+            ->field('date')->gte(date('Y-m-d', strtotime('-90 days')))
+            ->field('date')->lte(date('Y-m-d'))
+            ->sort([
+                'date' => 'desc',
+            ])
+            ->group(['from_user_id' => 1], ['from_user_id' => 1])
+            ->reduce('function ( curr, result ) { result.from_user_id = curr.from_user_id; result.date = curr.date; result.created_at = curr.created_at; }')
+            ->limit(12)
+            ->getQuery()
+            ->toArray();
 
         // Sort in desc
         usort($audioPlayUsers, function ($b, $a) {
@@ -321,19 +321,19 @@ class StatsController extends AbstractController
             }
 
             $audioLikes = [];
-//            $audioLikes = $dm->createQueryBuilder('App:AudioLike')
-//                ->field('user_id')->equals($user->getId())
-//                ->field('date')->gte($startDate->format('Y-m-d'))
-//                ->field('date')->lte($endDate->format('Y-m-d'))
-//                ->group(['month' => 1, 'audio_id' => 1, 'total' => 0], ['date' => 1])
-//                ->reduce('function ( curr, result ) { '
-//                            . 'result.total++;'
-//                            . 'result.date = curr.date;'
-//                            . 'month = ISODate(curr.date);'
-//                            . 'result.month = month.getMonth();'
-//                        . '}')
-//                ->getQuery()
-//                ->toArray();
+            $audioLikes = $dm->createQueryBuilder('App:AudioLike')
+                ->field('user_id')->equals($user->getId())
+                ->field('date')->gte($startDate->format('Y-m-d'))
+                ->field('date')->lte($endDate->format('Y-m-d'))
+                ->group(['month' => 1, 'audio_id' => 1, 'total' => 0], ['date' => 1])
+                ->reduce('function ( curr, result ) { '
+                            . 'result.total++;'
+                            . 'result.date = curr.date;'
+                            . 'month = ISODate(curr.date);'
+                            . 'result.month = month.getMonth();'
+                        . '}')
+                ->getQuery()
+                ->toArray();
 
             $stats = [];
             foreach ($audioLikes as $row) {
@@ -371,25 +371,25 @@ class StatsController extends AbstractController
             }
 
             $audioLikeStat = [];
-//            $audioLikeStat = $dm->createQueryBuilder('App:AudioLike')
-//                ->field('user_id')->equals($user->getId())
-//                ->field('date')->gte($startDate->format('Y-m-d'))
-//                ->field('date')->lte($endDate->format('Y-m-d'))
-//                ->group(['date_new' => 1, 'audio_id' => 1, 'total' => 0], ['date' => 1])
-//                ->reduce("function ( curr, result ) {
-//                            result.total++;
-//                            result.date = curr.date;
-//                            month = ISODate(curr.date);
-//                            result.month = month.getMonth();
-//                            curdate = ISODate(curr.date);
-//
-//                            result.date_new = curdate.getFullYear() + '-'
-//                            + ('0' + (curdate.getUTCMonth() + 1) ).slice(-2) + '-'
-//                            + curdate.getDate();
-//
-//                        }")
-//                ->getQuery()
-//                ->toArray();
+            $audioLikeStat = $dm->createQueryBuilder('App:AudioLike')
+                ->field('user_id')->equals($user->getId())
+                ->field('date')->gte($startDate->format('Y-m-d'))
+                ->field('date')->lte($endDate->format('Y-m-d'))
+                ->group(['date_new' => 1, 'audio_id' => 1, 'total' => 0], ['date' => 1])
+                ->reduce("function ( curr, result ) {
+                            result.total++;
+                            result.date = curr.date;
+                            month = ISODate(curr.date);
+                            result.month = month.getMonth();
+                            curdate = ISODate(curr.date);
+
+                            result.date_new = curdate.getFullYear() + '-'
+                            + ('0' + (curdate.getUTCMonth() + 1) ).slice(-2) + '-'
+                            + curdate.getDate();
+
+                        }")
+                ->getQuery()
+                ->toArray();
 
             $stats = [];
             foreach ($audioLikeStat as $row) {
@@ -413,21 +413,21 @@ class StatsController extends AbstractController
 
         // Get who has been liking the audio
         $audioLikeUsers = [];
-//        $audioLikeUsers = $dm->createQueryBuilder('App:AudioLike')
-//            ->field('user_id')->equals($user->getId())
-//            ->field('date')->gte(date('Y-m-d', strtotime('-90 days')))
-//            ->field('date')->lte(date('Y-m-d', strtotime('+1 day')))
-//            ->sort([
-//                'date' => 'desc',
-//            ])
-//            ->limit(15)
-//            ->group(['from_user_id' => 0], ['from_user_id' => 1])
-//                ->reduce('function ( curr, result ) {
-//                            result.from_user_id = curr.from_user_id;
-//                            result.date = curr.date;
-//                        }')
-//            ->getQuery()
-//            ->toArray();
+        $audioLikeUsers = $dm->createQueryBuilder('App:AudioLike')
+            ->field('user_id')->equals($user->getId())
+            ->field('date')->gte(date('Y-m-d', strtotime('-90 days')))
+            ->field('date')->lte(date('Y-m-d', strtotime('+1 day')))
+            ->sort([
+                'date' => 'desc',
+            ])
+            ->limit(15)
+            ->group(['from_user_id' => 0], ['from_user_id' => 1])
+                ->reduce('function ( curr, result ) {
+                            result.from_user_id = curr.from_user_id;
+                            result.date = curr.date;
+                        }')
+            ->getQuery()
+            ->toArray();
 
         // Sort in desc
         usort($audioLikeUsers, function ($b, $a) {
@@ -545,20 +545,20 @@ class StatsController extends AbstractController
             }
 
             $profileViews = [];
-//            $profileViews = $dm->createQueryBuilder('App:ProfileView')
-//                ->field('user_id')->equals($user->getId())
-//                ->field('unique')->equals(false)
-//                ->field('date')->gte($startDate->format('Y-m-d'))
-//                ->field('date')->lte($endDate->format('Y-m-d'))
-//                ->group(['monthyr' => 1], ['total' => 0])
-//                ->reduce("function ( curr, result ) {
-//                            result.total = curr.count;
-//                            dd = ISODate(curr.date);
-//                            result.monthyr = dd.getFullYear() + '-' + ('0' + (dd.getMonth()+1)).slice(-2);
-//                            result[result.monthyr] = result.total;
-//                        }")
-//                ->getQuery()
-//                ->toArray();
+            $profileViews = $dm->createQueryBuilder('App:ProfileView')
+                ->field('user_id')->equals($user->getId())
+                ->field('unique')->equals(false)
+                ->field('date')->gte($startDate->format('Y-m-d'))
+                ->field('date')->lte($endDate->format('Y-m-d'))
+                ->group(['monthyr' => 1], ['total' => 0])
+                ->reduce("function ( curr, result ) {
+                            result.total = curr.count;
+                            dd = ISODate(curr.date);
+                            result.monthyr = dd.getFullYear() + '-' + ('0' + (dd.getMonth()+1)).slice(-2);
+                            result[result.monthyr] = result.total;
+                        }")
+                ->getQuery()
+                ->toArray();
 
             if ($profileViews) {
                 $profileViews = $profileViews[0];
@@ -600,18 +600,18 @@ class StatsController extends AbstractController
             }
 
             $profileViewStat = [];
-//            $profileViewStat = $dm->createQueryBuilder('App:ProfileView')
-//                ->field('user_id')->equals($user->getId())
-//                ->field('unique')->equals(false)
-//                ->field('date')->gte($startDate->format('Y-m-d'))
-//                ->field('date')->lte($endDate->format('Y-m-d'))
-//                ->group(['date' => 1, 'total' => 1], [])
-//                ->reduce('function ( curr, result ) {
-//                            result.total += curr.count;
-//                            result.date = curr.date;
-//                        }')
-//                ->getQuery()
-//                ->toArray();
+            $profileViewStat = $dm->createQueryBuilder('App:ProfileView')
+                ->field('user_id')->equals($user->getId())
+                ->field('unique')->equals(false)
+                ->field('date')->gte($startDate->format('Y-m-d'))
+                ->field('date')->lte($endDate->format('Y-m-d'))
+                ->group(['date' => 1, 'total' => 1], [])
+                ->reduce('function ( curr, result ) {
+                            result.total += curr.count;
+                            result.date = curr.date;
+                        }')
+                ->getQuery()
+                ->toArray();
 
             $stats = [];
             foreach ($profileViewStat as $row) {
@@ -638,22 +638,22 @@ class StatsController extends AbstractController
 
         // Get who has been liking the audio
         $profileViewUsers = [];
-//        $profileViewUsers = $dm->createQueryBuilder('App:ProfileViewUser')
-//            ->field('user_id')->equals($user->getId())
-//            ->field('from_user_id')->gte(0)
-//            ->field('date')->gte(date('Y-m-d', strtotime('-90 days')))
-//            ->field('date')->lte(date('Y-m-d'))
-//            ->sort([
-//                'created_at' => 'desc',
-//            ])
-//            ->limit(12)
-//            ->group(['from_user_id' => 0], ['from_user_id' => 1])
-//                ->reduce('function ( curr, result ) {
-//                            result.from_user_id = curr.from_user_id;
-//                            result.date = curr.date;
-//                        }')
-//            ->getQuery()
-//            ->toArray();
+        $profileViewUsers = $dm->createQueryBuilder('App:ProfileViewUser')
+            ->field('user_id')->equals($user->getId())
+            ->field('from_user_id')->gte(0)
+            ->field('date')->gte(date('Y-m-d', strtotime('-90 days')))
+            ->field('date')->lte(date('Y-m-d'))
+            ->sort([
+                'created_at' => 'desc',
+            ])
+            ->limit(12)
+            ->group(['from_user_id' => 0], ['from_user_id' => 1])
+                ->reduce('function ( curr, result ) {
+                            result.from_user_id = curr.from_user_id;
+                            result.date = curr.date;
+                        }')
+            ->getQuery()
+            ->toArray();
 
         // Sort in desc
         usort($profileViewUsers, function ($b, $a) {

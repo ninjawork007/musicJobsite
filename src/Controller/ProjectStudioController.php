@@ -110,7 +110,7 @@ class ProjectStudioController extends AbstractController
         $em               = $this->em               = $this->getDoctrine()->getManager();
         $projectAudioRepo = $em->getRepository('App:ProjectAudio');
 
-        $userReviewForm = $this->createForm(new UserReviewType());
+        $userReviewForm = $this->createForm(UserReviewType::class);
 
         // Make sure project is valid
         if (!$uuid) {
@@ -151,7 +151,7 @@ class ProjectStudioController extends AbstractController
             ])->getForm();
 
             if ($request->get('sign_agreement')) {
-                $form->bind($request);
+                $form->handleRequest($request);
                 if ($form->isValid()) {
                     $em->flush();
 
@@ -238,7 +238,7 @@ class ProjectStudioController extends AbstractController
                 ->updateFeedItemsAsRead($project->getId(), $this->otherUserInfo->getId());
 
         // Edit lyrics form
-        $lyricForm = $this->createForm(new ProjectLyricType(), $project);
+        $lyricForm = $this->createForm(ProjectLyricType::class, $project);
 
         // If user is bidder, remove ontime field from form
         if ($project->getBidderUser()->getId() == $user->getId()) {
@@ -318,7 +318,7 @@ class ProjectStudioController extends AbstractController
 
             // If saving lyrics
             if ($request->get('save_lyrics')) {
-                $lyricForm->bind($request);
+                $lyricForm->handleRequest($request);
 
                 if ($lyricForm->isValid()) {
                     $data = $lyricForm->getData();
@@ -395,7 +395,7 @@ class ProjectStudioController extends AbstractController
             // USER REVIEW SAVE
             // Only submit if they haven't had a review yet
             if ($request->get('review') && $canReview) {
-                $userReviewForm->bindRequest($request);
+                $userReviewForm->handleRequest($request);
                 if ($userReviewForm->isValid()) {
                     if ($project->isOwner($user)) {
                         $userInfo = $project->getBidderUser();
@@ -419,7 +419,7 @@ class ProjectStudioController extends AbstractController
                     ]);
 
                     // Email user of review
-                    $body = $this->renderView('VocalizrAppBundle:Mail:reviewNotifyUser.html.twig', [
+                    $body = $this->renderView('Mail:reviewNotifyUser.html.twig', [
                         'userInfo'        => $userInfo,
                         'project'         => $project,
                         'userReview'      => $data,
@@ -481,7 +481,7 @@ class ProjectStudioController extends AbstractController
 
         $this->markProjectRead($project);
 
-        return $this->render('@VocalizrApp/ProjectStudio/index.html.twig', [
+        return $this->render('ProjectStudio/index.html.twig', [
             'project'             => $project,
             'defaultProjectAudio' => $defaultProjectAudio,
             'employeeAudio'       => $employeeAudio,
@@ -1109,7 +1109,7 @@ class ProjectStudioController extends AbstractController
         $displayNames[$otherUserInfo->getId()] = $otherUserInfo->getDisplayName();
         $displayNames[$user->getId()]          = $user->getDisplayName();
 
-        return $this->render('VocalizrAppBundle:ProjectStudio:feedItems.html.twig', [
+        return $this->render('ProjectStudio:feedItems.html.twig', [
             'projectFeed'  => $projectFeed,
             'project'      => $project,
             'displayNames' => $displayNames,
@@ -1132,7 +1132,7 @@ class ProjectStudioController extends AbstractController
         $type = $request->get('type');
 
         if (!in_array($type, [ProjectAudio::FLAG_WORKING, ProjectAudio::FLAG_MASTER])) {
-            return $this->forward('VocalizrAppBundle:Default:error', [
+            return $this->forward('App:Default:error', [
                 'error' => 'Invalid audio type',
             ]);
         }
@@ -1143,7 +1143,7 @@ class ProjectStudioController extends AbstractController
 
         // Make sure project is valid
         if (!$uuid) {
-            return $this->forward('VocalizrAppBundle:Default:error', [
+            return $this->forward('App:Default:error', [
                 'error' => 'Invalid gig',
             ]);
         }
@@ -1152,13 +1152,13 @@ class ProjectStudioController extends AbstractController
                     ->getProjectByUuid($uuid);
 
         if (!$project) {
-            return $this->forward('VocalizrAppBundle:Default:error', [
+            return $this->forward('App:Default:error', [
                 'error' => 'Invalid gig',
             ]);
         }
 
         if (!$projectBid = $project->getProjectBid()) {
-            return $this->forward('VocalizrAppBundle:Default:error', [
+            return $this->forward('App:Default:error', [
                 'error' => 'Cannot upload studio audio until gig has been awarded and accepted',
             ]);
         }
@@ -1166,7 +1166,7 @@ class ProjectStudioController extends AbstractController
         // Check permissions
         if ($project->getUserInfo()->getId() != $user->getId() &&
                 $project->getProjectBid()->getUserInfo()->getId() != $user->getId()) {
-            return $this->forward('VocalizrAppBundle:Default:error', [
+            return $this->forward('App:Default:error', [
                 'error' => 'Permission denied',
             ]);
         }
@@ -1174,7 +1174,7 @@ class ProjectStudioController extends AbstractController
         // Check file type and who is uploading
         if (($type == ProjectAudio::FLAG_MASTER && $project->getEmployeeUserInfo() == $user) ||
                 $type == ProjectAudio::FLAG_WORKING && $project->getUserInfo() == $user) {
-            return $this->forward('VocalizrAppBundle:Default:error', [
+            return $this->forward('App:Default:error', [
                 'error' => 'Permission denied to upload that audio type',
             ]);
         }
@@ -1643,7 +1643,7 @@ class ProjectStudioController extends AbstractController
         $projectAudioRepo = $em->getRepository('App:ProjectAudio');
         $userAudioRepo    = $em->getRepository('App:UserAudio');
 
-        $userReviewForm = $this->createForm(new UserReviewType());
+        $userReviewForm = $this->createForm(UserReviewType::class);
 
         // Make sure project is valid
         if (!$uuid) {
@@ -1716,10 +1716,10 @@ class ProjectStudioController extends AbstractController
 
         if ($project->getProjectType() == Project::PROJECT_TYPE_CONTEST) {
             $title   = 'CONTEST AGREEMENT';
-            $content = $this->get('templating')->render('VocalizrAppBundle:Contest:agreement.html.twig', $contentData);
+            $content = $this->get('templating')->render('Contest:agreement.html.twig', $contentData);
         } else {
             $title   = 'GIG AGREEMENT';
-            $content = $this->get('templating')->render('VocalizrAppBundle:Project:agreement.html.twig', $contentData);
+            $content = $this->get('templating')->render('Project:agreement.html.twig', $contentData);
         }
 
         $pdfPath = $project->getAbsolutePdfPath();
@@ -1756,7 +1756,7 @@ class ProjectStudioController extends AbstractController
             $title   = 'GIG INVOICE';
         }
 
-        $content = $this->get('templating')->render('VocalizrAppBundle:Project:invoice.html.twig', $contentData);
+        $content = $this->get('templating')->render('Project:invoice.html.twig', $contentData);
 
         $pdfPath = $project->getInvoicePdfPath();
 
@@ -1772,14 +1772,14 @@ class ProjectStudioController extends AbstractController
      */
     private function generatePdf($title, $content, $pdfPath)
     {
-        $rootDir    = $this->get('kernel')->getRootDir();
+        $rootDir    = $this->getParameter('kernel.project_dir');
         $pdfTempDir = $rootDir . '/../tmp/mpdf';
 
-        $css    = realpath($rootDir . '/../src/Vocalizr/AppBundle/Resources/public/css/pdf.css');
-        $header = $this->get('templating')->render('VocalizrAppBundle:Pdf:header.html.twig', [
+        $css    = realpath($rootDir . '/../Public/css/pdf.css');
+        $header = $this->get('templating')->render('Pdf:header.html.twig', [
             'title' => $title,
         ]);
-        $footer = $this->get('templating')->render('VocalizrAppBundle:Pdf:footer.html.twig');
+        $footer = $this->get('templating')->render('Pdf:footer.html.twig');
 
         if (!file_exists($pdfTempDir)) {
             @$dirExists = mkdir($pdfTempDir);

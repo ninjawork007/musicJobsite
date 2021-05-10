@@ -80,7 +80,7 @@ class ProProfileController extends AbstractController
             []
         ;
 
-        return $this->render('@VocalizrApp/ProProfile/index.html.twig', [
+        return $this->render('ProProfile/index.html.twig', [
             'user'             => $profileUser,
             'isUserFavorite'   => $isUserFavorite,
             'isUserBlocked'    => $isUserBlocked,

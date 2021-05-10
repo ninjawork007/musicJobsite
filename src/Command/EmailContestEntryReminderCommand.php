@@ -2,6 +2,7 @@
 
 namespace App\Command;
 
+use Slot\MandrillBundle\Message;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -9,9 +10,22 @@ use Symfony\Component\Console\Output\OutputInterface;
 use App\Entity\Project;
 
 use App\Entity\ProjectAudio;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class EmailContestEntryReminderCommand extends Command
 {
+    private $container;
+
+    /**
+     * DeferredSubscriptionCancelCommand constructor.
+     * @param ContainerInterface $container
+     */
+    public function __construct(ContainerInterface $container)
+    {
+        parent::__construct();
+        $this->container = $container;
+    }
+
     protected function configure()
     {
         // How often do we run this script
@@ -25,10 +39,9 @@ class EmailContestEntryReminderCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $this->container  = $container  = $this->getContainer();
-        $doctrine         = $container->get('doctrine');
-        $em               = $doctrine->getEntityManager();
-        $this->dispatcher = $container->get('hip_mandrill.dispatcher');
+        $doctrine         = $this->container->get('doctrine');
+        $em               = $doctrine->getManager();
+        $this->dispatcher = $this->container->get('hip_mandrill.dispatcher');
 
         $output->writeln(sprintf("\n## BEGIN TASK: %s", $this->getName()));
 
@@ -104,7 +117,7 @@ class EmailContestEntryReminderCommand extends Command
                         continue;
                     }
 
-                    $message = new \Hip\MandrillBundle\Message();
+                    $message = new Message();
                     $message->setSubject("Don't forget to submit your entry!");
                     $message->setFromEmail('noreply@vocalizr.com');
                     $message->setFromName('Vocalizr');
@@ -113,7 +126,7 @@ class EmailContestEntryReminderCommand extends Command
                         ->setTrackClicks(true);
 
                     $message->addTo($userInfo->getEmail());
-                    $body = $container->get('templating')->render('VocalizrAppBundle:Mail:submitEntryReminder.html.twig', [
+                    $body = $this->container->get('twig')->render('Mail:submitEntryReminder.html.twig', [
                         'userInfo' => $userInfo,
                         'project'  => $project,
                     ]);
@@ -125,5 +138,7 @@ class EmailContestEntryReminderCommand extends Command
                 echo 'Reminders sent: ' . $i . "\n\n";
             }
         }
+
+        return 1;
     }
 }

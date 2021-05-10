@@ -2,12 +2,26 @@
 
 namespace App\Command;
 
+use Slot\MandrillBundle\Message;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class EmailArticlesCommand extends Command
 {
+    private $container;
+
+    /**
+     * DeferredSubscriptionCancelCommand constructor.
+     * @param ContainerInterface $container
+     */
+    public function __construct(ContainerInterface $container)
+    {
+        parent::__construct();
+        $this->container = $container;
+    }
+
     protected function configure()
     {
         // How often do we run this script
@@ -19,9 +33,8 @@ class EmailArticlesCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $this->container  = $container  = $this->getContainer();
-        $this->em         = $container->get('doctrine')->getEntityManager();
-        $this->dispatcher = $container->get('hip_mandrill.dispatcher');
+        $this->em         = $this->container->get('doctrine')->getManager();
+        $this->dispatcher = $this->container->get('hip_mandrill.dispatcher');
 
         echo "SCRIPT START - Email Articles\n";
         $this->checkDate = date('Y-m-d', strtotime('-' . $this->_timeAgo));
@@ -33,9 +46,10 @@ class EmailArticlesCommand extends Command
 
     private function process()
     {
+
         $em = $this->em;
 
-        $message = new \Hip\MandrillBundle\Message();
+        $message = new Message();
         $message->setPreserveRecipients(false);
         $message->setTrackOpens(true)
                 ->setTrackClicks(true);
@@ -73,7 +87,7 @@ class EmailArticlesCommand extends Command
         if (count($recipients) > 0) {
             foreach ($recipients as $recipient) {
                 $message->addTo($recipient->getEmail());
-                $body = $this->container->get('templating')->render('VocalizrAppBundle:Mail:' . $template . 'connection.html.twig', [
+                $body = $this->container->get('twig')->render('Mail:' . $template . 'connection.html.twig', [
                     'articles' => $this->articles,
                     'user'     => $recipient,
                 ]);

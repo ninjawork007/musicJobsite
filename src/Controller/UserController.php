@@ -18,6 +18,8 @@ use App\Service\HelperService;
 use App\Service\MembershipSourceHelper;
 use App\Service\StatisticsService;
 use App\Service\StripeConfigurationProvider;
+use App\Service\UserRestrictionService;
+use Slot\MandrillBundle\Message;
 use Symfony\Component\Asset\Packages;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Routing\Annotation\Route;
@@ -777,7 +779,7 @@ class UserController extends AbstractController
 
                     // Send email
                     $dispatcher = $this->get('hip_mandrill.dispatcher');
-                    $message    = new \Hip\MandrillBundle\Message();
+                    $message    = new Message();
                     $message
                         ->addTo($emailRequest->getEmail())
                         ->addGlobalMergeVar('USER', $user->getUsernameOrFirstName())
@@ -1059,7 +1061,7 @@ class UserController extends AbstractController
      */
     public function completeProfileModalAction(Request $request)
     {
-        return [];
+        return $this->render('User/completeProfileModal.html.twig', []);
     }
 
     /**
@@ -1591,7 +1593,7 @@ class UserController extends AbstractController
      */
     public function prefEmailCollabsAction(Request $request)
     {
-        $em       = $this->getDoctrine()->getEntityManager();
+        $em       = $this->getDoctrine()->getManager();
         $userPref = $em->getRepository('App:UserPref')->findOneBy([
             'user_info' => $this->getUser(),
         ]);
@@ -2165,10 +2167,10 @@ class UserController extends AbstractController
         $customer   = Customer::retrieve($user->getStripeCustId());
         $membership = Subscription::retrieve($userSub->getStripeSubscrId());
 
-        return [
+        return $this->render('User/dontCancelMembershipModal.html.twig', [
             'customer'   => $customer,
             'membership' => $membership,
-        ];
+        ]);
     }
 
     /**
@@ -2210,10 +2212,10 @@ class UserController extends AbstractController
             $membership = Subscription::retrieve($userSub->getStripeSubscrId());
         }
 
-        return [
+        return $this->render('User/cancelModal.html.twig', [
             'customer'   => $customer,
             'membership' => $membership,
-        ];
+        ]);
     }
 
     /**
@@ -2242,9 +2244,9 @@ class UserController extends AbstractController
             $request->query->set('notice', 'Your order has been placed. A Vocalizr Engineer will be in contact soon with any questions.');
         }
 
-        return [
+        return $this->render('User/engine.html.twig', [
             'orders' => $orders,
-        ];
+        ]);
     }
 
     /**
@@ -2252,14 +2254,12 @@ class UserController extends AbstractController
      *
      * @param Request $request
      *
+     * @param UserVideoModel $videoModel
      * @return RedirectResponse
      */
-    public function saveUserVideoAction(Request $request)
+    public function saveUserVideoAction(Request $request, UserVideoModel $videoModel)
     {
         $link = $request->get('video_link');
-
-        /** @var UserVideoModel $videoModel */
-        $videoModel = $this->get('vocalizr_app.model.user_video');
 
         $video = $videoModel->createUserVideo($link, $this->getUser());
 
@@ -2279,19 +2279,19 @@ class UserController extends AbstractController
      *
      * @return JsonResponse
      */
-    public function getUserVideosAction(Request $request)
+    public function getUserVideosAction(Request $request, UserInfoModel $userInfoModel, UserVideoModel $userVideoModel)
     {
         $id     = $request->get('id');
         $offset = $request->get('offset');
         $limit  = $request->get('limit');
 
-        $userInfo = $this->get('vocalizr_app.model.user_info')->getObject($id);
+        $userInfo = $userInfoModel->getObject($id);
 
         if (is_null($userInfo)) {
             throw new NotFoundHttpException();
         }
 
-        $userVideos = $this->get('vocalizr_app.model.user_video')->getUserVideos($userInfo, $offset, $limit);
+        $userVideos = $userVideoModel->getUserVideos($userInfo, $offset, $limit);
 
         if (count($userVideos) > 0) {
             if ($request->get('edit')) {
@@ -2317,15 +2317,13 @@ class UserController extends AbstractController
      * @Route("/user/edit/remove-user-video/{id}", name="user_edit_remove_video")
      *
      * @param $id
+     * @param UserVideoModel $videoModel
      *
      * @return RedirectResponse
      */
-    public function removeUserVideoAction($id)
+    public function removeUserVideoAction($id, UserVideoModel $videoModel )
     {
         $userInfo = $this->getUser();
-
-        /** @var UserVideoModel $videoModel */
-        $videoModel = $this->get('vocalizr_app.model.user_video');
 
         $video = $videoModel->getObject($id);
 
@@ -2348,14 +2346,12 @@ class UserController extends AbstractController
      *
      * @param Request $request
      *
+     * @param UserVideoModel $videoModel
      * @return JsonResponse
      */
-    public function sortUserVideoAction(Request $request)
+    public function sortUserVideoAction(Request $request, UserVideoModel $videoModel)
     {
         $data = $request->get('data');
-
-        /** @var UserVideoModel $videoModel */
-        $videoModel = $this->get('vocalizr_app.model.user_video');
 
         $videoModel->sortVideo(json_decode($data));
 
@@ -2369,7 +2365,7 @@ class UserController extends AbstractController
      *
      * @return JsonResponse
      */
-    public function updateUserSpotifyIdAction(Request $request)
+    public function updateUserSpotifyIdAction(Request $request, UserSpotifyPlaylistModel $spotifyPlaylistModel, UserInfoModel $userInfoModel)
     {
         /** @var UserInfo $user */
         $user = $this->getUser();
@@ -2381,15 +2377,15 @@ class UserController extends AbstractController
         }
 
         if ($id === '') {
-            $this->get('vocalizr_app.model.user_spotify_playlist')->removeAllUserPlaylists($user);
+            $spotifyPlaylistModel->removeAllUserPlaylists($user);
             $user->setUserSpotifyId(null);
-            $this->get('vocalizr_app.model.user_info')->updateObject($user);
+            $userInfoModel->updateObject($user);
             return new JsonResponse(['success' => true]);
         }
 
         $user->setUserSpotifyId($id);
 
-        $this->get('vocalizr_app.model.user_info')->updateObject($user);
+        $userInfoModel->updateObject($user);
 
         return new JsonResponse(['success' => true]);
     }
@@ -2397,11 +2393,13 @@ class UserController extends AbstractController
     /**
      * @Route("user/edit/add-spotify-playlist/", name="user_edit_add_spotify_playlist")
      *
-     * @param Request $request
+     * @param Request                   $request
+     * @param UserInfoModel             $userInfoModel
+     * @param UserSpotifyPlaylistModel  $playlistModel
      *
      * @return JsonResponse
      */
-    public function addUserSpotifyPlaylistAction(Request $request)
+    public function addUserSpotifyPlaylistAction(Request $request, UserInfoModel $userInfoModel, UserSpotifyPlaylistModel $playlistModel)
     {
         $id = $request->get('id');
 
@@ -2409,7 +2407,7 @@ class UserController extends AbstractController
         $edit   = $request->get('edit', 0);
 
         /** @var UserInfo $user */
-        $user = $this->get('vocalizr_app.model.user_info')->getObject($id);
+        $user = $userInfoModel->getObject($id);
 
         if (is_null($user)) {
             throw new AccessDeniedException();
@@ -2417,8 +2415,6 @@ class UserController extends AbstractController
 
         $link = $request->get('link');
 
-        /** @var UserSpotifyPlaylistModel $playlistModel */
-        $playlistModel = $this->get('vocalizr_app.model.user_spotify_playlist');
 
         if (!is_null($link)) {
             try {
@@ -2445,17 +2441,14 @@ class UserController extends AbstractController
     /**
      * @Route("user/edit/remove-spotify-playlist/{id}", name="user_edit_remove_spotify_playlist")
      *
-     * @param int $id
+     * @param int                       $id
+     * @param UserSpotifyPlaylistModel  $playlistModel
      *
      * @return RedirectResponse
      */
-    public function removeUserSpotifyPlaylistAction($id)
+    public function removeUserSpotifyPlaylistAction($id, UserSpotifyPlaylistModel $playlistModel)
     {
         $userInfo = $this->getUser();
-
-        /** @var UserSpotifyPlaylistModel $playlistModel */
-        $playlistModel = $this->get('vocalizr_app.model.user_spotify_playlist');
-
         $playlist = $playlistModel->getObject($id);
 
         if (is_null($userInfo)) {
@@ -2475,17 +2468,18 @@ class UserController extends AbstractController
     /**
      * @Route("user/reviews/get-more", name="user_view_load_more_review")
      *
-     * @param Request $request
+     * @param Request       $request
+     * @param UserInfoModel $userInfoModel
      *
      * @return JsonResponse
      */
-    public function getMoreUserReviewAction(Request $request)
+    public function getMoreUserReviewAction(Request $request, UserInfoModel $userInfoModel)
     {
         $id   = $request->get('id');
         $type = $request->get('type');
         $page = $request->get('page');
         /** @var UserInfo $user */
-        $user = $this->get('vocalizr_app.model.user_info')->getObject($id);
+        $user = $userInfoModel->getObject($id);
 
         if (!$user || !$page || !in_array($type, UserReview::$reviewTypes)) {
             throw new BadRequestHttpException('Bad request.');
@@ -2512,12 +2506,11 @@ class UserController extends AbstractController
      *
      * @param Request $request
      *
+     * @param UserRestrictionService $service
      * @return JsonResponse
      */
-    public function userRestrictionCheckAction(Request $request)
+    public function userRestrictionCheckAction(Request $request, UserRestrictionService $service)
     {
-        $service = $this->get('vocalizr_app.user_restriction');
-
         $data   = [];
         $can    = false;
         $status = 200;

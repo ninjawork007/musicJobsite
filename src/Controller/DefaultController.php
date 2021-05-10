@@ -10,6 +10,7 @@ use App\Service\MembershipSourceHelper;
 use Slot\MandrillBundle\Message;
 
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -141,7 +142,7 @@ class DefaultController extends AbstractController
                         ]),
                     ],
                 ])
-                ->add('message', 'textarea', [
+                ->add('message', TextareaType::class, [
                     'label' => 'Message',
                     'attr'  => [
                         'class' => 'form-control',
@@ -155,7 +156,7 @@ class DefaultController extends AbstractController
                 ->getForm();
 
         if ($request->isMethod('POST')) {
-            $form->bind($request);
+            $form->handleRequest($request);
 
             if ($form->isValid()) {
                 $data       = $form->getData();
@@ -211,7 +212,7 @@ class DefaultController extends AbstractController
     {
         $view = $request->get('_view', 'Default:error.html.twig');
         if ($request->isXmlHttpRequest()) {
-            $template = $this->renderView($view, $this->getRequest()->attributes->all());
+            $template = $this->renderView($view, $request->attributes->all());
             return new Response($template, 400);
         }
 
@@ -222,12 +223,10 @@ class DefaultController extends AbstractController
      * @Route("/confirm-email", name="confirm_email")
      * @Template()
      */
-    public function confirmEmailAction()
+    public function confirmEmailAction(Request $request)
     {
-        $request = $this->getRequest();
-
         // Check if email change request is valid
-        $em = $this->getDoctrine()->getEntityManager();
+        $em = $this->getDoctrine()->getManager();
 
         if (!$result = $em->getRepository(EmailChangeRequest::class)->findOneBy(['unique_key' => $request->get('key')])) {
             throw $this->createNotFoundException('Invalid email change request');
@@ -337,9 +336,11 @@ class DefaultController extends AbstractController
             $_GET[$form->getName()]['audio'] = true;
         }
 
-        $form->handleRequest($_GET[$form->getName()]);
+        $form->handleRequest($request);
 
-        return ['form' => $form->createView()];
+        return $this->render('Default/singers.html.twig', [
+            'form' => $form->createView()
+        ]);
     }
 
     /**
@@ -385,7 +386,7 @@ class DefaultController extends AbstractController
      */
     public function singingJobsAction(Request $request)
     {
-        $em = $this->getDoctrine()->getEntityManager();
+        $em = $this->getDoctrine()->getManager();
 
         $ymlParser  = new \Symfony\Component\Yaml\Parser();
         $file       = $this->getParameter('kernel.project_dir') . '/config/packages/project.yml';
@@ -393,7 +394,7 @@ class DefaultController extends AbstractController
 
         $form = $this->createForm(new \App\Form\Type\ProjectSearchType($projectYml['budget']));
 
-        $form->bindRequest($request);
+        $form->handleRequest($request);
 
         return ['form' => $form->createView()];
     }

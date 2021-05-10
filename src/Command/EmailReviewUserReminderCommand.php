@@ -27,7 +27,7 @@ class EmailReviewUserReminderCommand extends Command
     {
         $container        = $this->getContainer();
         $doctrine         = $container->get('doctrine');
-        $em               = $doctrine->getEntityManager();
+        $em               = $doctrine->getManager();
         $this->dispatcher = $container->get('hip_mandrill.dispatcher');
 
         // Get projects that were completed 2 days ago
@@ -90,7 +90,7 @@ class EmailReviewUserReminderCommand extends Command
                         ->setTrackClicks(true);
 
                     $message->addTo($user->getEmail());
-                    $body = $container->get('templating')->render('VocalizrAppBundle:Mail:reviewUserReminder.html.twig', [
+                    $body = $container->get('twig')->render('Mail:reviewUserReminder.html.twig', [
                         'user'      => $user,
                         'project'   => $project,
                         'otherUser' => $otherUser,

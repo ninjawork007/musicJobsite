@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -11,9 +12,8 @@ class SoundcloudController extends AbstractController
     /**
      * @Route("/soundcloud/connect", name="soundcloud_connect")
      */
-    public function connectAction()
+    public function connectAction(Request $request)
     {
-        $request = $this->getRequest();
 
         $serverName = $_SERVER['SERVER_NAME'];
         $client     = $this->__createClient();
@@ -49,10 +49,9 @@ class SoundcloudController extends AbstractController
     /**
      * @Route("/soundcloud/auth", name="soundcloud_auth")
      */
-    public function authAction()
+    public function authAction(Request $request)
     {
         $em      = $this->getDoctrine()->getManager();
-        $request = $this->getRequest();
         $user    = $this->getUser();
 
         if (!$code = $request->get('code')) {
@@ -75,7 +74,7 @@ class SoundcloudController extends AbstractController
         // Try access profile information
         try {
             $me = json_decode($client->get('me'));
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             throw $this->createNotFoundException('Unable to connect to sound cloud. Please try connect again');
         }
 
@@ -84,7 +83,7 @@ class SoundcloudController extends AbstractController
             if (!$referer = $this->get('session')->get('sc_referer', false)) {
                 $referer = $this->generateUrl('user_edit');
             }
-            $session = $this->getRequest()->getSession();
+            $session = $request->getSession();
             $session->set('scId', $me->id);
             $session->set('scAccessToken', $accessToken);
 
@@ -111,13 +110,13 @@ class SoundcloudController extends AbstractController
     /**
      * @Route("/soundcloud/sync-status/{id}", name="soundcloud_sync_status")
      */
-    public function syncStatusAction()
+    public function syncStatusAction(Request $request)
     {
-        $id = $this->getRequest()->get('id');
+        $id = $request->get('id');
 
         $client = $this->__createClient();
         $user   = $this->getUser();
-        $em     = $this->getDoctrine()->getEntityManager();
+        $em     = $this->getDoctrine()->getManager();
 
         // Make sure user audio exists
         $userAudioRepo = $em->getRepository('App:UserAudio');
@@ -170,9 +169,8 @@ class SoundcloudController extends AbstractController
      * @Route("/soundcloud/fetch/tracks", name="soundcloud_fetch_tracks")
      * @Template()
      */
-    public function fetchTracksAction()
+    public function fetchTracksAction(Request $request)
     {
-        $request         = $this->getRequest();
         $user            = $this->getUser();
         $em              = $this->getDoctrine()->getManager();
         $userScTrackRepo = $em->getRepository('App:UserScTrack');
@@ -218,7 +216,7 @@ class SoundcloudController extends AbstractController
      */
     public function displayTracksAction()
     {
-        $em   = $this->getDoctrine()->getEntityManager();
+        $em   = $this->getDoctrine()->getManager();
         $user = $this->getUser();
 
         // Get cached soundcloud tracks

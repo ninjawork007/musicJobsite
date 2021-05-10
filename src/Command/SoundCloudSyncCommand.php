@@ -22,7 +22,7 @@ class SoundCloudSyncCommand extends Command
     {
         $container     = $this->getContainer();
         $doctrine      = $container->get('doctrine');
-        $em            = $doctrine->getEntityManager();
+        $em            = $doctrine->getManager();
         $userAudioRepo = $doctrine->getRepository('App:UserAudio');
 
         $id = $input->getArgument('id');
@@ -39,7 +39,7 @@ class SoundCloudSyncCommand extends Command
 
         $userInfo = $userAudio['user_info'];
 
-        $audio = $em->getReference('VocalizrAppBundle:UserAudio', $userAudio);
+        $audio = $em->getReference('App:UserAudio', $userAudio);
 
         // create client object with app credentials
         $clientId     = $container->getParameter('soundcloud_client_id');

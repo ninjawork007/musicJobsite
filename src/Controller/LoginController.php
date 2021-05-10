@@ -106,11 +106,12 @@ class LoginController extends AbstractController
      */
     public function resetPassAction(Request $request, Dispatcher $dispatcher)
     {
+
         if ($request->getMethod() == 'POST') {
             // Check email address
             if (!$email = $request->get('email', false)) {
                 $request->query->set('error', 'Email address field is blank');
-                return [];
+                return $this->render('Login/resetPass.html.twig', []);
             }
 
             // lets check if the email address exists
@@ -119,14 +120,17 @@ class LoginController extends AbstractController
             // lets check if the email address exists
             if (!$userInfo = $em->getRepository(UserInfo::class)->findFirstByEmail($email)) {
                 $request->query->set('notice', 'If your account exists, you will receive an email with instructions to reset your password');
-                return [];
+
+                return $this->render('Login/resetPass.html.twig', []);
             }
 
             if (!$userInfo->getIsActive()) {
                 $request->query->set('error', 'This account is not active, please write to support at help@vocalizr.com to reactivate');
-                return [];
+
+                return $this->render('Login/resetPass.html.twig', []);
             }
 
+            dd($userInfo->getIsActive());
             if (!$obj = $em->getRepository(ResetPassRequest::class)->findOneBy(['user_info' => $userInfo->getId()])) {
                 // Save reset password request
                 $obj = new ResetPassRequest();
@@ -154,7 +158,7 @@ class LoginController extends AbstractController
             $request->query->set('notice', 'Reset password request has been emailed');
         }
 
-        return $this->render('Login/resetPass.html.twig');
+        return $this->render('Login/resetPass.html.twig', []);
     }
 
     /**
@@ -280,7 +284,7 @@ class LoginController extends AbstractController
 
         try {
             $fbUser = $facebook->getUser();
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             $fbUser = null;
         }
 

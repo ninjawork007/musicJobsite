@@ -24,7 +24,7 @@ class EmailVocalistRecommendationsCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $this->container  = $container  = $this->getContainer();
-        $this->em         = $container->get('doctrine')->getEntityManager();
+        $this->em         = $container->get('doctrine')->getManager();
         $this->dispatcher = $container->get('hip_mandrill.dispatcher');
 
         $this->message = new \Hip\MandrillBundle\Message();
@@ -232,7 +232,7 @@ class EmailVocalistRecommendationsCommand extends Command
             return false;
         }
 
-        $gigsHtml = $this->container->get('templating')->render('VocalizrAppBundle:Mail:vocalistProjectRecommendations.html.twig', [
+        $gigsHtml = $this->container->get('twig')->render('Mail:vocalistProjectRecommendations.html.twig', [
             'user'             => $user,
             'projects'         => $projects,
             'featuredProjects' => $featuredProjects,

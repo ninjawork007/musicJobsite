@@ -7,6 +7,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use App\Repository\UserSubscriptionRepository;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Class DeferredSubscriptionCancelCommand
@@ -15,6 +16,18 @@ use App\Repository\UserSubscriptionRepository;
  */
 class DeferredSubscriptionCancelCommand extends Command
 {
+    private $container;
+
+    /**
+     * DeferredSubscriptionCancelCommand constructor.
+     * @param ContainerInterface $container
+     */
+    public function __construct(ContainerInterface $container)
+    {
+        parent::__construct();
+        $this->container = $container;
+    }
+
     protected function configure()
     {
         $this->setName('vocalizr:cancel-expired-subscriptions');
@@ -29,7 +42,7 @@ class DeferredSubscriptionCancelCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         /** @var EntityManager $em */
-        $em = $this->getContainer()->get('doctrine.orm.entity_manager');
+        $em = $this->container->get('doctrine.orm.entity_manager');
 
         /** @var UserSubscriptionRepository $subscriptionRepo */
         $subscriptionRepo = $em->getRepository('App:UserSubscription');
@@ -53,5 +66,7 @@ class DeferredSubscriptionCancelCommand extends Command
         $em->flush();
 
         $output->writeln('All done.');
+
+        return 1;
     }
 }

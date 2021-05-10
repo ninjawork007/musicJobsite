@@ -524,7 +524,7 @@ class VocalistsController extends AbstractUserSearchController
             'static_key' => 'FREE',
         ]);
 
-        return [
+        return $this->render('Vocalists/maleVocalists.html.twig',[
             'form'          => $form->createView(),
             'pagination'    => $pagination,
             'audioLikes'    => $audioLikes,
@@ -532,7 +532,7 @@ class VocalistsController extends AbstractUserSearchController
             'freePlan'      => $freePlan,
             'userAudioList' => $userAudios,
             'favs'          => $favs,
-        ];
+        ]);
     }
 
     /**
@@ -685,7 +685,7 @@ class VocalistsController extends AbstractUserSearchController
             'static_key' => 'FREE',
         ]);
 
-        return [
+        return $this->render('Vocalists/femaleVocalists.html.twig',[
             'form'          => $form->createView(),
             'pagination'    => $pagination,
             'audioLikes'    => $audioLikes,
@@ -693,7 +693,7 @@ class VocalistsController extends AbstractUserSearchController
             'freePlan'      => $freePlan,
             'userAudioList' => $userAudios,
             'favs'          => $favs,
-        ];
+        ]);
     }
 
     /**
@@ -714,7 +714,10 @@ class VocalistsController extends AbstractUserSearchController
         // Get fee options
         $projectYml = $this->getProjectConfigData();
 
-        $form = $this->createForm(new VocalistSearchType($projectYml['budget'], $em));
+        $form = $this->createForm(VocalistSearchType::class, [
+            'budget' => $projectYml['budget'],
+            'em'     => $em
+        ]);
 
         $q = $userInfoRepo->createQueryBuilder('ui');
         $q->leftJoin('ui.user_audio', 'ua', 'WITH', 'ua.default_audio = 1');
@@ -843,7 +846,7 @@ class VocalistsController extends AbstractUserSearchController
             'static_key' => 'FREE',
         ]);
 
-        return [
+        return $this->render('Vocalists/sessionSingersHire.html.twig',[
             'form'          => $form->createView(),
             'pagination'    => $pagination,
             'audioLikes'    => $audioLikes,
@@ -851,7 +854,7 @@ class VocalistsController extends AbstractUserSearchController
             'freePlan'      => $freePlan,
             'userAudioList' => $userAudios,
             'favs'          => $favs,
-        ];
+        ]);
     }
 
     /**
@@ -872,7 +875,10 @@ class VocalistsController extends AbstractUserSearchController
         // Get fee options
         $projectYml = $this->getProjectConfigData();
 
-        $form = $this->createForm(new VocalistSearchType($projectYml['budget'], $em));
+        $form = $this->createForm(VocalistSearchType::class, [
+            'budget' => $projectYml['budget'],
+            'em'     => $em
+        ]);
 
         $q = $userInfoRepo->createQueryBuilder('ui');
         $q->leftJoin('ui.user_audio', 'ua', 'WITH', 'ua.default_audio = 1');
@@ -1005,7 +1011,7 @@ class VocalistsController extends AbstractUserSearchController
             'static_key' => 'FREE',
         ]);
 
-        return [
+        return $this->render('Vocalists/femaleSingersHire.html.twig',[
             'form'          => $form->createView(),
             'pagination'    => $pagination,
             'audioLikes'    => $audioLikes,
@@ -1013,7 +1019,7 @@ class VocalistsController extends AbstractUserSearchController
             'freePlan'      => $freePlan,
             'userAudioList' => $userAudios,
             'favs'          => $favs,
-        ];
+        ]);
     }
 
     /**
@@ -1035,7 +1041,10 @@ class VocalistsController extends AbstractUserSearchController
         // Get fee options
         $projectYml = $this->getProjectConfigData();
 
-        $form = $this->createForm(new VocalistSearchType($projectYml['budget'], $em));
+        $form = $this->createForm(VocalistSearchType::class, [
+            'budget' => $projectYml['budget'],
+            'em'     => $em
+        ]);
 
         $q = $userInfoRepo->createQueryBuilder('ui');
         $q->leftJoin('ui.user_audio', 'ua', 'WITH', 'ua.default_audio = 1');
@@ -1168,7 +1177,7 @@ class VocalistsController extends AbstractUserSearchController
             'static_key' => 'FREE',
         ]);
 
-        return [
+        return $this->render('Vocalists/maleSingersHire.html.twig', [
             'form'          => $form->createView(),
             'pagination'    => $pagination,
             'audioLikes'    => $audioLikes,
@@ -1176,6 +1185,6 @@ class VocalistsController extends AbstractUserSearchController
             'freePlan'      => $freePlan,
             'userAudioList' => $userAudios,
             'favs'          => $favs,
-        ];
+        ]);
     }
 }

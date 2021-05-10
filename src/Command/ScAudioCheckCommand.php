@@ -23,7 +23,7 @@ class ScAudioCheckCommand extends Command
     {
         $this->container  = $container  = $this->getContainer();
         $doctrine         = $container->get('doctrine');
-        $em               = $doctrine->getEntityManager();
+        $em               = $doctrine->getManager();
         $this->dispatcher = $container->get('hip_mandrill.dispatcher');
 
         $q = $em->getRepository('App:UserAudio')
@@ -115,7 +115,7 @@ class ScAudioCheckCommand extends Command
                     ->setTrackClicks(true);
 
                 $message->addTo($userInfo->getEmail());
-                $body = $container->get('templating')->render('VocalizrAppBundle:Mail:soundcloudAudioRemoved.html.twig', [
+                $body = $container->get('twig')->render('Mail:soundcloudAudioRemoved.html.twig', [
                     'userAudio' => $userAudio,
                 ]);
                 $message->addGlobalMergeVar('BODY', $body);
@@ -137,7 +137,7 @@ class ScAudioCheckCommand extends Command
             ->setTrackClicks(true);
 
         $message->addTo($userAudio->getUserInfo()->getEmail());
-        $body = $this->container->get('templating')->render('VocalizrAppBundle:Mail:soundcloudDisconnected.html.twig', [
+        $body = $this->container->get('twig')->render('Mail:soundcloudDisconnected.html.twig', [
             'userAudio' => $userAudio,
         ]);
         $message->addGlobalMergeVar('BODY', $body);

@@ -279,7 +279,7 @@ class RegisterController extends AbstractController
             return $this->redirect($this->generateUrl('onboarding-success'));
         }
 
-        return $this->render('@VocalizrApp/Register/onboard_payment.html.twig', [
+        return $this->render('Register/onboard_payment.html.twig', [
             'user_source' => $userSource,
             'userSub'     => false,
         ]);
@@ -348,6 +348,7 @@ class RegisterController extends AbstractController
 
         // check that the unique str is parsed and is valid
         // load the used based on the unique_str
+        $unique_str = explode('&', $unique_str)[0];
         $emailUser = $em->getRepository(UserInfo::class)->findOneBy(['unique_str' => $unique_str]);
         $error     = false;
 
@@ -378,15 +379,17 @@ class RegisterController extends AbstractController
      *
      * @Route("/user/resendConfirmationEmail", name="resend_confirmation_email")
      *
-     * @param \Symfony\Component\HttpFoundation\Request $request
+     * @param Request    $request
+     * @param Dispatcher $dispatcher
+     *
+     * @return JsonResponse|RedirectResponse
      * @Template()
      */
-    public function projectStatusWidgetAction(Request $request)
+    public function projectStatusWidgetAction(Request $request, Dispatcher $dispatcher)
     {
         $em   = $this->getDoctrine()->getManager();
         $user = $this->getUser();
 
-        $dispatcher = $this->get('hip_mandrill.dispatcher');
         $message    = new Message();
         $message
             ->addTo($user->getEmail())

@@ -6,9 +6,18 @@ namespace App\Command;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class ContestFixEntryCommand extends Command
 {
+    private $container;
+
+    public function __construct(ContainerInterface $container)
+    {
+        parent::__construct();
+        $this->container = $container;
+    }
+
     protected function configure()
     {
         // How often do we run this script
@@ -22,10 +31,9 @@ class ContestFixEntryCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $this->container  = $container  = $this->getContainer();
-        $doctrine         = $container->get('doctrine');
-        $em               = $doctrine->getEntityManager();
-        $this->dispatcher = $container->get('hip_mandrill.dispatcher');
+        $doctrine         = $this->container->get('doctrine');
+        $em               = $doctrine->getManager();
+        $this->dispatcher = $this->container->get('hip_mandrill.dispatcher');
 
         $output->writeln(sprintf("\n## BEGIN TASK: %s", $this->getName()));
 
@@ -75,5 +83,7 @@ class ContestFixEntryCommand extends Command
         foreach ($votes as $vote) {
             echo $vote . "\r\n";
         }
+
+        return 1;
     }
 }
