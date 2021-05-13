@@ -1,81 +1,75 @@
 parameters:
-    locale: en
-    secret: v0cal1zR*DSJu8DH347s
+    locale: '%env(PARAM_LOCALE)%'
+    secret: '%env(PARAM_SECRET)%'
 
-    domain_base: local.vocalizr.com
-    router.request_context.host: local.vocalizr.com
-    router.request_context.scheme: http
+    domain_base: '%env(DOMAIN_BASE)%'
+    router.request_context.host: '%env(ROUTER_REQUEST_CONTEST_HOST)%'
+    router.request_context.scheme: '%env(ROUTER_REQUEST_CONTEST_SCHEMA)%'
 
-    audio_recorder_key: 820f01581a603e68ad92c87c072d8a58
+    audio_recorder_key: '%env(AUDIO_RECORDER_KEY)%'
 
-    facebook_app_id: 270724609723149
-    facebook_app_secret: 4182c17474aabea8cd8b6d226478554f
-    facebook_app_scope: email,user_birthday,user_location
+    facebook_app_id: '%env(FACEBOOK_APP_ID)%'
+    facebook_app_secret: '%env(FACEBOOK_APP_SECRET)%'
+    facebook_app_scope: '%env(FACEBOOK_APP_SCOPE)%'
 
-    soundcloud_client_id: 2a742087e2ef470eaf157bca383386d1
-    soundcloud_client_secret: 1a0a41aff336e48dbeb03448b6d486f2
+    soundcloud_client_id: '%env(SOUNDECLOUD_CLIENT_ID)%'
+    soundcloud_client_secret: '%env(SOUNDECLOUD_CLIENT_SECRET)%'
 
-    admin_email: john@smytheweb.com
+    admin_email: '%env(ADMIN_EMAIL)%'
 
-    mail_from_email: john@smytheweb.com
-    mail_from_name: Vocalizr
+    mail_from_email: '%env(MAIL_FROM_EMAIL)%'
+    mail_from_name: '%env(MAIL_FROM_NAME)%'
 
-    mail_subject_activation: Activate your account
-    mail_subject_change_email: Email change request
-    mail_subject_reset_pass: Reset your password request
+    mail_subject_activation: '%env(MAIL_SUBJECT_ACTIVATION)%'
+    mail_subject_change_email: '%env(MAIL_SUBJECT_CHANGE_EMAIL)%'
+    mail_subject_reset_pass: '%env(MAIL_SUBJECT_CHANGE_PASS)%'
 
-    paypal_primary_email: timofey.n-test@zimalab.com
-    paypal_url: https://www.sandbox.paypal.com/cgi-bin/webscr
-    paypal_ipn_simulator_url: http://www.smytheweb.com/vocalizr/ipn.php?request=1
-    paypal_test_mode: 1
-    paypal_test_url: https://www.sandbox.paypal.com/cgi-bin/webscr
-    paypal_currency: USD
-    paypal_notify_url: https://v.pf.ipnta.xyz/app_dev.php/paypal/ipn
+    paypal_primary_email: '%env(MAIL_SUBJECT_CHANGE_PASS)%'
+    paypal_url: '%env(resolve:PAYPAL_URL)%'
+    paypal_ipn_simulator_url: '%env(resolve:PAYPAL_IPN_SIMULATOR_URL)%'
+    paypal_test_mode: '%env(PAYPAL_TEST_MODE)%'
+    paypal_test_url: '%env(resolve:PAYPAL_TEST_URL)%'
+    paypal_currency: '%env(PAYPAL_CURRENCY)%'
+    paypal_notify_url: '%env(resolve:PAYPAL_NOTIFY_URL)%'
 
-    paypal_env: 'dev'
+    paypal_env: '%env(PAYPAL_ENV)%'
 
-    paypal_client_id: 'AY-N8n5ycph03VwwBX3XgGf2bbUXDFWKlD7iVp5Ep01cD9s6V1SB9mr-6umdBZ4f21tpOr_UOYbVgLid'
-    paypal_client_Secret: 'EOxtaE9cMygeWMzy_3GINDLL2si5ty7h41oCXfnoXFKiPR8MtgIbNhFypzZ4t0pFGrl7Vl1a9CWEmOPs'
+    paypal_client_id: '%env(PAYPAL_CLIENT_ID)%'
+    paypal_client_Secret: '%env(PAYPAL_CLIENT_SECRET)%'
 
-    paypal_legacy_api_username: 'timofey.n-test_api1.zimalab.com'
-    paypal_legacy_api_password: 'W2FYCR9F3SUDANPZ'
-    paypal_legacy_signature:    'AxpYDfrZEOWfawzZkLN7tKCy.BvJAOS8a4ZUsuHd6kb4UtHDYBikuud9'
-
-
-    default_currency: USD
-
-    upload_audio_allowed: mp3
-    upload_assets_allowed: mp3, wav
-    upload_audio_allowed_extended: mp3,aac,m4a
+    paypal_legacy_api_username: '%env(PAYPAL_LEGACY_API_USERNAME)%'
+    paypal_legacy_api_password: '%env(PAYPAL_LEGACY_API_PASSWORD)%'
+    paypal_legacy_signature:    '%env(PAYPAL_LEGACY_API_SIGNATURE)%'
 
 
-    default_date_format: M d, Y
+    default_currency: '%env(DEFAULT_CURRENCY)%'
 
-    cdn_url:
+    upload_audio_allowed: '%env(UPLOAD_AUDIO_ALLOWED)%'
+    upload_assets_allowed: '%env(UPLOAD_ASSETS_ALLOWED)%'
+    upload_audio_allowed_extended: '%env(UPLOAD_AUDIO_ALLOWED_EXTENDED)%'
 
-    connect_default_msg: "I'd like to add you to my professional network on Vocalizr."
 
-    stripe_api_key: sk_test_9meu3hZp96wFN6VCvGpqCj5N
-    stripe_checkout_key: pk_test_Y9zYhfkN1kx8TOJjP1UBlyFM
+    default_date_format: '%env(DEFAULT_DATE_FORMAT)%'
 
-    statistics_google_sheet_id: 1NWi-MhGrxztg6uKmxsMgkWvwzT9dHxXXJk-WUiaC1DQ
-    statistics_google_list_name: local
-#    paypal_primary_email_subscriptions:       'timofey.n-test@zimalab.com'
-#    paypal_button_id:                         'JFP4WPAJB9H44'
-#    paypal_legacy_api_username_subscriptions: 'timofey.n-test_api1.zimalab.com'
-#    paypal_legacy_api_password_subscriptions: 'W2FYCR9F3SUDANPZ'
-#    paypal_legacy_signature_subscriptions:    'AxpYDfrZEOWfawzZkLN7tKCy.BvJAOS8a4ZUsuHd6kb4UtHDYBikuud9'
-#    paypal_stayhome_button_id:                'P7H5BNC7ES6VG'
+    cdn_url: '%env(CDN_URL)%'
 
-    paypal_primary_email_subscriptions:       'timofey.n-test@zimalab.com'
-    paypal_button_id:                         'JFP4WPAJB9H44'
-    paypal_legacy_api_username_subscriptions: 'timofey.n-test_api1.zimalab.com'
-    paypal_legacy_api_password_subscriptions: 'W2FYCR9F3SUDANPZ'
-    paypal_legacy_signature_subscriptions:    'AxpYDfrZEOWfawzZkLN7tKCy.BvJAOS8a4ZUsuHd6kb4UtHDYBikuud9'
-    paypal_stayhome_button_id:                'P7H5BNC7ES6VG'
+    connect_default_msg: '%env(CONNECT_DEFAULT_MSG)%'
 
-    pro_profile_enabled: false
+    stripe_api_key: '%env(STRIPE_API_KEY)%'
+    stripe_checkout_key: '%env(STRIPE_CHECKOUT_KEY)%'
 
-    database_driver: oci8
+    statistics_google_sheet_id: '%env(STATISTICS_GOOGLE_SHEET_ID)%'
+    statistics_google_list_name: '%env(STATISTICS_GOOGLE_LIST_NAME)%'
 
-    stripe_baseUrl: 'https://api.stripe.com/v1'
+    paypal_primary_email_subscriptions:       '%env(PAYPAL_PRIMARY_EMAIL_SUBSCRIPTIONS)%'
+    paypal_button_id:                         '%env(PAYPAL_BUTTON_ID)%'
+    paypal_legacy_api_username_subscriptions: '%env(PAYPAL_LEGACY_API_USERNAME_SUBSCRIPTIONS)%'
+    paypal_legacy_api_password_subscriptions: '%env(PAYPAL_LEGACY_API_PASSWORD_SUBSCRIPTIONS)%'
+    paypal_legacy_signature_subscriptions:    '%env(PAYPAL_LEGACY_SIGNATURE_SUBSCRIPTIONS)%'
+    paypal_stayhome_button_id:                '%env(PAYPAL_STAYHOME_BUTTON_ID)%'
+
+    pro_profile_enabled: '%env(PRO_PROFILE_ENABLED)%'
+
+    database_driver: '%env(DATABASE_DRIVER)%'
+
+    stripe_baseUrl: '%env(resolve:STRIPE_BASEURL)%'

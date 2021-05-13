@@ -9,6 +9,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use App\Entity\UserWithdraw;
 use App\Repository\UserWithdrawRepository;
 use App\Service\PayPalApiService;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Class PaypalMakePayout
@@ -22,6 +23,14 @@ class PaypalMakePayoutCommand extends Command
 
     /** @var EntityManager */
     private $em;
+
+    private $container;
+
+    public function __construct(ContainerInterface $container)
+    {
+        parent::__construct();
+        $this->container = $container;
+    }
 
     protected function configure()
     {
@@ -39,8 +48,8 @@ class PaypalMakePayoutCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $this->apiClient = $this->getContainer()->get('vocalizr_app.paypal_api');
-        $this->em        = $this->getContainer()->get('doctrine.orm.entity_manager');
+        $this->apiClient = $this->container->get('vocalizr_app.paypal_api');
+        $this->em        = $this->container->get('doctrine.orm.entity_manager');
 
         $this->apiClient->setOutput($output);
 
@@ -86,8 +95,8 @@ class PaypalMakePayoutCommand extends Command
 
                 // Loop through withdraws, and remove any users that are not subscribed and blocked emails
                 foreach ($pendingWithdraws as $k => $pw) {
-                    if (in_array($pw->getPaypalEmail(), $this->getContainer()->getParameter('withdraw_emails'))
-                        || in_array($pw->getUserInfo()->getWithdrawEmail(), $this->getContainer()->getParameter('withdraw_emails'))) {
+                    if (in_array($pw->getPaypalEmail(), $this->container->getParameter('withdraw_emails'))
+                        || in_array($pw->getUserInfo()->getWithdrawEmail(), $this->container->getParameter('withdraw_emails'))) {
                         unset($pendingWithdraws[$k]);
                         continue;
                     }

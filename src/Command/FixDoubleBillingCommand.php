@@ -10,6 +10,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use App\Entity\UserWalletTransaction;
 use App\Entity\UserWithdraw;
 use App\Model\UserInfoModel;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Class FixMultipleWithdrawTransactionsCommand
@@ -27,6 +28,14 @@ class FixDoubleBillingCommand extends Command
      */
     private $userModel;
 
+    private $container;
+
+    public function __construct(ContainerInterface $container)
+    {
+        parent::__construct();
+        $this->container = $container;
+    }
+
     protected function configure()
     {
         $this->setName('vocalizr:app:fix-double-billing');
@@ -34,8 +43,8 @@ class FixDoubleBillingCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $this->em          = $this->getContainer()->get('doctrine.orm.entity_manager');
-        $this->userModel   = $this->getContainer()->get('vocalizr_app.model.user_info');
+        $this->em          = $this->container->get('doctrine.orm.entity_manager');
+        $this->userModel   = $this->container->get('vocalizr_app.model.user_info');
         $transactionGroups = $this->getTransactionsGroupedByWithdrawId();
 
         $withdraws = $this->getWithdrawsByIds(array_keys($transactionGroups));

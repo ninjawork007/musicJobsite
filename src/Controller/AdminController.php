@@ -1612,10 +1612,11 @@ class AdminController extends AbstractController
             return $this->redirect($this->generateUrl('admin_withdrawels'));
         }
 
-        return ['errors' => $errors,
+        return $this->render('Admin/adminWithdrawelProcess.html.twig', ['errors' => $errors,
             'withdrawel' => $withdrawel,
             'form'       => $form->createView(),
-            'cancelForm' => $cancelForm->createView(), ];
+            'cancelForm' => $cancelForm->createView(),
+        ]);
     }
 
     /**
@@ -1646,9 +1647,9 @@ class AdminController extends AbstractController
 
         $items = $q->execute();
 
-        return [
+        return $this->render('Admin/marketplace.html.twig', [
             'items' => $items,
-        ];
+        ]);
     }
 
     /**
@@ -1674,9 +1675,9 @@ class AdminController extends AbstractController
             throw $this->createNotFoundException('Item not found');
         }
 
-        return [
+        return $this->render('Admin/marketplaceReview.html.twig', [
             'item' => $marketplaceItem,
-        ];
+        ]);
     }
 
     /**
@@ -1776,10 +1777,10 @@ class AdminController extends AbstractController
             return $this->redirect($this->generateUrl('admin_marketplace'));
         }
 
-        return [
+        return $this->render('Admin/marketplaceReject.html.twig', [
             'item' => $marketplaceItem,
             'form' => $form->createView(),
-        ];
+        ]);
     }
 
     // ENGINE ROOM

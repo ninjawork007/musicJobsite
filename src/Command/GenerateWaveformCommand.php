@@ -6,6 +6,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 define('ZOOM', 2);                 // Image is drawn ZOOM times bigger and then resized
 define('ACCURACY', 400);           // Data point is the average of ACCURACY points in the data block
@@ -28,6 +29,15 @@ class GenerateWaveformCommand extends Command
 
     private $audioType;
 
+    private $container;
+
+    public function __construct(ContainerInterface $container)
+    {
+        parent::__construct();
+        $this->container = $container;
+    }
+
+
     protected function configure()
     {
         $this
@@ -43,7 +53,7 @@ class GenerateWaveformCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $container         = $this->getContainer();
+        $container        = $this->container;
         $doctrine          = $container->get('doctrine');
         $em                = $doctrine->getManager();
         $userAudioRepo     = $doctrine->getRepository('App:UserAudio');

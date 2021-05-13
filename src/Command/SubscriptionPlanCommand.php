@@ -9,9 +9,18 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use App\Entity\SubscriptionPlan;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class SubscriptionPlanCommand extends Command
 {
+    private $container;
+
+    public function __construct(ContainerInterface $container)
+    {
+        parent::__construct();
+        $this->container = $container;
+    }
+    
     protected function configure()
     {
         $this
@@ -72,7 +81,7 @@ class SubscriptionPlanCommand extends Command
     private function getBuilderFromInput(InputInterface $input)
     {
         /** @var EntityManager $em */
-        $em = $this->getContainer()->get('doctrine.orm.entity_manager');
+        $em = $this->container->get('doctrine.orm.entity_manager');
         $metadata = $em->getClassMetadata(SubscriptionPlan::class);
 
         $builder = $em->getRepository('App:SubscriptionPlan')

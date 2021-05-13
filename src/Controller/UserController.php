@@ -74,7 +74,7 @@ class UserController extends AbstractController
      */
     public function indexAction()
     {
-        return [];
+        return $this->render('User/index.html.twig', []);
     }
 
     /**
@@ -2548,6 +2548,8 @@ class UserController extends AbstractController
         $projectsAwarded = $em->getRepository('App:ProjectBid')
                 ->getProjectsAwardedNeedAction($user->getId());
 
-        return ['projectsAwarded' => $projectsAwarded];
+        return $this->render('User/index.html.twig', [
+            'projectsAwarded' => $projectsAwarded
+        ]);
     }
 }

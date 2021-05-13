@@ -2,10 +2,12 @@
 
 namespace App\Command;
 
+use Slot\MandrillBundle\Message;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Setup the platform
@@ -15,6 +17,14 @@ class GigInviteFavoritesCommand extends Command
     const COMMAND_NAME = 'vocalizr:gig:invite:favorites';
 
     const COMMAND_DESC = 'Send email to favorites in case of new Gig';
+
+    private $container;
+
+    public function __construct(ContainerInterface $container)
+    {
+        parent::__construct();
+        $this->container = $container;
+    }
 
     /**
      * @param InputInterface  $input
@@ -63,7 +73,7 @@ EOT
             throw new \RuntimeException('<error>--userId=m is required</error>');
         }
 
-        $container = $this->getContainer();
+        $container = $this->container;
         $em        = $container->get('doctrine.orm.default_entity_manager');
 
         $project = $em->getRepository('App:Project')->find($projectId);
@@ -85,7 +95,7 @@ EOT
 
         if ($userInfoFavs) {
             $dispatcher = $container->get('hip_mandrill.dispatcher');
-            $message    = new \Hip\MandrillBundle\Message();
+            $message    = new Message();
 
             $favorites = $userInfoFavs[0]->getFavorites();
             foreach ($favorites as $favUserInfo) {
@@ -114,7 +124,7 @@ EOT
                 $userPref = $favUserInfo->getUserPref();
                 if (is_null($userPref) || ($userPref && $userPref->getEmailProjectInvites())) {
                     if (!isset($message)) {
-                        $message = new \Hip\MandrillBundle\Message();
+                        $message = new Message();
                     }
                     $message->addTo($favUserInfo->getEmail());
                     $body = $container->get('twig')->render('Mail:projectInvite.html.twig', [

@@ -90,9 +90,11 @@ class EditProjectType extends AbstractType
                         'label'             => 'Gender',
                         'attr'              => ['class' => 'select2'],
                         'preferred_choices' => [''],
-                        'choices'           => ['' => 'Either',
-                            'female'               => 'Female',
-                            'male'                 => 'Male', ],
+                        'choices'           => [
+                            'Either'  => '',
+                            'Female'  => 'female',
+                            'Male'    => 'male',
+                        ],
                     ]
                 )
                 ->add(
@@ -102,9 +104,11 @@ class EditProjectType extends AbstractType
                         'label'             => 'Looking for',
                         'attr'              => ['class' => 'select2'],
                         'preferred_choices' => [''],
-                        'choices'           => ['' => 'Either',
-                            'producer'             => 'Producer',
-                            'vocalist'             => 'Vocalist', ],
+                        'choices'           => [
+                                'Either'    => '',
+                                'Producer'  => 'producer',
+                                'Vocalist'  => 'vocalist',
+                            ],
                     ]
                 )
                 ->add(

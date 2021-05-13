@@ -16,10 +16,10 @@ class NewProjectContestType extends AbstractType
 
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $defaultLanguage = $options['data']['english'];
+        $defaultLanguage = $options['english'];
         $budgets         = [];
 
-        foreach ($options['data']['budget'] as $value => $label) {
+        foreach ($options['budget'] as $value => $label) {
             $budgets[$label] = $value;
         }
 
@@ -40,7 +40,7 @@ class NewProjectContestType extends AbstractType
                     'choices'           => $budgets,
                 ])
                 ->add('royalty', null, [
-                    'label' => 'Royalty %',
+                    'label' => 'royalty',
                     'attr'  => [
                         'class' => 'form-control percent-slider',
                     ],
@@ -79,9 +79,11 @@ class NewProjectContestType extends AbstractType
                         'label'             => 'Gender',
                         'attr'              => ['class' => 'select2'],
                         'preferred_choices' => [''],
-                        'choices'           => ['' => 'Either',
-                            'female'               => 'Female',
-                            'male'                 => 'Male', ],
+                        'choices'           => [
+                                'Either'               => '',
+                                'Female'               => 'female',
+                                'Male'                 => 'male',
+                            ],
                     ]
                 )
                 ->add(
@@ -160,7 +162,7 @@ class NewProjectContestType extends AbstractType
                         'Vocalist to provide lyrics' => '1',
                         'I will provide lyrics'      => '0',
                         ],
-                    'mapped' => false,
+                    'mapped'        => false,
                     'multiple'      => false,
                     'expanded'      => true,
                     'data'          => 1,
@@ -171,8 +173,9 @@ class NewProjectContestType extends AbstractType
                         'class' => 'select2-project-type contest-type',
                     ],
                     'choices' => [
-                        'producer' => 'Producer',
-                        'vocalist' => 'Vocalist', ],
+                        'Producer' => 'producer',
+                        'Vocalist' => 'vocalist',
+                        ],
                     'data' => 'vocalist',
                 ])
                 ->add('agree', CheckboxType::class, [

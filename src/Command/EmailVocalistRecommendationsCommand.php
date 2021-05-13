@@ -2,15 +2,25 @@
 
 namespace App\Command;
 
+use Slot\MandrillBundle\Message;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class EmailVocalistRecommendationsCommand extends Command
 {
     const BUNCH_SIZE = 10;  // bunch emails to reduce calls to mandrill
 
     private $projects = [];
+
+    private $container;
+
+    public function __construct(ContainerInterface $container)
+    {
+        parent::__construct();
+        $this->container = $container;
+    }
 
     protected function configure()
     {
@@ -23,11 +33,11 @@ class EmailVocalistRecommendationsCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $this->container  = $container  = $this->getContainer();
+        $container        = $this->container;
         $this->em         = $container->get('doctrine')->getManager();
         $this->dispatcher = $container->get('hip_mandrill.dispatcher');
 
-        $this->message = new \Hip\MandrillBundle\Message();
+        $this->message = new Message();
         $this->message->setPreserveRecipients(false);
         $this->message
             ->setTrackOpens(true)
@@ -108,7 +118,7 @@ class EmailVocalistRecommendationsCommand extends Command
                 $this->sendEmail();
 
                 $this->dispatcher = $container->get('hip_mandrill.dispatcher');
-                $this->message    = new \Hip\MandrillBundle\Message();
+                $this->message    = new Message();
                 $this->message->setPreserveRecipients(false);
                 $this->message
                     ->setTrackOpens(true)

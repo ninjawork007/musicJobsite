@@ -2,6 +2,7 @@
 
 namespace App\Command;
 
+use Slot\MandrillBundle\Message;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -72,7 +73,7 @@ class EmailBidsEndedCommand extends Command
             foreach ($results as $project) {
                 $userInfo = $project->getUserInfo();
 
-                $message = new \Hip\MandrillBundle\Message();
+                $message = new Message();
                 $message
                     ->setTrackOpens(true)
                     ->setTrackClicks(true);

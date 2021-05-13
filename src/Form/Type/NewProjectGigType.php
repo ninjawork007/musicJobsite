@@ -36,8 +36,8 @@ class NewProjectGigType extends AbstractType
                         'class' => 'select2-project-type',
                     ],
                     'choices' => [
-                        'producer' => 'Producer',
-                        'vocalist' => 'Vocalist',
+                        'Producer' => 'producer',
+                        'Vocalist' => 'vocalist',
                     ],
                     'data' => 'vocalist',
                 ])
@@ -63,9 +63,9 @@ class NewProjectGigType extends AbstractType
                     ],
                     'preferred_choices' => [''],
                     'choices'           => [
-                        ''       => 'Either',
-                        'female' => 'Female',
-                        'male'   => 'Male',
+                        'Either'   => '',
+                        'Female'   => 'female',
+                        'Male'     => 'male',
                     ],
                 ])
                 ->add('royalty_mechanical', null, [
@@ -77,7 +77,7 @@ class NewProjectGigType extends AbstractType
                     'required' => false,
                 ])
                 ->add('royalty', null, [
-                    'label' => 'Royalty %',
+                    'label' => ' ',
                     'attr'  => [
                         'class' => 'form-control percent-slider',
                     ],
@@ -162,7 +162,7 @@ class NewProjectGigType extends AbstractType
                     ],
                     'preferred_choices' => ['100-300'],
                     'required'          => true,
-                    'mapped'          => false,
+                    'mapped'            => false,
                     'choices'           => $budgets,
                 ])
         ;

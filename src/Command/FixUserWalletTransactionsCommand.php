@@ -12,6 +12,7 @@ use App\Entity\UserInfo;
 use App\Entity\UserWalletTransaction;
 use App\Entity\UserWithdraw;
 use App\Model\UserInfoModel;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Class FixUserWalletTransactions
@@ -35,6 +36,14 @@ class FixUserWalletTransactionsCommand extends Command
      */
     private $output;
 
+    private $container;
+
+    public function __construct(ContainerInterface $container)
+    {
+        parent::__construct();
+        $this->container = $container;
+    }
+
     protected function configure()
     {
         $this->setName('vocalizr:fix:wallet');
@@ -50,12 +59,12 @@ class FixUserWalletTransactionsCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $this->em            = $this->getContainer()->get('doctrine.orm.entity_manager');
-        $this->userInfoModel = $this->getContainer()->get('vocalizr_app.model.user_info');
+        $this->em            = $this->container->get('doctrine.orm.entity_manager');
+        $this->userInfoModel = $this->container->get('vocalizr_app.model.user_info');
         $this->output        = $output;
 
         // Disable auto-update for actual wallet balance.
-        $this->getContainer()->get('event.listener.user_wallet')->setEnabled(false);
+        $this->container->get('event.listener.user_wallet')->setEnabled(false);
 
         $userRepo = $this->em->getRepository('App:UserInfo');
 

@@ -252,13 +252,19 @@
                 <form action="{{ path('gig_hunter', {filter: app.request.get('filter')} ) }}" method="get" novalidate>
                 <div class="row form-group">
                     <div class="col-sm-12">
-                        {{ form_row(form.project_type) }}
+                        {% for ch in form.project_type.children %}
+                            {{ form_widget(ch) }}
+                            {{ form_label(ch) }}
+                        {% endfor %}
                     </div>
                 </div>
                     
                 <div class="row form-group">
                     <div class="col-sm-12">
-                        {{ form_row(form.looking_for) }}
+                        {% for ch in form.looking_for.children %}
+                            {{ form_widget(ch) }}
+                            {{ form_label(ch) }}
+                        {% endfor %}
                     </div>
                 </div>
 
@@ -290,7 +296,7 @@
 
                 <div class="row form-group">
                     <div class="col-sm-12">
-                        {{ form_row(form.studio_access) }} Must have studio access
+                        {{ form_widget(form.studio_access) }} Must have studio access
 
 {#                        <input type="checkbox" name="{{ form.studio_access.vars.full_name }}" value="1"{% if form.vars.value.studio_access %} checked{% endif %}> Must have studio access#}
                     </div>

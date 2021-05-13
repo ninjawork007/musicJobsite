@@ -135,7 +135,7 @@
                     <div class="col-sm-8 budget-desc">
                         <label>BUDGET DESCRIPTION</label>
                         <div id="20-100">Just a few words sung by a vocalist (under 10 words), or some ad-libs.</div>
-                        <div id="100-300">For a couple of sentences sung that have already been written, or for some singing and songwriting needed.</div>
+                        <div id="100-300" style="display: block;">For a couple of sentences sung that have already been written, or for some singing and songwriting needed.</div>
                         <div id="300-500">For a couple of sentences sung that have already been written, or for some singing and songwriting needed.</div>
                         <div id="500-800">Seeking a professional topline vocal, lyrics/song written, and performed.</div>
                         <div id="800-1000">Seeking a professional topline vocal, lyrics/song written, and performed.</div>
@@ -161,7 +161,7 @@
                     </div>
                     <div class="col-sm-5 form-royalty-group">
                         {{ form_widget(form.royalty, {'attr': {'data-slider-value': form.vars.value.royalty}}) }}
-                        {{ form_label(form.royalty) }}
+                        {{ form_label(form.royalty)|raw }}
                         <div class="royalty-num"><span>{{ form.vars.value.royalty }}</span>%</div>
                     </div>
                     <div id="royalty-tip">

@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use Doctrine\ORM\EntityRepository;
 use App\Entity\EngineOrderAsset;
+use getID3;
 
 class EngineOrderAssetRepository extends EntityRepository
 {
@@ -22,7 +23,7 @@ class EngineOrderAssetRepository extends EntityRepository
         $em = $this->getEntityManager();
 
         // Check if file exists
-        $uploadDir = __DIR__ . '/../../../../tmp';
+        $uploadDir = __DIR__ . '/../../tmp';
 
         if (!file_exists($uploadDir . DIRECTORY_SEPARATOR . $fileName)) {
             return false;
@@ -53,7 +54,7 @@ class EngineOrderAssetRepository extends EntityRepository
         }
 
         // Calculate length of audio file
-        $getID3   = new \getid3();
+        $getID3   = new getid3();
         $fileInfo = $getID3->analyze($uploadDir . DIRECTORY_SEPARATOR . $fileName);
         if (isset($fileInfo['playtime_seconds'])) {
             $milliseconds = $fileInfo['playtime_seconds'] * 1000;

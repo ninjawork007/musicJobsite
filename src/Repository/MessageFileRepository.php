@@ -22,7 +22,7 @@ class MessageFileRepository extends EntityRepository
         $em = $this->getEntityManager();
 
         // Check if file exists
-        $uploadDir = __DIR__ . '/../../../../tmp';
+        $uploadDir = __DIR__ . '/../../tmp';
 
         if (!file_exists($uploadDir . DIRECTORY_SEPARATOR . $fileName)) {
             return false;

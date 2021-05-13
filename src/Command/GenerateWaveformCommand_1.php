@@ -6,6 +6,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 // how much detail we want. Larger number means less detail
 // (basically, how many bytes/frames to skip processing)
@@ -19,6 +20,14 @@ define('DEFAULT_BACKGROUND', '');
 
 class GenerateWaveformCommand_1 extends Command
 {
+    private $container;
+
+    public function __construct(ContainerInterface $container)
+    {
+        parent::__construct();
+        $this->container = $container;
+    }
+
     protected function configure()
     {
         $this
@@ -30,7 +39,7 @@ class GenerateWaveformCommand_1 extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $container     = $this->getContainer();
+        $container     = $this->container;
         $doctrine      = $container->get('doctrine');
         $em            = $doctrine->getManager();
         $userAudioRepo = $doctrine->getRepository('App:UserAudio');

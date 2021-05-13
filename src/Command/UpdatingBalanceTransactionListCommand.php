@@ -8,9 +8,18 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use App\Entity\StripeCharge;
 use App\Repository\StripeChargeRepository;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class UpdatingBalanceTransactionListCommand extends Command
 {
+    private $container;
+
+    public function __construct(ContainerInterface $container)
+    {
+        parent::__construct();
+        $this->container = $container;
+    }
+    
     protected function configure()
     {
         $this
@@ -21,8 +30,8 @@ class UpdatingBalanceTransactionListCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $em = $this->getContainer()->get('doctrine')->getManager();
-        $stripeManager = $this->getContainer()->get('vocalizr_app.stripe_manager');
+        $em = $this->container->get('doctrine')->getManager();
+        $stripeManager = $this->container->get('vocalizr_app.stripe_manager');
         /** @var StripeChargeRepository $stripeChargeRepository */
         $stripeChargeRepository = $em->getRepository('App:StripeCharge');
 
@@ -47,6 +56,5 @@ class UpdatingBalanceTransactionListCommand extends Command
 
         }
         $em->flush();
-
     }
 }

@@ -54,10 +54,10 @@ class VmagController extends AbstractController
             10// limit per page
         );
 
-        return [
+        return $this->render('Vmag/index.html.twig', [
             'latest'     => $latest,
             'pagination' => $pagination,
-        ];
+        ]);
     }
 
     /**
@@ -89,10 +89,10 @@ class VmagController extends AbstractController
             10// limit per page
         );
 
-        return [
+        return $this->render('Vmag/category.html.twig', [
             'pagination' => $pagination,
             'category'   => $category,
-        ];
+        ]);
     }
 
     /**
@@ -164,11 +164,11 @@ class VmagController extends AbstractController
             ]);
         }
 
-        return [
+        return $this->render('Vmag/view.html.twig', [
             'article'    => $article,
             'freePlan'   => $freePlan,
             'audioLikes' => $audioLikes,
-        ];
+        ]);
     }
 
     /**
@@ -231,9 +231,9 @@ class VmagController extends AbstractController
             $em->flush();
         }
 
-        return [
+        return $this->render('Vmag/unsubscribe.html.twig', [
             'magUser' => $magUser,
-        ];
+        ]);
     }
 
     /**
@@ -252,11 +252,11 @@ class VmagController extends AbstractController
             $recentArticles = $this->getRecentArticles($article->getId());
         }
 
-        return [
+        return $this->render('Vmag/_sidebar.html.twig', [
             'article'        => $article,
             'hireUser'       => $hireUser,
             'recentArticles' => $recentArticles,
-        ];
+        ]);
     }
 
     /**
@@ -273,11 +273,11 @@ class VmagController extends AbstractController
         $categories = $em->getRepository('App:ArticleCategory')
                 ->findBy(['display' => true], ['sort_order' => 'ASC']);
 
-        return [
+        return $this->render('Vmag/_categoryNav.html.twig', [
             'categories' => $categories,
             'route'      => $route,
             'slug'       => $slug,
-        ];
+        ]);
     }
 
     private function getRecentArticles($excludeArticleId = null)

@@ -29,8 +29,8 @@ class ProjectSearchType extends AbstractType
         $builder->add('project_type', ChoiceType::class, [
             'label'   => 'Type',
             'choices' => [
-                    Project::PROJECT_TYPE_PAID => 'Gig',
-                    Project::PROJECT_TYPE_CONTEST        => 'Contest',
+                'Gig' => Project::PROJECT_TYPE_PAID,
+                'Contest' => Project::PROJECT_TYPE_CONTEST,
                 ],
             'expanded' => true,
             'multiple' => true,
@@ -39,8 +39,8 @@ class ProjectSearchType extends AbstractType
         $builder->add('looking_for', ChoiceType::class, [
             'label'   => 'Jobs For',
             'choices' => [
-                    'vocalist' => 'Vocalists',
-                    'producer'           => 'Producers',
+                    'Vocalists'  => 'vocalist',
+                    'Producers'  => 'producer',
                 ],
             'expanded' => true,
             'multiple' => true,
@@ -52,9 +52,10 @@ class ProjectSearchType extends AbstractType
             [
                 'attr'        => ['class' => 'select2'],
                 'label'       => 'Gender',
+                'placeholder' => 'Choose a gender',
                 'choices'     => [
-                    'male'   => 'Male',
-                    'female' => 'Female',
+                    'Male'   => 'male',
+                    'Female' => 'female',
                     ],
             ]
         );
@@ -63,7 +64,8 @@ class ProjectSearchType extends AbstractType
             'label'         => 'GENRES',
             'class'         => 'App:Genre',
             'multiple'      => true,
-            'attr'          => ['class' => 'select2'
+            'attr'          => [
+                'class' => 'select2'
             ],
         ]);
 
@@ -99,7 +101,7 @@ class ProjectSearchType extends AbstractType
             'class'    => Language::class,
         ]);
 
-        $choices = ['' => 'Please select'] + $budget;
+        $choices = ['Please select' => '' ] + $budget;
         $builder->add('budget', ChoiceType::class, [
             'label'                                 => 'Budget',
             'attr'                                 => ['class' => 'select2'],

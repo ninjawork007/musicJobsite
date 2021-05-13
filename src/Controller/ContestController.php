@@ -183,16 +183,19 @@ class ContestController extends AbstractController
             20// limit per page
         );
 
-        return [
+        return $this->render('Contest/index.html.twig', [
             'form'       => $form->createView(),
             'pagination' => $pagination,
             'filter'     => $filter,
-        ];
+        ]);
     }
 
     /**
      * @Route("/new/contest/{uuid}", name="contest_new", defaults={"uuid" = ""})
      * @Template()
+     * @param Request $request
+     * @param $uuid
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse|Response
      */
     public function newAction(Request $request, $uuid)
     {
@@ -1219,11 +1222,15 @@ class ContestController extends AbstractController
         $publishForm = $this->createFormBuilder($project)
             ->add('publish_type', ChoiceType::class, [
                 'label'   => 'PUBLISHING OPTIONS',
-                'choices' => [Project::PUBLISH_PUBLIC => ucwords(Project::PUBLISH_PUBLIC),
-                    Project::PUBLISH_PRIVATE          => ucwords(Project::PUBLISH_PRIVATE), ],
+                'choices' => [
+                    ucwords(Project::PUBLISH_PUBLIC)  => Project::PUBLISH_PUBLIC,
+                    ucwords(Project::PUBLISH_PRIVATE) => Project::PUBLISH_PRIVATE,
+                    ],
                 'expanded'          => true,
                 'multiple'          => false,
-                'preferred_choices' => [Project::PUBLISH_PUBLIC],
+                'preferred_choices' => [
+                    Project::PUBLISH_PUBLIC
+                ],
             ])
             ->add('to_favorites', null, [
                 'label'    => 'NOTIFY YOUR FAVORITES',
@@ -1346,9 +1353,9 @@ class ContestController extends AbstractController
             ->add('publish_type', ChoiceType::class, [
                 'label'   => 'PUBLISHING OPTIONS',
                 'choices' => [
-                        Project::PUBLISH_PUBLIC  => ucwords(Project::PUBLISH_PUBLIC),
-                        Project::PUBLISH_PRIVATE => ucwords(Project::PUBLISH_PRIVATE),
-                    ],
+                    ucwords(Project::PUBLISH_PUBLIC)  => Project::PUBLISH_PUBLIC,
+                    ucwords(Project::PUBLISH_PRIVATE) => Project::PUBLISH_PRIVATE,
+                ],
                 'expanded' => true,
                 'multiple' => false,
             ])
@@ -1416,9 +1423,9 @@ class ContestController extends AbstractController
             ->add('publish_type', ChoiceType::class, [
                 'label'   => 'PUBLISHING OPTIONS',
                 'choices' => [
-                        Project::PUBLISH_PUBLIC => ucwords(Project::PUBLISH_PUBLIC),
-                        Project::PUBLISH_PRIVATE          => ucwords(Project::PUBLISH_PRIVATE),
-                    ],
+                    ucwords(Project::PUBLISH_PUBLIC)  => Project::PUBLISH_PUBLIC,
+                    ucwords(Project::PUBLISH_PRIVATE) => Project::PUBLISH_PRIVATE,
+                ],
                 'expanded' => true,
                 'multiple' => false,
                 'data'     => Project::PUBLISH_PUBLIC,
@@ -1773,11 +1780,11 @@ class ContestController extends AbstractController
             }
         }
 
-        return [
+        return $this->render('Contest/award.html.twig', [
             'project' => $project,
             'bid'     => $projectBid,
             'form'    => $form->createView(),
-        ];
+        ]);
     }
 //     * @Secure(roles="ROLE_USER")
     /**
@@ -1832,12 +1839,12 @@ class ContestController extends AbstractController
         $employeeSubscriptionPlan = $em->getRepository('App:SubscriptionPlan')
                 ->getActiveSubscription($projectBid->getUserInfo()->getId());
 
-        return [
+        return $this->render('Contest/removeBid.html.twig', [
             'project'                  => $project,
             'projectBid'               => $projectBid,
             'subscriptionPlan'         => $subscriptionPlan,
             'employeeSubscriptionPlan' => $employeeSubscriptionPlan,
-        ];
+        ]);
     }
 
 //     * @Secure(roles="ROLE_USER")
@@ -1937,7 +1944,9 @@ class ContestController extends AbstractController
         }
 
         if (!isset($_GET['agree'])) {
-            return ['project' => $project];
+            return $this->render('Contest/sfsAudioDownload.html.twig', [
+                'project' => $project
+            ]);
         }
 
         // Get project featured audio

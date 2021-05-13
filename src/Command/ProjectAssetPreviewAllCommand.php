@@ -14,6 +14,7 @@ use App\Entity\Project;
 use App\Entity\ProjectAsset;
 use App\Model\ProjectModel;
 use App\Service\HelperService;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Class ProjectAssetPreviewAllCommand
@@ -36,6 +37,14 @@ class ProjectAssetPreviewAllCommand extends Command
      */
     private $output;
 
+    private $container;
+
+    public function __construct(ContainerInterface $container)
+    {
+        parent::__construct();
+        $this->container = $container;
+    }
+
     protected function configure()
     {
         $this
@@ -53,7 +62,7 @@ class ProjectAssetPreviewAllCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $container    = $this->getContainer();
+        $container    = $this->container;
         $this->em     = $container->get('doctrine')->getManager();
         $this->helper = $container->get('service.helper');
         $this->output = $output;
@@ -113,7 +122,7 @@ class ProjectAssetPreviewAllCommand extends Command
         }
 
         /** @var ProjectModel $projectModel */
-        $projectModel = $this->getContainer()->get('vocalizr_app.model.project');
+        $projectModel = $this->container->get('vocalizr_app.model.project');
 
         foreach ($projectsByIds as $project) {
 

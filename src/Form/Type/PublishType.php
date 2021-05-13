@@ -18,8 +18,8 @@ class PublishType extends AbstractType
             ->add('publish_type', ChoiceType::class, [
                 'label'   => 'PUBLISHING OPTIONS',
                 'choices' => [
-                    Project::PUBLISH_PUBLIC  => ucwords(Project::PUBLISH_PUBLIC),
-                    Project::PUBLISH_PRIVATE => ucwords(Project::PUBLISH_PRIVATE),
+                    ucwords(Project::PUBLISH_PUBLIC)  => Project::PUBLISH_PUBLIC,
+                    ucwords(Project::PUBLISH_PRIVATE) => Project::PUBLISH_PRIVATE,
                 ],
                 'expanded' => true,
                 'multiple' => false,

@@ -2,16 +2,27 @@
 
 namespace App\Command;
 
+use Slot\MandrillBundle\Dispatcher;
+use Slot\MandrillBundle\Message;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * @property string _timeAgo
- * @property \Hip\MandrillBundle\Dispatcher|object dispatcher
+ * @property Dispatcher|object dispatcher
  */
 class EmailReviewUserReminderCommand extends Command
 {
+    private $container;
+
+    public function __construct(ContainerInterface $container)
+    {
+        parent::__construct();
+        $this->container = $container;
+    }
+
     protected function configure()
     {
         // How often do we run this script
@@ -25,7 +36,7 @@ class EmailReviewUserReminderCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $container        = $this->getContainer();
+        $container        = $this->container;
         $doctrine         = $container->get('doctrine');
         $em               = $doctrine->getManager();
         $this->dispatcher = $container->get('hip_mandrill.dispatcher');
@@ -83,7 +94,7 @@ class EmailReviewUserReminderCommand extends Command
                 foreach ($users as $key => $user) {
                     $otherUser = $user == $project->getUserInfo() ? $project->getEmployeeUserInfo() : $project->getUserInfo();
 
-                    $message = new \Hip\MandrillBundle\Message();
+                    $message = new Message();
                     $message->setSubject("Don't forget to review " . $otherUser->getDisplayName());
                     $message
                         ->setTrackOpens(true)

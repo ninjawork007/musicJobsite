@@ -3,6 +3,7 @@
 {% block title %}Create your contest{% endblock %}
 
 {% block javascript %}
+{#    {{ parent() }}#}
     <script type="text/javascript" src="{{ asset('js/uploader/plupload.full.min.js') }}"></script>
     <script type="text/javascript" src="{{ asset('js/audio-uploader.js') }}"></script>
     <script type="text/javascript" src="{{ asset('js/jquery.geocomplete.min.js') }}"></script>
@@ -40,7 +41,7 @@
     <div class="col-sm-8">
         <h1>Create a New Contest</h1>
 
-        {% include 'messages.html.twig' %}
+        {% include 'messages_app.html.twig' %}
 
         <div class="light-content">
             {% set formAction = project.id ? path('contest_new', {uuid: project.uuid}) : path('contest_new') %}
@@ -260,6 +261,7 @@
                     <hr>
                     <div class="row form-group">
                         <div class="col-sm-12">
+
                             {{ form_row(form.lyrics_needed) }}
                         </div>
                     </div>

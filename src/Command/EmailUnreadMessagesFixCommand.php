@@ -2,12 +2,22 @@
 
 namespace App\Command;
 
+use Slot\MandrillBundle\Message;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class EmailUnreadMessagesFixCommand extends Command
 {
+    private $container;
+
+    public function __construct(ContainerInterface $container)
+    {
+        parent::__construct();
+        $this->container = $container;
+    }
+
     protected function configure()
     {
         // How often do we run this script
@@ -21,7 +31,7 @@ class EmailUnreadMessagesFixCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $this->container  = $container  = $this->getContainer();
+        $container        = $this->container;
         $doctrine         = $container->get('doctrine');
         $em               = $doctrine->getManager();
         $this->dispatcher = $container->get('hip_mandrill.dispatcher');
@@ -73,7 +83,7 @@ class EmailUnreadMessagesFixCommand extends Command
 
             $subject = 'UNREAD MESSAGE' . (count($messages) > 1 ? 'S' : '') . ' from ' . $fromUserInfo->getDisplayName() . ' on gig "' . $project->getTitle() . '"';
 
-            $message = new \Hip\MandrillBundle\Message();
+            $message = new Message();
             $message->setSubject($subject);
             $message->setFromEmail('noreply@vocalizr.com');
             $message->setFromName('Vocalizr');

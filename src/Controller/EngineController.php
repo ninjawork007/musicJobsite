@@ -40,10 +40,10 @@ class EngineController extends AbstractController
             }
         }
 
-        return [
+        return $this->render('Engine/index.html.twig', [
             'products'    => $products,
             'proProducts' => $proProducts,
-        ];
+        ]);
     }
 
     /**

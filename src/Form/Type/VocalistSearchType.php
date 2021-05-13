@@ -33,7 +33,7 @@ class VocalistSearchType extends AbstractType
         $genres = [];
         if ($results) {
             foreach ($results as $result) {
-                $genres[$result->getId()] = $result->getTitle();
+                $genres[$result->getTitle()] = $result->getId();
             }
         }
 
@@ -43,7 +43,7 @@ class VocalistSearchType extends AbstractType
         $vocalChars = [];
         if ($results) {
             foreach ($results as $result) {
-                $vocalChars[$result->getId()] = $result->getTitle();
+                $vocalChars[$result->getTitle()] = $result->getId();
             }
         }
 
@@ -53,17 +53,20 @@ class VocalistSearchType extends AbstractType
         $vocalStyles = [];
         if ($results) {
             foreach ($results as $result) {
-                $vocalStyles[$result->getId()] = $result->getTitle();
+                $vocalStyles[$result->getTitle()] = $result->getId();
             }
         }
 
         $builder->add('gender', ChoiceType::class, [
-            'label' => 'Gender',
-            'attr'                                 => ['class' => 'select2'],
-            'preferred_choices'                    => [''],
-            'choices'                              => ['' => 'Either',
-                'f'                                       => 'Female',
-                'm'                                       => 'Male', ], ]);
+            'label'                 => 'Gender',
+            'attr'                  => ['class' => 'select2'],
+            'preferred_choices'     => [''],
+            'choices'               => [
+                    'Either'    => '',
+                    'Female'    => 'f',
+                    'Male'      => 'm',
+                ],
+            ]);
 
         $builder->add('genre', ChoiceType::class, [
             'label'       => 'GENRES',
@@ -110,7 +113,7 @@ class VocalistSearchType extends AbstractType
         ]);
 
         if ($budgets) {
-//            $feeChoices = ['' => 'Please select'] + $budgets;
+            $feeChoices = ['Please select' => ''] + $budgets;
             $builder->add('fees', ChoiceType::class, [
                     'label'             => 'Fee',
                     'attr'              => ['class' => 'select2'],

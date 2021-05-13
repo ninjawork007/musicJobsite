@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\AppMessage;
 use App\Entity\AppMessageRead;
 use App\Entity\EmailChangeRequest;
+use App\Form\Type\ProjectSearchType;
 use App\Form\Type\UserSearchType;
 use App\Service\MembershipSourceHelper;
 use Slot\MandrillBundle\Message;
@@ -53,7 +54,6 @@ class DefaultController extends AbstractController
     public function faqAction()
     {
         return $this->redirect('http://support.vocalizr.com/');
-        return [];
     }
 
     /**
@@ -176,7 +176,9 @@ class DefaultController extends AbstractController
             }
         }
 
-        return ['form' => $form->createView()];
+        return $this->render('Default/contact.html.twig', [
+            'form' => $form->createView()
+        ]);
     }
 
     /**
@@ -185,7 +187,7 @@ class DefaultController extends AbstractController
      */
     public function contactConfirmAction(Request $request)
     {
-        return [];
+        return $this->render('Default/contactConfirm.html.twig', []);
     }
 
     /**
@@ -198,7 +200,7 @@ class DefaultController extends AbstractController
             return $this->redirect($this->generateUrl('dashboard'));
         }
 
-        return [];
+        return $this->render('Default/placeholder.html.twig', []);
     }
 
     /**
@@ -239,7 +241,7 @@ class DefaultController extends AbstractController
         $em->remove($result);
         $em->flush();
 
-        return ['user' => $user];
+        return $this->render('Default/confirmEmail.html.twig', ['user' => $user]);
     }
 
     /**
@@ -289,11 +291,11 @@ class DefaultController extends AbstractController
      * @Route("/press", name="press")
      * @Template()
      *
-     * @param \Symfony\Component\HttpFoundation\Request $request
+     * @param Request $request
      */
     public function pressAction(Request $request)
     {
-        return [];
+        return $this->render('Default/press.html.twig');
     }
 
     /**
@@ -301,7 +303,7 @@ class DefaultController extends AbstractController
      * @Route("/membership", name="membership")
      * @Template()
      *
-     * @param \Symfony\Component\HttpFoundation\Request $request
+     * @param Request $request
      *
      * @return array|Response
      */
@@ -356,15 +358,19 @@ class DefaultController extends AbstractController
         $file       = $this->getParameter('kernel.project_dir') . '/config/packages/project.yml';
         $projectYml = $ymlParser->parse(file_get_contents($file));
 
-        $form = $this->createForm(new \App\Form\Type\UserSearchType($projectYml['budget']));
+        $form = $this->createForm(UserSearchType::class, [
+                                            'budget' => $projectYml['budget']
+                                        ]);
 
         if (!$request->get('search')) {
             $_GET[$form->getName()]['audio'] = true;
         }
 
-        $form->bind($_GET[$form->getName()]);
+        $form->handleRequest($request);
 
-        return ['form' => $form->createView()];
+        return $this->render('Default/singersongwriter.html.twig', [
+            'form' => $form->createView()
+        ]);
     }
 
     /**
@@ -375,7 +381,7 @@ class DefaultController extends AbstractController
      */
     public function vocalizerAction(Request $request)
     {
-        return [];
+        return $this->render('Default/vocalizer.html.twig', []);
     }
 
     /**
@@ -392,11 +398,15 @@ class DefaultController extends AbstractController
         $file       = $this->getParameter('kernel.project_dir') . '/config/packages/project.yml';
         $projectYml = $ymlParser->parse(file_get_contents($file));
 
-        $form = $this->createForm(new \App\Form\Type\ProjectSearchType($projectYml['budget']));
+        $form = $this->createForm(ProjectSearchType::class, [
+                                    'budget' => $projectYml['budget']
+                                ]);
 
         $form->handleRequest($request);
 
-        return ['form' => $form->createView()];
+        return $this->render('Default/singingJobs.html.twig', [
+            'form' => $form->createView()
+        ]);
     }
 
     /**
@@ -520,7 +530,9 @@ class DefaultController extends AbstractController
     {
         $user = $this->getUser();
         if (!$user) {
-            return ['notifications' => []];
+            return $this->render('Default/notifications.html.twig', [
+                    'notifications' => []
+                ]);
         }
 
         $em = $this->getDoctrine()->getManager();

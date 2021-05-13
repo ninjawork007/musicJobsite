@@ -121,9 +121,9 @@ class HintController extends AbstractController
      *
      * @return JsonResponse
      */
-    public function hintVisibilityAction($type, $action)
+    public function hintVisibilityAction($type, $action, HintModel $hintModel)
     {
-        $success = $this->get('vocalizr_app.model.hint')->setVisibility($type, $action);
+        $success = $hintMOdel->setVisibility($type, $action);
 
         return new JsonResponse(['success' => $success]);
     }

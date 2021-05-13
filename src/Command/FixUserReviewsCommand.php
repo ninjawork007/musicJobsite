@@ -8,6 +8,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use App\Entity\UserInfo;
 use App\Helper\UserPagerTrait;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Class FixUserReviewsCommand
@@ -22,6 +23,14 @@ class FixUserReviewsCommand extends Command
      */
     private $em;
 
+    private $container;
+
+    public function __construct(ContainerInterface $container)
+    {
+        parent::__construct();
+        $this->container = $container;
+    }
+
     protected function configure()
     {
         $this->setName('vocalizr:fix-user-reviews');
@@ -30,8 +39,8 @@ class FixUserReviewsCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         /** @var EntityManager $em */
-        $this->em = $em = $this->getContainer()->get('doctrine.orm.entity_manager');
-        $userModel = $this->getContainer()->get('vocalizr_app.model.user_info');
+        $this->em = $em = $this->container->get('doctrine.orm.entity_manager');
+        $userModel = $this->container->get('vocalizr_app.model.user_info');
 
         $em->beginTransaction();
 

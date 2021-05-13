@@ -183,9 +183,13 @@ class SoundcloudController extends AbstractController
             $result = $client->get('users/' . $user->getSoundcloudId() . '/tracks');
             $tracks = json_decode($result);
         } catch (\Services_Soundcloud_Invalid_Http_Response_Code_Exception $e) {
-            return ['error' => $e->getMessage()];
+            return $this->render('Soundcloud/fetchTracks.html.twig', [
+                'error' => $e->getMessage()
+            ]);
         } catch (\Exception $e) {
-            return ['error' => $e->getMessage()];
+            return $this->render('Soundcloud/fetchTracks.html.twig', [
+                'error' => $e->getMessage()
+            ]);
         }
 
         $tracks = $userScTrackRepo->saveFromSoundcloud($user->getId(), $tracks);
@@ -207,7 +211,9 @@ class SoundcloudController extends AbstractController
             }
         }
 
-        return ['scTracks' => $jsonA];
+        return $this->render('Soundcloud/fetchTracks.html.twig', [
+            'scTracks' => $jsonA
+        ]);
     }
 
     /**
@@ -225,7 +231,9 @@ class SoundcloudController extends AbstractController
             $scTracks = $em->getRepository('App:UserScTrack')->getTracksByUserInfoId($user->getId());
         }
 
-        return ['scTracks' => $scTracks];
+        return $this->render('Soundcloud/displayTracks.html.twig', [
+            'scTracks' => $scTracks
+        ]);
     }
 
     /**

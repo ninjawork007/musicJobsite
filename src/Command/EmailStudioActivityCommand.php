@@ -2,11 +2,13 @@
 
 namespace App\Command;
 
+use Slot\MandrillBundle\Dispatcher;
 use Slot\MandrillBundle\Message;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use App\Entity\ProjectFeed;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class EmailStudioActivityCommand extends Command
 {
@@ -15,9 +17,17 @@ class EmailStudioActivityCommand extends Command
      */
     private $output;
     /**
-     * @var \Hip\MandrillBundle\Dispatcher|object
+     * @var Dispatcher|object
      */
     private $dispatcher;
+
+    private $container;
+
+    public function __construct(ContainerInterface $container)
+    {
+        parent::__construct();
+        $this->container = $container;
+    }
 
     protected function configure()
     {
@@ -32,7 +42,7 @@ class EmailStudioActivityCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $container        = $this->getContainer();
+        $container        = $this->container;
         $doctrine         = $container->get('doctrine');
         $em               = $doctrine->getManager();
         $this->dispatcher = $container->get('hip_mandrill.dispatcher');
@@ -119,7 +129,7 @@ class EmailStudioActivityCommand extends Command
             $message->addTo($pf->getUserInfo()->getEmail());
             $message->addGlobalMergeVar('USER', $pf->getUserInfo()->getUsernameOrFirstName());
             $message->addGlobalMergeVar('PROJECTTITLE', $project->getTitle());
-            $message->addGlobalMergeVar('PROJECTURL', $this->getContainer()->get('router')->generate('project_studio', [
+            $message->addGlobalMergeVar('PROJECTURL', $this->container->get('router')->generate('project_studio', [
                 'uuid' => $project->getUuid(),
             ], true));
             $message->addGlobalMergeVar('CONTENT', $content);

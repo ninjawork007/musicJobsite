@@ -36,7 +36,7 @@ class EditProjectGigType extends AbstractType
             ]
         )
                 ->add('royalty', null, [
-                    'label' => 'Royalty %',
+                    'label' => 'royalty',
                     'attr'  => [
                         'class' => 'form-control percent-slider',
                     ],
@@ -64,9 +64,11 @@ class EditProjectGigType extends AbstractType
                         'label'             => 'Gender',
                         'attr'              => ['class' => 'select2'],
                         'preferred_choices' => [''],
-                        'choices'           => ['' => 'Either',
-                            'female'               => 'Female',
-                            'male'                 => 'Male', ],
+                        'choices'           => [
+                                'Either'  => '',
+                                'Female'  => 'female',
+                                'Male'    => 'male',
+                            ],
                     ]
                 )
                 ->add('audio_brief', UrlType::class, [

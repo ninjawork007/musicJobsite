@@ -23,7 +23,7 @@ class EditProjectContestType extends AbstractType
         }
 
         $builder->add('royalty', null, [
-                    'label' => 'Royalty %',
+                    'label' => 'royalty',
                     'attr'  => [
                         'class' => 'form-control percent-slider',
                     ],
@@ -76,9 +76,11 @@ class EditProjectContestType extends AbstractType
                         'label'             => 'Gender',
                         'attr'              => ['class' => 'select2'],
                         'preferred_choices' => [''],
-                        'choices'           => ['' => 'Either',
-                            'female'               => 'Female',
-                            'male'                 => 'Male', ],
+                        'choices'           => [
+                            'Either'               => '',
+                            'Female'               => 'female',
+                            'Male'                 => 'male',
+                        ],
                     ]
                 )
                 ->add(
@@ -147,8 +149,9 @@ class EditProjectContestType extends AbstractType
                 ])
                 ->add('lyrics_needed', ChoiceType::class, [
                     'choices' => [
-                        '1' => 'Vocalist to provide lyrics',
-                        '0' => 'I will provide lyrics', ],
+                        'Vocalist to provide lyrics' => '1',
+                        'I will provide lyrics'      => '0',
+                    ],
                     'mapped' => false,
                     'multiple'      => false,
                     'expanded'      => true,

@@ -79,7 +79,9 @@ class RegisterController extends AbstractController
                     if ($existingUser->getEmailConfirmed()) {
                         $request->query->set('error', 'Sorry! Please correct the errors below to complete sign up');
                         $registerForm->get('email')->addError(new FormError('Email already exists'));
-                        return ['form' => $registerForm->createView()];
+                        return $this->render('Register/index.html.twig', [
+                            'form' => $registerForm->createView()
+                        ]);
                     }
                     // If email isn't confirmed, then set data as existing user and resend activation
                     $user = $existingUser;

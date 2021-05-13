@@ -132,7 +132,9 @@ class PaypalController extends AbstractController
             'static_key' => 'PRO',
         ]);
 
-        return ['proPlan' => $proPlan];
+        return $this->render('Paypal/promo.html.twig', [
+            'proPlan' => $proPlan
+        ]);
     }
 
     /**

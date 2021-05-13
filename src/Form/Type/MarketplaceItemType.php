@@ -30,9 +30,10 @@ class MarketplaceItemType extends AbstractType
                         'attr'              => ['class' => 'select2'],
                         'preferred_choices' => [''],
                         'choices'           => [
-                            'vocal' => 'Vocal (Acapella)',
-                            'music' => 'Music (full backing track)',
-                            'song'  => 'Song (lyrics and melody)', ],
+                            'Vocal (Acapella)'              => 'vocal',
+                            'Music (full backing track)'    => 'music',
+                            'Song (lyrics and melody)'      => 'song'
+                        ],
                     ]
                 )
                 ->add('buyout_price', null, [
@@ -103,9 +104,11 @@ class MarketplaceItemType extends AbstractType
                         'label'             => 'Gender',
                         'attr'              => ['class' => 'select2'],
                         'preferred_choices' => [''],
-                        'choices'           => ['' => 'Either',
-                            'female'               => 'Female',
-                            'male'                 => 'Male', ],
+                        'choices'           => [
+                            'Either'  => '',
+                            'Female'  => 'female',
+                            'Male'    => 'male',
+                        ],
                     ]
                 )
                 ->add(

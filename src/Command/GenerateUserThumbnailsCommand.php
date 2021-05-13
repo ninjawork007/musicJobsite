@@ -7,6 +7,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use App\Entity\UserInfo;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Class GenerateUserThumbnailsCommand
@@ -14,6 +15,14 @@ use App\Entity\UserInfo;
  */
 class GenerateUserThumbnailsCommand extends Command
 {
+    private $container;
+
+    public function __construct(ContainerInterface $container)
+    {
+        parent::__construct();
+        $this->container = $container;
+    }
+
     /**
      * @inheritDoc
      */
@@ -32,10 +41,10 @@ class GenerateUserThumbnailsCommand extends Command
     {
         $limit = 100;
 
-        $model = $this->getContainer()->get('vocalizr_app.model.user_info');
+        $model = $this->container->get('vocalizr_app.model.user_info');
 
         /** @var EntityManager $em */
-        $em = $this->getContainer()->get('doctrine.orm.entity_manager');
+        $em = $this->container->get('doctrine.orm.entity_manager');
         $qb = $em->getRepository('App:UserInfo')->createQueryBuilder('u');
         $qb->where('u.path is not null');
 

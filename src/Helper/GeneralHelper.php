@@ -2,13 +2,16 @@
 
 namespace App\Helper;
 
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
+
 class GeneralHelper
 {
-    public function __construct($doctrine, $container, $templating)
+    public function __construct($doctrine, $container, $templating, ParameterBagInterface $parameterBag)
     {
         $this->em         = $doctrine->getEntityManager();
         $this->container  = $container;
         $this->templating = $templating;
+        $this->parameterBag = $parameterBag;
     }
 
     /**
@@ -35,7 +38,7 @@ class GeneralHelper
      */
     public function getUploadTmpDir()
     {
-        return $this->container->get('kernel')->getRootdir() . '/../tmp';
+        return $this->parameterBag->get('kernel.project_dir') . '/tmp';
     }
 }
 

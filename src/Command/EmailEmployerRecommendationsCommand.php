@@ -2,14 +2,16 @@
 
 namespace App\Command;
 
+use Slot\MandrillBundle\Dispatcher;
 use Slot\MandrillBundle\Message;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use App\Entity\Project;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * @property \Hip\MandrillBundle\Dispatcher|object dispatcher
+ * @property Dispatcher|object dispatcher
  * @property \Doctrine\ORM\EntityManager em
  * @property Message message
  */
@@ -22,6 +24,14 @@ class EmailEmployerRecommendationsCommand extends Command
     private $userData = '';
 
     private $emailBuffer = [];
+
+    private $container;
+
+    public function __construct(ContainerInterface $container)
+    {
+        parent::__construct();
+        $this->container = $container;
+    }
 
     protected function configure()
     {
@@ -40,7 +50,7 @@ class EmailEmployerRecommendationsCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $container        = $this->getContainer();
+        $container        = $this->container;
         $this->em         = $container->get('doctrine')->getManager();
         $this->dispatcher = $container->get('hip_mandrill.dispatcher');
 
@@ -136,7 +146,7 @@ class EmailEmployerRecommendationsCommand extends Command
         $this->projectHtml .= '<table cellpadding="0" cellspacing="0" border="0" width="100%" style="margin-bottom: 13px; padding-top: 13px; padding-right: 18px; padding-bottom: 13px; padding-left: 18px; border: 1px solid #e6e6e6; background: #f6f6f6;">';
         $this->projectHtml .= '<tr>';
         $this->projectHtml .= '<td style="font-size: 16px; font-weight: bold; padding-bottom: 5px;">';
-        $this->projectHtml .= 'Gig: <a href="' . $this->getContainer()->get('router')->generate('project_view', [
+        $this->projectHtml .= 'Gig: <a href="' . $this->container->get('router')->generate('project_view', [
             'uuid' => $project->getUuid(),
         ], true) . '" style="color: #14b9d6; font-size: 16px; font-weight: bold;">' . $project->getTitle() . '</a>';
         $this->projectHtml .= '</td>';
@@ -166,7 +176,7 @@ class EmailEmployerRecommendationsCommand extends Command
             $this->projectHtml .= '<td style="width: 80px;"><img src="http://www.vocalizr.com/uploads/avatar/small/' . $user->getAvatar() . '" width="60" height="60" style="border-radius: 60px;"></td>';
 
             $this->projectHtml .= '<td style="width: 300px;">';
-            $this->projectHtml .= '<div style="padding-bottom: 5px;"><a href="' . $this->getContainer()->get('router')->generate('user_view', [
+            $this->projectHtml .= '<div style="padding-bottom: 5px;"><a href="' . $this->container->get('router')->generate('user_view', [
                 'username' => $user->getUsername(),
             ], true) . '" style="color: #14b9d6; font-size: 14px; font-weight: bold;">' . $user->getUsername() . '</a></div>';
 
@@ -174,7 +184,7 @@ class EmailEmployerRecommendationsCommand extends Command
             $this->projectHtml .= '<div style="font-size:12px;color:#333333;padding-bottom:5px;font-weight:bold">Studio Access: <span style="font-weight: normal; margin-right: 15px;">' . ($user->getStudioAccess() == 1 ? 'Yes' : 'No') . '</span></div>';
             $this->projectHtml .= '</td>';
             $this->projectHtml .= '<td>';
-            $this->projectHtml .= '<a href="' . $this->getContainer()->get('router')->generate('user_view', [
+            $this->projectHtml .= '<a href="' . $this->container->get('router')->generate('user_view', [
                 'username' => $user->getUsername(),
             ], true) . '" style="color:#fff;font-size:14px;background-color:#14b9d6;text-decoration:none;border-radius:3px;padding:8px 16px;border-width:1px;border-style:solid;border-color:#1aadc7" target="_blank">View profile</a>';
             $this->projectHtml .= '</td>';

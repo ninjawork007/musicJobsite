@@ -243,8 +243,8 @@ class DashboardController extends AbstractController
             'audioPlays'   => 0,
         ];
         $timeAgo = '-30 days';
-//
-//       /* $profileViewStat = $this->dm->createQueryBuilder('App:ProfileView')
+
+//       $profileViewStat = $this->dm->createQueryBuilder('App:ProfileView')
 //            ->field('user_id')->equals($user->getId())
 //            ->field('unique')->equals(false)
 //            ->field('date')->gte(date('Y-m-d', strtotime($timeAgo)))
@@ -252,7 +252,7 @@ class DashboardController extends AbstractController
 //            ->group(['user_id' => 1], ['total' => 0])
 //            ->reduce('function ( curr, result ) { result.total += curr.count;}')
 //            ->getQuery()
-//            ->execute();*/
+//            ->execute();
 //
 //        // Get stats
 //        $profileViewStat = $this->dm->createAggregationBuilder('App:ProfileView')
@@ -262,12 +262,15 @@ class DashboardController extends AbstractController
 //                ->field('date')->gte(date('Y-m-d', strtotime($timeAgo)))
 //                ->field('date')->lte(date('Y-m-d'))
 ////            ->group(['user_id' => 1], ['total' => 0])
-////            ->group()
-////                ->field('user_id')->expression(1)
-////                ->field('total')->expression(0)
+//            ->group()
+//                ->field('user_id')->expression(1)
+//                ->field('total')->expression(0)
 ////            ->reduce('function ( curr, result ) { result.total += curr.count;}')
 ////            ->getQuery()
-//            ->execute();
+//            ->getAggregation();
+//
+//        dd($profileViewStat);
+//
 //
 //        if (count($profileViewStat)) {
 //            $stats['profileViews'] = $profileViewStat[0]['total'];

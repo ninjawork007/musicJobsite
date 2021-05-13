@@ -4,11 +4,12 @@ namespace App\Command;
 
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\OptimisticLockException;
-use Hip\MandrillBundle\Dispatcher;
+use Slot\MandrillBundle\Dispatcher;
 use Slot\MandrillBundle\Message;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Twig_Error;
 use App\Entity\ProjectDispute;
 use App\Entity\UserWalletTransaction;
@@ -35,6 +36,14 @@ class EmailProjectDisputeCommand extends Command
      */
     private $mandrill;
 
+    private $container;
+
+    public function __construct(ContainerInterface $container)
+    {
+        parent::__construct();
+        $this->container = $container;
+    }
+
     protected function configure()
     {
         // How often do we run this script
@@ -48,7 +57,7 @@ class EmailProjectDisputeCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $container        = $this->getContainer();
+        $container        = $this->container;
         $doctrine         = $container->get('doctrine');
         $this->em         = $doctrine->getManager();
         $this->dispatcher = $container->get('hip_mandrill.dispatcher');
@@ -165,7 +174,7 @@ class EmailProjectDisputeCommand extends Command
     private function closeDispute($dispute)
     {
         $em     = $this->em;
-        $helper = $this->getContainer()->get('service.helper');
+        $helper = $this->container->get('service.helper');
         $dispute->setAccepted(true);
 
         $project    = $dispute->getProject();
@@ -191,7 +200,7 @@ class EmailProjectDisputeCommand extends Command
         $uwt = new UserWalletTransaction();
         $uwt->setUserInfo($project->getUserInfo());
         $uwt->setAmount($refundProjectAmount);
-        $uwt->setCurrency($this->getContainer()->getParameter('default_currency'));
+        $uwt->setCurrency($this->container->getParameter('default_currency'));
         $description = 'Refund payment for {project} escrow';
         $uwt->setDescription($description);
         $data = [
@@ -205,7 +214,7 @@ class EmailProjectDisputeCommand extends Command
         $uwt = new UserWalletTransaction();
         $uwt->setUserInfo($project->getUserInfo());
         $uwt->setAmount($refundProjectFee);
-        $uwt->setCurrency($this->getContainer()->getParameter('default_currency'));
+        $uwt->setCurrency($this->container->getParameter('default_currency'));
         $description = 'Refund gig fee for {project} escrow';
         $uwt->setDescription($description);
         $data = [
@@ -229,7 +238,7 @@ class EmailProjectDisputeCommand extends Command
         $uwt = new UserWalletTransaction();
         $uwt->setUserInfo($projectBid->getUserInfo());
         $uwt->setAmount($escrow->getAmount()); // In cents
-        $uwt->setCurrency($this->getContainer()->getParameter('default_currency'));
+        $uwt->setCurrency($this->container->getParameter('default_currency'));
         $description = 'Payment for gig {project} from {username}';
         $uwt->setDescription($description);
         $data = [
@@ -255,7 +264,7 @@ class EmailProjectDisputeCommand extends Command
         $uwt = new UserWalletTransaction();
         $uwt->setUserInfo($projectBid->getUserInfo());
         $uwt->setAmount('-' . $fee); // In cents
-        $uwt->setCurrency($this->getContainer()->getParameter('default_currency'));
+        $uwt->setCurrency($this->container->getParameter('default_currency'));
         $description = 'Gig fee taken for {project}';
         $uwt->setDescription($description);
         $data = [
@@ -309,7 +318,7 @@ class EmailProjectDisputeCommand extends Command
      */
     private function sendMessage($to, $subject, $twigTemplate, $twigVars)
     {
-        $body = $this->getContainer()->get('twig')->render($twigTemplate, $twigVars);
+        $body = $this->container->get('twig')->render($twigTemplate, $twigVars);
 
         $message = new Message();
         $message

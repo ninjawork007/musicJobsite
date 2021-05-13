@@ -5,12 +5,13 @@ namespace App\Repository;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\ORMException;
 use App\Entity\ProjectAudio;
+use getID3;
 
 class ProjectAudioRepository extends EntityRepository
 {
     /**
      * Save uploaded file to database
-     *
+     *`
      * @param int    $projectId
      * @param int    $userInfoId
      * @param string $title
@@ -24,9 +25,8 @@ class ProjectAudioRepository extends EntityRepository
         try {
             $em = $this->_em;
 
-            dd(__DIR__);
             // Check if file exists
-            $uploadDir = __DIR__ . '/../../../../tmp';
+            $uploadDir = __DIR__ . '/../../tmp';
             if (!file_exists($uploadDir . DIRECTORY_SEPARATOR . $fileName)) {
                 return false;
             }
@@ -45,7 +45,7 @@ class ProjectAudioRepository extends EntityRepository
             $projectAudio->file = $file;
 
             // Calculate length
-            $getID3   = new \getid3();
+            $getID3   = new getid3();
             $fileInfo = $getID3->analyze($uploadDir . DIRECTORY_SEPARATOR . $fileName);
             if (isset($fileInfo['playtime_seconds'])) {
                 $milliseconds = $fileInfo['playtime_seconds'] * 1000;

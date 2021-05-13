@@ -31,9 +31,9 @@ class UserSearchType extends AbstractType
             'attr'              => ['class' => 'select2'],
             'preferred_choices' => [''],
             'choices'           => [
-                ''   => 'Either',
-                'f'  => 'Female',
-                'm'  => 'Male',
+                    'Either'    => '',
+                    'Female'    => 'f',
+                    'Male'      => 'm',
                 ],
             ]);
 
@@ -137,7 +137,7 @@ class UserSearchType extends AbstractType
         ]);
 
         if ($this->fees) {
-            $feeChoices = ['' => 'Please select'] + $this->fees;
+            $feeChoices = ['Please select' => '' ] + $this->fees;
 
             $builder->add('fees', ChoiceType::class, [
                 'label'             => 'Fee',

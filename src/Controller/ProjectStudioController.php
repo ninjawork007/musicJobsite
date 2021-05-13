@@ -801,9 +801,9 @@ class ProjectStudioController extends AbstractController
             throw $this->createNotFoundException('Permission denied');
         }
 
-        return [
+        return $this->render('ProjectStudio/uploadAssets.html.twig', [
             'project' => $project,
-        ];
+        ]);
     }
 
     /**
@@ -1218,9 +1218,9 @@ class ProjectStudioController extends AbstractController
             return $this->redirect($this->generateUrl('project_studio', ['uuid' => $project->getUuid()]));
         }
 
-        return [
+        return $this->render('ProjectStudio/uploadAudio.html.twig', [
             'project' => $project,
-        ];
+        ]);
     }
 
     // HELPER FUNCTIONS
@@ -1529,7 +1529,7 @@ class ProjectStudioController extends AbstractController
     public function regenAgreementAction(Request $request)
     {
         $user    = $this->getUser();
-        $rootDir = $this->container->get('kernel')->getRootDir();
+        $rootDir = $this->getParameter('kernel.project_dir');
         $uuid    = $request->get('uuid');
         $em      = $this->getDoctrine()->getManager();
 
@@ -1773,9 +1773,9 @@ class ProjectStudioController extends AbstractController
     private function generatePdf($title, $content, $pdfPath)
     {
         $rootDir    = $this->getParameter('kernel.project_dir');
-        $pdfTempDir = $rootDir . '/../tmp/mpdf';
+        $pdfTempDir = $rootDir . '/tmp/mpdf';
 
-        $css    = realpath($rootDir . '/../Public/css/pdf.css');
+        $css    = realpath($rootDir . '/Public/css/pdf.css');
         $header = $this->get('templating')->render('Pdf:header.html.twig', [
             'title' => $title,
         ]);
@@ -1788,7 +1788,7 @@ class ProjectStudioController extends AbstractController
         }
 
         if ($dirExists && !defined('_MPDF_TEMP_PATH')) {
-            define("_MPDF_TEMP_PATH", $rootDir . '/../tmp/mpdf');
+            define("_MPDF_TEMP_PATH", $rootDir . '/tmp/mpdf');
         }
         $mpdf = new \mPDF('', 'A4', '', '', 0, 0, 30, 35, 0, 10);
         $mpdf->setHTMLHeader($header);

@@ -11,6 +11,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use App\Entity\SubscriptionPlan;
 use App\Entity\UserInfo;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class EmailUpgradePromptCommand extends Command
 {
@@ -19,6 +20,12 @@ class EmailUpgradePromptCommand extends Command
     protected $em;
     protected $dispatcher;
     protected $message;
+
+    public function __construct(ContainerInterface $container)
+    {
+        parent::__construct();
+        $this->container = $container;
+    }
 
     protected function configure()
     {
@@ -31,7 +38,7 @@ class EmailUpgradePromptCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $this->container  = $container  = $this->getContainer();
+        $container        = $this->container;
         $this->em         = $container->get('doctrine')->getManager();
         $this->dispatcher = $container->get('hip_mandrill.dispatcher');
 
@@ -72,7 +79,7 @@ class EmailUpgradePromptCommand extends Command
 
     private function newMessage()
     {
-        $this->message = new \Hip\MandrillBundle\Message();
+        $this->message = new Message();
         $this->message->setPreserveRecipients(false);
         $this->message
             ->setTrackOpens(true)

@@ -2,13 +2,23 @@
 
 namespace App\Command;
 
+use Slot\MandrillBundle\Message;
 use Stripe\Subscription;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class EmailTrialHalfWayCommand extends Command
 {
+    private $container;
+
+    public function __construct(ContainerInterface $container)
+    {
+        parent::__construct();
+        $this->container = $container;
+    }
+
     protected function configure()
     {
         // How often do we run this script
@@ -20,7 +30,7 @@ class EmailTrialHalfWayCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $this->container  = $container  = $this->getContainer();
+        $container        = $this->container;
         $this->em         = $container->get('doctrine')->getManager();
         $this->dispatcher = $container->get('hip_mandrill.dispatcher');
 
@@ -34,7 +44,7 @@ class EmailTrialHalfWayCommand extends Command
 
     private function processTrialists()
     {
-        $message = new \Hip\MandrillBundle\Message();
+        $message = new Message();
         $message->setFromEmail('matt@vocalizr.com');
         $message->setFromName('Matt Chable');
         $message->setSubject('Vocalizr Pro - how is it going for you?');

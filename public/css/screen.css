@@ -234,63 +234,63 @@ position: relative;
 .icon-profile-dropdown {
     width: 21px;
     height: 21px;
-    background-image: url(../../images/icon/profile-dropdown.svg);
+    background-image: url(../../public/images/icon/profile-dropdown.svg);
     cursor: pointer;
 }
 .icon-settings {
     width: 15px;
     height: 14px;
-    background-image: url(../../images/icon/settings.png);
+    background-image: url(../../public/images/icon/settings.png);
 }
 .icon-favorites {
     width: 14px;
     height: 13px;
-    background-image: url(../../images/icon/favorites.png);
+    background-image: url(../../public/images/icon/favorites.png);
 }
 .icon-finances {
     width: 13px;
     height: 13px;
-    background-image: url(../../images/icon/finances.png);
+    background-image: url(../../public/images/icon/finances.png);
 }
 .icon-logout {
     width: 13px;
     height: 14px;
-    background-image: url(../../images/icon/logout.png);
+    background-image: url(../../public/images/icon/logout.png);
 }
 .icon-mic {
     width: 10px;
     height: 16px;
-    background-image: url(../../images/icon/mic.png);
+    background-image: url(../../public/images/icon/mic.png);
 }
 .icon-soundcloud {
     width: 18px;
     height: 8px;
-    background-image: url(../../images/icon/soundcloud.jpg);
+    background-image: url(../../public/images/icon/soundcloud.jpg);
 }
 .icon-gender {
     width: 16px;
     height: 16px;
-    background-image: url(../../images/icon/user.png);
+    background-image: url(../../public/images/icon/user.png);
 }
 .icon-country {
     width: 16px;
     height: 16px;
-    background-image: url(../../images/icon/country.png);
+    background-image: url(../../public/images/icon/country.png);
 }
 .icon-white-thumb {
     width: 16px;
     height: 15px;
-    background-image: url(../../images/icon/white-thumb.png);
+    background-image: url(../../public/images/icon/white-thumb.png);
 }
 .icon-light-thumb {
     width: 12px;
     height: 15px;
-    background-image: url(../../images/icon/light-thumb.png);
+    background-image: url(../../public/images/icon/light-thumb.png);
 }
 .icon-light-play {
     width: 8px;
     height: 12px;
-    background-image: url(../../images/icon/light-play.png);
+    background-image: url(../../public/images/icon/light-play.png);
 }
 
 .comma-list {
@@ -314,7 +314,7 @@ position: relative;
 /* Buttons */
 .btn-play {
     display: inline-block;
-    background-image: url(../../images/play.png);
+    background-image: url(../../public/images/play.png);
     background-repeat: no-repeat;
     height: 66px;
     width: 48px;
@@ -322,7 +322,7 @@ position: relative;
 }
 .btn-play-small {
     display: inline-block;
-    background-image: url(../../images/play-sm.png);
+    background-image: url(../../public/images/play-sm.png);
     background-repeat: no-repeat;
     height: 29px;
     font-size: 11px;
@@ -336,7 +336,7 @@ position: relative;
 }
 .btn-pause-small {
     display: inline-block;
-    background-image: url(../../images/pause-sm.png);
+    background-image: url(../../public/images/pause-sm.png);
     background-repeat: no-repeat;
     height: 29px;
     font-size: 11px;
@@ -1104,7 +1104,7 @@ padding: 12px 14px 10px 15px;
     margin: 14px 10px 7px 18px;
     transition: color 1s, boder-color 1s;
     -webkit-transition: color 1s, boder-color 1s; /* Safari */
-    background: url(../../images/tick.png);
+    background: url(../../public/images/tick.png);
     background-repeat: no-repeat;
     background-position: 2px 3px;
 }
@@ -1113,7 +1113,7 @@ padding: 12px 14px 10px 15px;
        only screen and (-o-min-device-pixel-ratio: 3/2),
        only screen and (min-device-pixel-ratio: 1.5) {
     .profile-task .tick-box {
-        background-image: url('../../images/tick@2x.png');
+        background-image: url('../../public/images/tick@2x.png');
         -webkit-background-size: 13px 11px;
         background-size: 13px 11px;
     }
@@ -1542,7 +1542,7 @@ padding: 12px 14px 10px 15px;
     display: inline-block;
     width: 760px;
     height: 45px;
-    background: url(../../images/wave_full.png);
+    background: url(../../public/images/wave_full.png);
     margin-left: 16px;
     margin-bottom: -6px;
 }
@@ -2654,7 +2654,7 @@ padding: 12px 14px 10px 15px;
 
 .vocalizr-certified-stamp {
     display: inline-block;
-    background-image: url(../../images/certified_pro_stamp.svg);
+    background-image: url(../../public/images/certified_pro_stamp.svg);
     width: 40px;
     height: 23px;
     margin-left: 6px;
@@ -2715,7 +2715,7 @@ padding: 12px 14px 10px 15px;
 
 /* Profile */
 .vocalizr-certified {
-    background: url(../../images/vocalizr_certified.png);
+    background: url(../../public/images/vocalizr_certified.png);
     background-size: 14px 14px;
     background-repeat: no-repeat;
     width: 14px;
@@ -2888,7 +2888,7 @@ padding: 12px 14px 10px 15px;
     border-radius: 3px;
     border: 1px solid #526672;
     color: #a9b9c3;
-    background: transparent url(../../images/thumb.png) 6px 3px no-repeat;
+    background: transparent url(../../public/images/thumb.png) 6px 3px no-repeat;
     display: inline-block;
     padding: 3px 7px 1px 22px;
 }
@@ -2896,16 +2896,16 @@ padding: 12px 14px 10px 15px;
     cursor: default;
 }
 .vote-tag a.disabled:hover {
-    background-image: url(../../images/thumb.png);
+    background-image: url(../../public/images/thumb.png);
 }
 .vote-tag a.voted,
 .vote-tag a.voted:hover {
-    background-image: url(../../images/thumb-voted.png);
+    background-image: url(../../public/images/thumb-voted.png);
 }
 .vote-tag a:hover {
     color: #a9b9c3;
     text-decoration: none;
-    background-image: url(../../images/thumb-roll.png);
+    background-image: url(../../public/images/thumb-roll.png);
 }
 
 .vote-tag.simple {
@@ -3000,31 +3000,31 @@ padding: 12px 14px 10px 15px;
     vertical-align: top;
 }
 .btn-record.record {
-    background: transparent url(../../images/record.png) 0 0 no-repeat;
+    background: transparent url(../../public/images/record.png) 0 0 no-repeat;
 }
 .btn-record.record:hover {
-    background: transparent url(../../images/record-roll.png) 0 0 no-repeat;
+    background: transparent url(../../public/images/record-roll.png) 0 0 no-repeat;
 }
 .btn-record.play {
-    background: transparent url(../../images/record-play.png) 0 0 no-repeat;
+    background: transparent url(../../public/images/record-play.png) 0 0 no-repeat;
     width: 68px;
 }
 .btn-record.play:hover {
-    background: transparent url(../../images/record-play-roll.png) 0 0 no-repeat;
+    background: transparent url(../../public/images/record-play-roll.png) 0 0 no-repeat;
 }
 .btn-record.pause {
-    background: transparent url(../../images/record-pause.png) 0 0 no-repeat;
+    background: transparent url(../../public/images/record-pause.png) 0 0 no-repeat;
     width: 68px;
 }
 .btn-record.pause:hover {
-    background: transparent url(../../images/record-pause-roll.png) 0 0 no-repeat;
+    background: transparent url(../../public/images/record-pause-roll.png) 0 0 no-repeat;
 }
 .btn-record.stop {
-    background: transparent url(../../images/record-stop.png) 0 0 no-repeat;
+    background: transparent url(../../public/images/record-stop.png) 0 0 no-repeat;
     width: 68px;
 }
 .btn-record.stop:hover {
-    background: transparent url(../../images/record-stop-roll.png) 0 0 no-repeat;
+    background: transparent url(../../public/images/record-stop-roll.png) 0 0 no-repeat;
 }
 .btn-record:hover {
     color: #b8ccd8;
@@ -3286,7 +3286,7 @@ padding: 12px 14px 10px 15px;
     padding: 0;
     width: 29px;
     height: 29px;
-    background: url(../../images/polaris.png) no-repeat;
+    background: url(../../public/images/polaris.png) no-repeat;
     border: none;
     cursor: pointer;
     margin-bottom: -10px;
@@ -3333,7 +3333,7 @@ padding: 12px 14px 10px 15px;
        only screen and (min-device-pixel-ratio: 1.5) {
     .icheckbox_polaris,
     .iradio_polaris {
-        background-image: url('../../images/polaris@2x.png');
+        background-image: url('../../public/images/polaris@2x.png');
         -webkit-background-size: 310px 31px;
         background-size: 310px 31px;
     }
@@ -3773,7 +3773,7 @@ ul.playlist li .peak .r {
 }
 .track-waveform a.track, .track-waveform.sm2_paused a.track {
     display: inline-block;
-    background-image: url(../../images/play.png);
+    background-image: url(../../public/images/play.png);
     background-repeat: no-repeat;
     height: 48px;
     width: 48px;
@@ -3781,7 +3781,7 @@ ul.playlist li .peak .r {
     padding-left: 8px;
 }
 .track-waveform.sm2player_playing a.track {
-    background-image: url(../../images/pause.png);
+    background-image: url(../../public/images/pause.png);
 }
 .track-waveform a:hover {
     text-decoration: none;
@@ -5863,7 +5863,7 @@ div.join-facebook {
     padding: 13px 15px 0 15px;
 }
 .user-dashboard-finance i.user-wallet-funds{
-    background: url(../../images/icon/wallet-funds.png);
+    background: url(../../public/images/icon/wallet-funds.png);
     content: ' ';
     background-size: 16px 16px;
     cursor: pointer;
@@ -5874,7 +5874,7 @@ div.join-facebook {
     /*position: absolute;*/
 }
 .user-dashboard-finance i.user-wallet-no-funds{
-    background: url(../../images/icon/wallet-no-funds.png);
+    background: url(../../public/images/icon/wallet-no-funds.png);
     content: ' ';
     background-size: 16px 16px;
     cursor: pointer;
@@ -5885,7 +5885,7 @@ div.join-facebook {
     /*position: absolute;*/
 }
 i.user-wallet-funds-hover{
-    background: url(../../images/icon/wallet-funds-hover.png);
+    background: url(../../public/images/icon/wallet-funds-hover.png);
     content: ' ';
     background-size: 16px 16px;
     cursor: pointer;
@@ -5895,7 +5895,7 @@ i.user-wallet-funds-hover{
     /*position: absolute;*/
 }
 i.user-wallet-no-funds-hover{
-    background: url(../../images/icon/wallet-no-funds-hover.png);
+    background: url(../../public/images/icon/wallet-no-funds-hover.png);
     content: ' ';
     background-size: 16px 16px;
     cursor: pointer;
@@ -5905,11 +5905,11 @@ i.user-wallet-no-funds-hover{
     /*position: absolute;*/
 }
 .user-dashboard-finance i.user-wallet-funds:hover{
-    background: url(../../images/icon/wallet-funds-hover.png);
+    background: url(../../public/images/icon/wallet-funds-hover.png);
     background-size: 16px 16px;
 }
 .user-dashboard-finance i.user-wallet-no-funds:hover{
-    background: url(../../images/icon/wallet-no-funds-hover.png);
+    background: url(../../public/images/icon/wallet-no-funds-hover.png);
     background-size: 16px 16px;
 
 }
@@ -6413,19 +6413,19 @@ b.w500 {
     }
 
     .user-dashboard-finance i.user-wallet-funds{
-        background: url(../../images/icon/wallet-funds-mobile.png);
+        background: url(../../public/images/icon/wallet-funds-mobile.png);
     }
     .user-dashboard-finance i.user-wallet-no-funds{
-        background: url(../../images/icon/wallet-no-funds-mobile.png);
+        background: url(../../public/images/icon/wallet-no-funds-mobile.png);
     }
     i.user-wallet-funds-hover{
-        background: url(../../images/icon/wallet-funds-mobile-hover.png);
+        background: url(../../public/images/icon/wallet-funds-mobile-hover.png);
     }
     .user-dashboard-finance i.user-wallet-funds:hover{
-        background: url(../../images/icon/wallet-funds-mobile-hover.png);
+        background: url(../../public/images/icon/wallet-funds-mobile-hover.png);
     }
     .user-dashboard-finance i.user-wallet-no-funds:hover{
-        background: url(../../images/icon/wallet-no-funds-mobile-hover.png);
+        background: url(../../public/images/icon/wallet-no-funds-mobile-hover.png);
     }
     .buttons i:not(.vocalizr-icon) {
         color: #bcc1c3;

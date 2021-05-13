@@ -5,11 +5,20 @@ namespace App\Command;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 define('STRIPE_API_KEY', 'sk_live_3MCMC1EJfOjB7EBDRua3b85P');
 
 class FixSubsCommand extends Command
 {
+    private $container;
+
+    public function __construct(ContainerInterface $container)
+    {
+        parent::__construct();
+        $this->container = $container;
+    }
+
     protected function configure()
     {
         // How often do we run this script
@@ -22,7 +31,7 @@ class FixSubsCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $container  = $this->getContainer();
+        $container  = $this->container;
         $doctrine   = $container->get('doctrine');
         $em         = $doctrine->getManager();
         $dispatcher = $container->get('hip_mandrill.dispatcher');

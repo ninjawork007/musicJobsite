@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\EventListener\GigContestCreateListener;
 use App\Model\ProjectModel;
 use App\Service\HelperService;
 use App\Service\PayPalService;
@@ -611,7 +612,7 @@ class ProjectController extends AbstractController
 
         $dispatcher = new EventDispatcher();
         $dispatcher->dispatch(
-            'contest_or_gig.just_created',
+            GigContestCreateListener::class,
             new JustCreatedEvent(JustCreatedEvent::TYPE_GIG, $user, $project)
         );
 
@@ -913,8 +914,10 @@ class ProjectController extends AbstractController
         $publishForm = $this->createFormBuilder($project)
             ->add('publish_type', ChoiceType::class, [
                 'label'   => 'PUBLISHING OPTIONS',
-                'choices' => [Project::PUBLISH_PUBLIC => ucwords(Project::PUBLISH_PUBLIC),
-                    Project::PUBLISH_PRIVATE          => ucwords(Project::PUBLISH_PRIVATE), ],
+                'choices' => [
+                    ucwords(Project::PUBLISH_PUBLIC)  => Project::PUBLISH_PUBLIC,
+                    ucwords(Project::PUBLISH_PRIVATE) => Project::PUBLISH_PRIVATE,
+                ],
                 'expanded' => true,
                 'multiple' => false,
                 'data'     => Project::PUBLISH_PUBLIC,
@@ -2140,24 +2143,27 @@ class ProjectController extends AbstractController
             $type  = 'contest';
         }
 
-        $header = $this->render('Pdf/header.html.twig', [
+        $header = $this->renderView('Pdf/header.html.twig', [
             'title' => $title,
         ]);
-        $footer = $this->render('Pdf/footer.html.twig', []);
+        $footer = $this->renderView('Pdf/footer.html.twig', []);
 
         $content = null;
         if ($request->get('type') == 'gig') {
-            $content = $this->render('Project/agreement.html.twig', []);
+            $content = $this->renderView('Project/agreement.html.twig', []);
         } elseif ($request->get('type') == 'contest') {
-            $content = $this->render('Contest/agreement.html.twig', []);
+            $content = $this->renderView('Contest/agreement.html.twig', []);
         }
         $css = realpath($rootDir . '/public/css/pdf.css');
 
         $mpdf = new Mpdf(['', 'A4', '', '', 0, 0, 30, 35, 0, 10]);
+        $mpdf->setAutoTopMargin  = 'pad';
+        $mpdf->defaultheaderline = 0;
         $mpdf->setHTMLHeader($header);
         $mpdf->setHTMLFooter($footer);
         $mpdf->WriteHTML(file_get_contents($css), 1);
         $mpdf->WriteHTML($content, 2);
+
         $mpdf->Output('agreement-' . $type . '-template.pdf', 'D');
         exit;
     }

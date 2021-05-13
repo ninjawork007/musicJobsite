@@ -27,7 +27,7 @@ class MarketplaceController extends AbstractController
      */
     public function indexAction(Request $request)
     {
-        return [];
+        return $this->render('Marketplace/index.html.twig', []);
     }
 
     /**
@@ -98,11 +98,11 @@ class MarketplaceController extends AbstractController
             }
         }
 
-        return [
+        return $this->render('Marketplace/create.html.twig', [
             'marketplaceItem'  => $marketplaceItem,
             'defaultItemAudio' => $defaultItemAudio,
             'form'             => $form->createView(),
-        ];
+        ]);
     }
 
     /**
@@ -196,11 +196,11 @@ class MarketplaceController extends AbstractController
             }
         }
 
-        return [
+        return $this->render('Marketplace/edit.html.twig', [
             'marketplaceItem'  => $marketplaceItem,
             'defaultItemAudio' => $defaultItemAudio,
             'form'             => $form->createView(),
-        ];
+        ]);
     }
 
     /**
@@ -229,11 +229,11 @@ class MarketplaceController extends AbstractController
 
         $assets = $marketplaceItem->getMarketplaceItemAssets();
 
-        return [
+        return $this->render('Marketplace/view.html.twig', [
             'marketplaceItem'  => $marketplaceItem,
             'defaultItemAudio' => $defaultItemAudio,
             'assets'           => $assets,
-        ];
+        ]);
     }
 
     /**
@@ -347,11 +347,11 @@ class MarketplaceController extends AbstractController
         $marketplaceItem->setHasAssets(count($assets) > 0);
         $em->flush();
 
-        return [
+        return $this->render('Marketplace/assets.html.twig', [
             'marketplaceItem' => $marketplaceItem,
             'form'            => $form->createView(),
             'assets'          => $assets,
-        ];
+        ]);
     }
 
     /**

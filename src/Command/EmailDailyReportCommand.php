@@ -23,6 +23,14 @@ use App\Service\MembershipSourceHelper;
  */
 class EmailDailyReportCommand extends Command
 {
+    private $container;
+
+    public function __construct(ContainerInterface $container)
+    {
+        parent::__construct();
+        $this->container = $container;
+    }
+
     protected function configure()
     {
         // How often do we run this script
@@ -39,7 +47,7 @@ class EmailDailyReportCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $this->container = $container = $this->getContainer();
+        $container       = $this->container;
         $this->em        = $container->get('doctrine')->getManager();
         $dispatcher      = $container->get('hip_mandrill.dispatcher');
 

@@ -95,7 +95,7 @@ class LoginController extends AbstractController
      */
     public function facebookSuccessAction(Request $request)
     {
-        return [];
+        return $this->render('Login/facebookSuccess.html.twig', []);
     }
 
     /**
@@ -267,7 +267,9 @@ class LoginController extends AbstractController
             return $this->redirect($this->generateUrl('login'));
         }
 
-        return ['email' => $email];
+        return $this->render('Login/resendActivation.html.twig', [
+            'email' => $email
+        ]);
     }
 
     /**

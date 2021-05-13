@@ -767,7 +767,7 @@ class MessageController extends AbstractController
         if ($session->get('messageWarningSeen')) {
             return $this->forward('App:Message:compose', ['projectUuid' => $projectUuid, 'userId' => $userId]);
         }
-        return [];
+        return $this->render('Message/warning.html.twig', []);
     }
 
     /**
@@ -791,9 +791,9 @@ class MessageController extends AbstractController
                         'is_open'          => true,
                         'bidder'           => $userId, ]);
         if ($messageThread) {
-            return [
+            return $this->render('Message/warningPrivate.html.twig', [
                 'redirect' => $this->generateUrl('message_home', ['tid' => $messageThread->getUuid()]),
-            ];
+            ]);
         }
 
         // Check how many messages they started this month
@@ -813,6 +813,6 @@ class MessageController extends AbstractController
             return $this->forward('App:Message:composePrivate', ['userId' => $userId]);
         }
 
-        return [];
+        return $this->render('Message/warningPrivate.html.twig', []);
     }
 }
