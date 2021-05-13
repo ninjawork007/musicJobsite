@@ -17,6 +17,7 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Session;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
 
@@ -125,7 +126,7 @@ class RegisterController extends AbstractController
                     $message    = new Message();
                     $message
                         ->addTo($user->getEmail())
-                        ->addGlobalMergeVar('CONFIRMURL', $this->generateUrl('register_complete', ['unique_str' => $user->getUniqueStr()], true))
+                        ->addGlobalMergeVar('CONFIRMURL', $this->generateUrl('register_complete', ['unique_str' => $user->getUniqueStr()], UrlGeneratorInterface::ABSOLUTE_URL))
                         ->setTrackOpens(true)
                         ->setTrackClicks(true);
                     $result = $dispatcher->send($message, 'register-confirm');
@@ -395,7 +396,7 @@ class RegisterController extends AbstractController
         $message    = new Message();
         $message
             ->addTo($user->getEmail())
-            ->addGlobalMergeVar('CONFIRMURL', $this->generateUrl('register_complete', ['unique_str' => $user->getUniqueStr()], true))
+            ->addGlobalMergeVar('CONFIRMURL', $this->generateUrl('register_complete', ['unique_str' => $user->getUniqueStr()], UrlGeneratorInterface::ABSOLUTE_URL))
             ->setTrackOpens(true)
             ->setTrackClicks(true);
         $result = $dispatcher->send($message, 'register-confirm');
