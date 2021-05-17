@@ -429,6 +429,14 @@ services:
             - '@service_container'
         public: true
 
+    vocalizr_app.service.mongo_core_query:
+        class: App\Service\MongoCoreQueryService
+        autowire: true
+        autoconfigure: true
+        arguments:
+            - '@service_container'
+        public: true
+
 
 
 

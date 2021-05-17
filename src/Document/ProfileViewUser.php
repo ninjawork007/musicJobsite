@@ -145,4 +145,15 @@ class ProfileViewUser
     {
         return $this->created_at;
     }
+
+    public function toArray()
+    {
+        return [
+            'id'            => $this->id,
+            'user_id'       => $this->user_id,
+            'date'          => $this->date,
+            'created_at'    => $this->created_at,
+            'from_user_id'  => $this->from_user_id,
+        ];
+    }
 }

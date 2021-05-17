@@ -2,6 +2,8 @@
 
 namespace App\Controller;
 
+use App\Document\ProfileView;
+use App\Document\ProfileViewUser;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
@@ -102,22 +104,30 @@ class StatsController extends AbstractController
                 ->field('user_id')->equals($user->getId())
                 ->field('date')->gte($startDate->format('Y-m-d'))
                 ->field('date')->lte($endDate->format('Y-m-d'))
-                ->group(['month' => 1, 'audio_id' => 1], ['date' => 1, 'total' => 0])
-                ->reduce('function ( curr, result ) { '
-                            . 'result.total += curr.count;'
-                            . 'result.date = curr.date;'
-                            . 'month = ISODate(curr.date);'
-                            . 'result.month = month.getMonth();'
-                        . '}')
+//                ->group(['month' => 1, 'audio_id' => 1], ['date' => 1, 'total' => 0])
+//                ->reduce('function ( curr, result ) { '
+//                            . 'result.total += curr.count;'
+//                            . 'result.date = curr.date;'
+//                            . 'month = ISODate(curr.date);'
+//                            . 'result.month = month.getMonth();'
+//                        . '}')
                 ->getQuery()
                 ->toArray();
 
             $stats = [];
             foreach ($audioPlayStat as $row) {
+                $row = $row->toArray();
                 list($row['yr'], $row['mth'], $row['day']) = explode('-', $row['date']);
                 $monthYear                                 = date('Y-m', strtotime($row['date']));
                 $monthName                                 = date('F', strtotime($row['date']));
                 $row['monthName']                          = $monthName;
+                $row['total']                              = $row['count'];
+                $row['mth'] = ((int)$row['mth'])-1;
+
+                if(isset($stats[$row['audio_id']]) && isset($stats[$row['audio_id']][$monthYear])) {
+                    $row['total'] = $stats[$row['audio_id']][$monthYear]['total'] + $row['total'];
+                }
+
                 $stats[$row['audio_id']][$monthYear]       = $row;
             }
 
@@ -135,7 +145,8 @@ class StatsController extends AbstractController
 
             $categories = current($stats);
             $categories = array_keys($categories);
-        } else {
+        }
+        else {
             $datePeriod = new \DatePeriod(
                 $startDate,
                 new \DateInterval('P1D'),
@@ -148,19 +159,24 @@ class StatsController extends AbstractController
             }
 
             $audioPlayStat = [];
-            $audioPlayStat = $dm->createQueryBuilder('App:AudioPlay')
+            $audioPlayStatArray = $dm->createQueryBuilder('App:AudioPlay')
                 ->field('user_id')->equals($user->getId())
                 ->field('date')->gte($startDate->format('Y-m-d'))
                 ->field('date')->lte($endDate->format('Y-m-d'))
-                ->group(['date' => 1, 'audio_id' => 1], ['date' => 1, 'total' => 0])
-                ->reduce('function ( curr, result ) { result.total += curr.count; result.date = curr.date }')
                 ->getQuery()
                 ->toArray();
 
             $stats = [];
-            foreach ($audioPlayStat as $row) {
+            foreach ($audioPlayStatArray as $row) {
+                $row = $row->toArray();
                 list($row['yr'], $row['mth'], $row['day']) = explode('-', $row['date']);
                 $row['mth']                                = $row['mth'] - 1;
+                $row['total']                              = $row['count'];
+
+                if(isset($stats[$row['audio_id']]) && isset($stats[$row['audio_id']][$row['date']])) {
+                    $row['total'] = $stats[$row['audio_id']][$row['date']]['total'] + $row['total'];
+                }
+
                 $stats[$row['audio_id']][$row['date']]     = $row;
             }
 
@@ -179,18 +195,23 @@ class StatsController extends AbstractController
 
         // Get who has been playing the audio
         $audioPlayUsers =[];
-        $audioPlayUsers = $dm->createQueryBuilder('App:AudioPlayUser')
+        $audioPlayUsersArray = $dm->createQueryBuilder('App:AudioPlayUser')
             ->field('user_id')->equals($user->getId())
             ->field('date')->gte(date('Y-m-d', strtotime('-90 days')))
             ->field('date')->lte(date('Y-m-d'))
             ->sort([
                 'date' => 'desc',
             ])
-            ->group(['from_user_id' => 1], ['from_user_id' => 1])
-            ->reduce('function ( curr, result ) { result.from_user_id = curr.from_user_id; result.date = curr.date; result.created_at = curr.created_at; }')
+//            ->group(['from_user_id' => 1], ['from_user_id' => 1])
+//            ->reduce('function ( curr, result ) { result.from_user_id = curr.from_user_id; result.date = curr.date; result.created_at = curr.created_at; }')
             ->limit(12)
             ->getQuery()
             ->toArray();
+
+        /** @var ProfileViewUser $data */
+        foreach ($audioPlayUsersArray as $data) {
+            $audioPlayUsers[] = $data->toArray();
+        }
 
         // Sort in desc
         usort($audioPlayUsers, function ($b, $a) {
@@ -545,24 +566,38 @@ class StatsController extends AbstractController
             }
 
             $profileViews = [];
-            $profileViews = $dm->createQueryBuilder('App:ProfileView')
+            $profileViewsDataArray = $dm->createQueryBuilder('App:ProfileView')
                 ->field('user_id')->equals($user->getId())
                 ->field('unique')->equals(false)
                 ->field('date')->gte($startDate->format('Y-m-d'))
                 ->field('date')->lte($endDate->format('Y-m-d'))
-                ->group(['monthyr' => 1], ['total' => 0])
-                ->reduce("function ( curr, result ) {
-                            result.total = curr.count;
-                            dd = ISODate(curr.date);
-                            result.monthyr = dd.getFullYear() + '-' + ('0' + (dd.getMonth()+1)).slice(-2);
-                            result[result.monthyr] = result.total;
-                        }")
                 ->getQuery()
                 ->toArray();
 
-            if ($profileViews) {
-                $profileViews = $profileViews[0];
+            $profileViewsData = [];
+            foreach ($profileViewsDataArray as $row) {
+                $row = $row->toArray();
+                $date = new \DateTime($row['date']);
+                $dateIndex = $date->format('Y').'-'.$date->format('m');
+                if(array_key_exists($dateIndex, $profileViews)) {
+                    $profileViewsData[$dateIndex] = $profileViews[$dateIndex] + $row['count'];
+                } else {
+                    $profileViewsData[$dateIndex] = $row['count'];
+                }
             }
+
+            $monthyr = $total = 1;
+            foreach ($profileViewsData as $index => $profileViewsDataRow) {
+                if($profileViewsDataRow >= $total) {
+                    $total   = $profileViewsDataRow;
+                    $monthyr = $index;
+                }
+
+            }
+
+            $profileViews            = $profileViewsData;
+            $profileViews['monthyr'] = $monthyr;
+            $profileViews['total']   = $total;
 
             $stats = [];
 
@@ -599,23 +634,18 @@ class StatsController extends AbstractController
                 $dateRange[] = $date->format('Y-m-d');
             }
 
-            $profileViewStat = [];
             $profileViewStat = $dm->createQueryBuilder('App:ProfileView')
                 ->field('user_id')->equals($user->getId())
                 ->field('unique')->equals(false)
                 ->field('date')->gte($startDate->format('Y-m-d'))
                 ->field('date')->lte($endDate->format('Y-m-d'))
-                ->group(['date' => 1, 'total' => 1], [])
-                ->reduce('function ( curr, result ) {
-                            result.total += curr.count;
-                            result.date = curr.date;
-                        }')
                 ->getQuery()
                 ->toArray();
 
-            $stats = [];
             foreach ($profileViewStat as $row) {
+                $row = $row->toArray();
                 list($row['yr'], $row['mth'], $row['day']) = explode('-', $row['date']);
+                $row['total']                              = $row['count'];
                 $row['mth']                                = $row['mth'] - 1;
                 $stats[$row['date']]                       = $row;
             }
@@ -638,7 +668,7 @@ class StatsController extends AbstractController
 
         // Get who has been liking the audio
         $profileViewUsers = [];
-        $profileViewUsers = $dm->createQueryBuilder('App:ProfileViewUser')
+        $profileViewUsersData = $dm->createQueryBuilder('App:ProfileViewUser')
             ->field('user_id')->equals($user->getId())
             ->field('from_user_id')->gte(0)
             ->field('date')->gte(date('Y-m-d', strtotime('-90 days')))
@@ -647,14 +677,18 @@ class StatsController extends AbstractController
                 'created_at' => 'desc',
             ])
             ->limit(12)
-            ->group(['from_user_id' => 0], ['from_user_id' => 1])
-                ->reduce('function ( curr, result ) {
-                            result.from_user_id = curr.from_user_id;
-                            result.date = curr.date;
-                        }')
+//            ->group(['from_user_id' => 0], ['from_user_id' => 1])
+//                ->reduce('function ( curr, result ) {
+//                            result.from_user_id = curr.from_user_id;
+//                            result.date = curr.date;
+//                        }')
             ->getQuery()
             ->toArray();
 
+        /** @var ProfileViewUser $data */
+        foreach ($profileViewUsersData as $data) {
+            $profileViewUsers[] = $data->toArray();
+        }
         // Sort in desc
         usort($profileViewUsers, function ($b, $a) {
             return strtotime($a['date']) - strtotime($b['date']);

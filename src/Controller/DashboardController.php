@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\UserPref;
+use App\Service\MongoCoreQueryService;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use GuzzleHttp\Client;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
@@ -49,7 +50,7 @@ class DashboardController extends AbstractController
      * @return Response
      * @throws MongoDBException
      */
-    public function indexAction(Request $request, Security $security)
+    public function indexAction(Request $request, Security $security, MongoCoreQueryService $mongoCoreQueryService)
     {
         $em   = $this->getDoctrine()->getManager();
 
@@ -78,15 +79,6 @@ class DashboardController extends AbstractController
             $request->getSession()->set('activity_filter', $userPref->getActivityFilter());
         }
         $activity = $em->getRepository(VocalizrActivity::Class)->findActivity($this->getUser(), ['filter' => $request->getSession()->get('activity_filter')]);
-
-        // Update the activity to read
-        /** VocalizrActivity $actovity */
-        $activity = $em->getRepository(VocalizrActivity::class)->findOneBy(['user_info' => $this->getUser()]);
-        if ($activity) {
-            $activity->setActivityRead(true);
-            $em->flush();
-        }
-
         $activityMessage = new VocalizrActivity();
         $messageForm     = $this->createFormBuilder($activityMessage)
                     ->add('message_text', TextType::class, [
@@ -244,62 +236,13 @@ class DashboardController extends AbstractController
         ];
         $timeAgo = '-30 days';
 
-//       $profileViewStat = $this->dm->createQueryBuilder('App:ProfileView')
-//            ->field('user_id')->equals($user->getId())
-//            ->field('unique')->equals(false)
-//            ->field('date')->gte(date('Y-m-d', strtotime($timeAgo)))
-//            ->field('date')->lte(date('Y-m-d'))
-//            ->group(['user_id' => 1], ['total' => 0])
-//            ->reduce('function ( curr, result ) { result.total += curr.count;}')
-//            ->getQuery()
-//            ->execute();
-//
-//        // Get stats
-//        $profileViewStat = $this->dm->createAggregationBuilder('App:ProfileView')
-//            ->match()
-//                ->field('user_id')->equals($user->getId())
-//                ->field('unique')->equals(false)
-//                ->field('date')->gte(date('Y-m-d', strtotime($timeAgo)))
-//                ->field('date')->lte(date('Y-m-d'))
-////            ->group(['user_id' => 1], ['total' => 0])
-//            ->group()
-//                ->field('user_id')->expression(1)
-//                ->field('total')->expression(0)
-////            ->reduce('function ( curr, result ) { result.total += curr.count;}')
-////            ->getQuery()
-//            ->getAggregation();
-//
-//        dd($profileViewStat);
-//
-//
-//        if (count($profileViewStat)) {
-//            $stats['profileViews'] = $profileViewStat[0]['total'];
-//        }
-//
-//        $audioPlayStat = $this->dm->createQueryBuilder('App:AudioPlay')
-//            ->field('user_id')->equals($user->getId())
-//            ->field('date')->gte(date('Y-m-d', strtotime($timeAgo)))
-//            ->field('date')->lte(date('Y-m-d'))
-//            ->group(['user_id' => 1], ['total' => 0])
-//            ->reduce('function ( curr, result ) { result.total += curr.count;}')
-//            ->getQuery()
-//            ->execute();
-//
-//        if (count($audioPlayStat)) {
-//            $stats['audioPlays'] = $audioPlayStat[0]['total'];
-//        }
-//
-//        $audioLikeStat = $this->dm->createQueryBuilder('App:AudioLike')
-//            ->field('user_id')->equals($user->getId())
-//            ->field('date')->gte(date('Y-m-d H:i:s', strtotime($timeAgo)))
-//            ->field('date')->lte(date('Y-m-d H:i:s'))
-//            ->getQuery()
-//            ->execute()
-//            ->count();
-//
-//        if (count($audioPlayStat)) {
-//            $stats['audioLikes'] = $audioLikeStat;
-//        }
+        $stats['profileViews']  = $mongoCoreQueryService->profileViewCountTotal($user->getId(), $timeAgo);
+        $stats['audioPlays']    = $mongoCoreQueryService->audioPlayCountTotal($user->getId(), $timeAgo);
+
+        if ($stats['audioPlays'] > 0) {
+            $audioLikeStat = $mongoCoreQueryService->audioLikesCount($user->getId(), $timeAgo);
+            $stats['audioLikes'] = $audioLikeStat;
+        }
 
         $data = [
             'activity'           => $activity,
@@ -339,9 +282,7 @@ class DashboardController extends AbstractController
             $sfs = $result[0];
         }
         $data['sfs'] = $sfs;
-//
-//        $data['audiosByUser'] = $this->getUserAudios($activity);
-//        $data['audiosByProject'] = $this->getFeaturedProjectAudios($activity);
+
         $activity = [];
         $data['audiosByUser'] = $this->getUserAudios($activity);
         $data['audiosByProject'] = $this->getFeaturedProjectAudios($activity);

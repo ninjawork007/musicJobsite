@@ -349,7 +349,7 @@ Highcharts.setOptions(Highcharts.theme);
             <div class="row">
             {% if profileViewUsers %}
                 {% for profileView in profileViewUsers %}
-                    {% if profileView %}
+                    {% if profileView and fromUsers|length > 0 %}
                         {% set fromUser = fromUsers[profileView.from_user_id] %}
                     {% else %}
                         {% set fromUser = "Unknown" %}
@@ -379,33 +379,41 @@ Highcharts.setOptions(Highcharts.theme);
                             </div>
                         {% else %}
                             <a href="{{ path('plans') }}" class="stat-user-avatar">
-                            <img src="{{ asset('images/default_avatar.svg') }}" alt="{{ fromUser.username }}" class="img-circle" width="58" height="58" />
-                            {% if fromUser.isCertified %}
-                                <span class="vocalizr-certified" data-text="<div class='tip-header'>Vocalizr Certified Professional</div>A 'Certified Pro' is deemed a professional by the experts at Vocalizr. The stamp is based on ability, experience, and skill level."></span>
-                            {% endif %}
+                                {% if fromUser != "Unknown" %}
+                                    <img src="{{ asset('images/default_avatar.svg') }}" alt="{{ fromUser.username }}" class="img-circle" width="58" height="58" />
+                                    {% if fromUser.isCertified %}
+                                        <span class="vocalizr-certified" data-text="<div class='tip-header'>Vocalizr Certified Professional</div>A 'Certified Pro' is deemed a professional by the experts at Vocalizr. The stamp is based on ability, experience, and skill level."></span>
+                                    {% endif %}
+                                {% endif %}
                             </a>
                             <div class="stat-user-name">
                                 <a href="{{ path('plans') }}">Vocalizr Member</a>
-                                {% if fromUser.isSubscribed %}
+                                {% if fromUser != "Unknown" and fromUser.isSubscribed %}
                                 <span class="badge badge-pro">PRO</span>
                                 {% endif %}
                             </div>
                         {% endif %}
                         <div class="stat-user-info">
-                        {% if fromUser.isVocalist and fromUser.isProducer %}
-                            Producer &amp; Vocalist
-                        {% elseif fromUser.isVocalist %}
-                            Vocalist
-                        {% elseif fromUser.isProducer %}
-                            Producer
-                        {% endif %}
+                            {% if  fromUser != "Unknown" %}
+                                {% if fromUser.isVocalist and fromUser.isProducer %}
+                                    Producer &amp; Vocalist
+                                {% elseif fromUser.isVocalist %}
+                                    Vocalist
+                                {% elseif fromUser.isProducer %}
+                                    Producer
+                                {% endif %}
+                            {% endif %}
                         </div>
-                        <div class="stat-user-country">from {{ fromUser.country|countryName }}</div>
+                        <div class="stat-user-country">from
+                            {% if  fromUser != "Unknown" %}
+                                {{ fromUser.country|countryName }}
+                            {% endif %}
+                        </div>
                         <div class="stat-user-timeago">
                             {{ profileView.date|timeAgoString }} ago
                         </div>
                     </div>
-                    {% if app.user.isSubscribed %}
+                    {% if fromUser != "Unknown" and app.user.isSubscribed %}
                         {% set userConnect = false %}
                         {% if fromUser.userConnectInvites|length %}
                             {% set userConnect = fromUser.userConnectInvites|first %}

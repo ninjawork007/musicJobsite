@@ -174,4 +174,16 @@ class AudioPlayUser
     {
         return $this->from_user_id;
     }
+
+    public function toArray()
+    {
+        return [
+            'id'            => $this->id,
+            'user_id'       => $this->user_id,
+            'audio_id'      => $this->audio_id,
+            'date'          => $this->date,
+            'from_user_id'  => $this->from_user_id,
+            'created_at'    => $this->created_at
+        ];
+    }
 }

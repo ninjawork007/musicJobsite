@@ -146,4 +146,15 @@ class ProfileView
     {
         return $this->user_id;
     }
+
+    public function toArray()
+    {
+        return [
+            'id'      => $this->id,
+            'user_id' => $this->user_id,
+            'date'    => $this->date,
+            'count'   => $this->count,
+            'unique'  => $this->unique,
+        ];
+    }
 }

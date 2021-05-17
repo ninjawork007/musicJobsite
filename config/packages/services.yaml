@@ -1,4 +1,7 @@
 parameters:
+    mongo_database_name: '%env(MONGODB_DB)%'
+    mongo_client_url: '%env(MONGODB_CLIENT_URL)%'
+
     locale: '%env(PARAM_LOCALE)%'
     secret: '%env(PARAM_SECRET)%'
 

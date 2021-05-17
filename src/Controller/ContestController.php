@@ -294,10 +294,10 @@ class ContestController extends AbstractController
             }
 
             // If contest and no audio, throw error
-//            if ($form->isValid() && $locationFormIsValid && ($project->getId() || $request->get('audio_file'))) {
+            if ($form->isValid() && $locationFormIsValid && ($project->getId() || $request->get('audio_file'))) {
 //            mayur_dev_testing
             /* uncomment above line, remove below line and value array */
-            if ($form->isValid() && !$locationFormIsValid && ($project->getId() || $request->get('audio_file'))) {
+//            if ($form->isValid() && !$locationFormIsValid && ($project->getId() || $request->get('audio_file'))) {
                 $project->setUserInfo($user);
 
                 $project->setProjectType(Project::PROJECT_TYPE_CONTEST);
@@ -312,18 +312,20 @@ class ContestController extends AbstractController
                 if ($request->get('location')) {
                     $values = $locationForm->getData();
 
-                // need to remove below and update above condition // mayur_dev_testing
-                $values['city'] ='ahmedabad';
-                $values['state'] ='gujrat';
-                $values['country'] ='india';
-                $values['location_lat'] ='23.0225';
-                $values['location_lng'] ='72.5714';
+//                    // need to remove below and update above condition // mayur_dev_testing
+//                    //START
+//                    $values['city'] ='ahmedabad';
+//                    $values['state'] ='gujrat';
+//                    $values['country'] ='india';
+//                    $values['location_lat'] ='23.0225';
+//                    $values['location_lng'] ='72.5714';
+//                    //END
 
-                $project->setCity($values['city']);
-                $project->setState($values['state']);
-                $project->setCountry($values['country']);
-                $project->setLocationLat($values['location_lat']);
-                $project->setLocationLng($values['location_lng']);
+                    $project->setCity($values['city']);
+                    $project->setState($values['state']);
+                    $project->setCountry($values['country']);
+                    $project->setLocationLat($values['location_lat']);
+                    $project->setLocationLng($values['location_lng']);
                 }
 
                 $em->persist($project);
@@ -460,9 +462,6 @@ class ContestController extends AbstractController
 
         $subscriptionPlan   = $planRepo->getActiveSubscription($user->getId());
         $prices             = $planRepo->getFeaturePrices();
-
-        // mayur_dev_testing // remove below line.
-        $prices['PRO'] = $prices['FREE'];
 
         return $this->render('Contest/publish.html.twig', [
             'paypal'           => $payPalService,
