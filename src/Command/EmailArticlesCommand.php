@@ -42,6 +42,8 @@ class EmailArticlesCommand extends Command
         $this->process();
 
         echo "SCRIPT END - Email Articles\n\n";
+
+        return 1;
     }
 
     private function process()

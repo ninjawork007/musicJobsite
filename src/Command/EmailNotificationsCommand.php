@@ -110,6 +110,8 @@ class EmailNotificationsCommand extends Command
             $em->flush();
         }
 
+        return 1;
+
         /**
          * - Check project feeds for unread items
          *   inner join project

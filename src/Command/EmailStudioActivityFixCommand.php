@@ -78,6 +78,8 @@ class EmailStudioActivityFixCommand extends Command
             }
             $this->sendEmail($pf, $content);
         }
+
+        return 1;
     }
 
     private function sendEmail($pf, $content)

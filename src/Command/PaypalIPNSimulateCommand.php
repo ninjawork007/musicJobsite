@@ -40,5 +40,7 @@ class PaypalIPNSimulateCommand extends Command
 
             $payPalService->processIpn($data);
         }
+
+        return 1;
     }
 }

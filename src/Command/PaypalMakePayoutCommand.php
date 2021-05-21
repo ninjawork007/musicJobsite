@@ -135,5 +135,8 @@ class PaypalMakePayoutCommand extends Command
             }
             $this->em->flush();
         }
+
+        return 1;
+
     }
 }

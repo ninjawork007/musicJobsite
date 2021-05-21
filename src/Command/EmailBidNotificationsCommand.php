@@ -98,5 +98,7 @@ class EmailBidNotificationsCommand extends Command
                 $dispatcher->send($message, 'default');
             }
         }
+
+        return 1;
     }
 }

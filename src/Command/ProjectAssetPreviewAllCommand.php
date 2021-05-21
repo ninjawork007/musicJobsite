@@ -143,6 +143,8 @@ class ProjectAssetPreviewAllCommand extends Command
                 $projectModel->notifyOwnerAssetsUploaded($project, $assetsByProjectIds[$project->getId()]);
             }
         }
+
+        return 1;
     }
 
     /**

@@ -56,5 +56,7 @@ class UpdatingBalanceTransactionListCommand extends Command
 
         }
         $em->flush();
+
+        return 1;
     }
 }

@@ -71,5 +71,7 @@ class GenerateUserThumbnailsCommand extends Command
         } while ($resultUsers);
 
         $output->writeln('Process finished.');
+
+        return 1;
     }
 }

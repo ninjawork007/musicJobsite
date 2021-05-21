@@ -99,6 +99,8 @@ class EmailVocalistRecommendationsCommand_1 extends Command
         $this->sendEmail();
         echo "DONE\n";
         echo "SCRIPT END - Email Vocalist Recommendations\n\n";
+
+        return 1;
     }
 
     private function generateProjectHtml()

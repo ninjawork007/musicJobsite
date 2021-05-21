@@ -81,5 +81,7 @@ class EmailProjectBiddingCheckCommand extends Command
                 $this->dispatcher->send($message, 'default-luke');
             }
         }
+
+        return 1;
     }
 }

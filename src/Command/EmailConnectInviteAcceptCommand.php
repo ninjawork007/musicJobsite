@@ -78,5 +78,7 @@ class EmailConnectInviteAcceptCommand extends Command
             $message->addGlobalMergeVar('BODY', $body);
             $this->dispatcher->send($message, 'default');
         }
+
+        return 1;
     }
 }

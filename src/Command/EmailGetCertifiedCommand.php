@@ -66,6 +66,8 @@ class EmailGetCertifiedCommand extends Command
         }
         $this->em->flush();
         $this->sendEmail();
+
+        return 1;
     }
 
     private function sendEmail()

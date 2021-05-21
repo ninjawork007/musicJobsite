@@ -134,6 +134,8 @@ class ScAudioCheckCommand extends Command
                 $em->flush();
             }
         }
+
+        return 1;
     }
 
     public function sendScNotConnectedEmail($userAudio)

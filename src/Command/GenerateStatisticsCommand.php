@@ -108,6 +108,8 @@ class GenerateStatisticsCommand extends Command
         $this->processStats('month', 'P1M', $startDate, $today);
 
         echo "\nSCRIPT COMPLETE\n\n";
+
+        return 1;
     }
 
     private function processStats($label, $interval, $startDate, $today)

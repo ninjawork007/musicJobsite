@@ -402,6 +402,8 @@ imagepng($png, $waveFormImageName);
         }
 
         imagedestroy($img);
+
+        return 1;
     }
 
     /**

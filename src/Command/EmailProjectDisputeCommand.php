@@ -66,6 +66,8 @@ class EmailProjectDisputeCommand extends Command
         $this->firstReminder();
         $this->secondReminder();
         $this->closeDisputesAndSendEmails();
+
+        return 1;
     }
 
     /**

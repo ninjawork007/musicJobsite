@@ -66,6 +66,8 @@ class FixDoubleBillingCommand extends Command
             $this->em->rollback();
             throw $exception;
         }
+
+        return 1;
     }
 
     /**

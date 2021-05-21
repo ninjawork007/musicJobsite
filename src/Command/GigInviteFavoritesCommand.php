@@ -52,6 +52,8 @@ The <info>%command.name%</info> command send email to invite all favorites to a 
     <info>php %command.full_name% --projectId=[n] --userId=[m]</info>
 EOT
                 );
+
+        return 1;
     }
 
     /**

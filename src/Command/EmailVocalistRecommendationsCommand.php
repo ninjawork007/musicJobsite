@@ -128,6 +128,8 @@ class EmailVocalistRecommendationsCommand extends Command
 
         echo "DONE\n";
         echo "SCRIPT END - Email Vocalist Recommendations\n\n";
+
+        return 1;
     }
 
     private function processUser($user)

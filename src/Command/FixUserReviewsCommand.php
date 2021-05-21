@@ -86,5 +86,7 @@ class FixUserReviewsCommand extends Command
         }
 
         $em->commit();
+
+        return 1;
     }
 }

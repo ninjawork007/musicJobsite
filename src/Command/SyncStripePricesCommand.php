@@ -94,5 +94,6 @@ class SyncStripePricesCommand extends Command
             $output->writeln('Feature prices are already in sync.');
         }
 
+        return 1;
     }
 }

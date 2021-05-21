@@ -648,6 +648,8 @@ class EmailDailyReportCommand extends Command
             $output->writeln('Skip google spreadsheet part');
         }
         echo "\nSCRIPT COMPLETE\n\n";
+
+        return 1;
     }
 
     /**

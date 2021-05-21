@@ -136,6 +136,8 @@ class EmailEmployerRecommendationsCommand extends Command
             $this->processLastUser();
             $this->sendBunchOfEmails();
         }
+
+        return 1;
     }
 
     private function generateProjectHtml($project, $matchedUsers)

@@ -95,6 +95,8 @@ class FixUserWalletTransactionsCommand extends Command
             $this->em->rollback();
             $output->writeln('An exception occurred during updating user wallet transactions. The MySQL transaction has been rolled back. ' . $exception->getMessage());
         }
+
+        return 1;
     }
 
     /**

@@ -102,5 +102,7 @@ class SoundCloudSyncCommand extends Command
 
         $em->persist($audio);
         $em->flush();
+
+        return 1;
     }
 }

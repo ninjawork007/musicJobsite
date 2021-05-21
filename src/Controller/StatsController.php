@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Document\ProfileView;
 use App\Document\ProfileViewUser;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -24,8 +25,10 @@ class StatsController extends AbstractController
     /**
      * @Route("/stats/plays/{filter}", defaults={"filter" = "7days"}, name="user_stat_plays")
      * @Template()
+     *
      * @param Request $request
      * @param ContainerInterface $container
+     *
      * @return array
      */
     public function playsAction(Request $request, ContainerInterface $container)
@@ -268,6 +271,11 @@ class StatsController extends AbstractController
     /**
      * @Route("/stats/likes/{filter}", defaults={"filter" = "7days"}, name="user_stat_likes")
      * @Template()
+     *
+     * @param Request            $request
+     * @param ContainerInterface $container
+     *
+     * @return Response
      */
     public function likesAction(Request $request, ContainerInterface $container)
     {
@@ -346,22 +354,29 @@ class StatsController extends AbstractController
                 ->field('user_id')->equals($user->getId())
                 ->field('date')->gte($startDate->format('Y-m-d'))
                 ->field('date')->lte($endDate->format('Y-m-d'))
-                ->group(['month' => 1, 'audio_id' => 1, 'total' => 0], ['date' => 1])
-                ->reduce('function ( curr, result ) { '
-                            . 'result.total++;'
-                            . 'result.date = curr.date;'
-                            . 'month = ISODate(curr.date);'
-                            . 'result.month = month.getMonth();'
-                        . '}')
+//                ->group(['month' => 1, 'audio_id' => 1, 'total' => 0], ['date' => 1])
+//                ->reduce('function ( curr, result ) { '
+//                            . 'result.total++;'
+//                            . 'result.date = curr.date;'
+//                            . 'month = ISODate(curr.date);'
+//                            . 'result.month = month.getMonth();'
+//                        . '}')
                 ->getQuery()
                 ->toArray();
 
             $stats = [];
             foreach ($audioLikes as $row) {
+                $row = $row->toArray();
                 list($row['yr'], $row['mth'], $row['day']) = explode('-', $row['date']);
                 $monthYear                                 = date('Y-m', strtotime($row['date']));
                 $monthName                                 = date('F', strtotime($row['date']));
                 $row['monthName']                          = $monthName;
+                $row['total']                              = 1;
+
+                if(isset($stats[$row['audio_id']]) && isset($stats[$row['audio_id']][$monthYear])) {
+                    $row['total'] = $row['total']+1;
+                }
+
                 $stats[$row['audio_id']][$monthYear]       = $row;
             }
 
@@ -379,7 +394,8 @@ class StatsController extends AbstractController
 
             $categories = current($stats);
             $categories = array_keys($categories);
-        } else {
+        }
+        else {
             $datePeriod = new \DatePeriod(
                 $startDate,
                 new \DateInterval('P1D'),
@@ -396,26 +412,35 @@ class StatsController extends AbstractController
                 ->field('user_id')->equals($user->getId())
                 ->field('date')->gte($startDate->format('Y-m-d'))
                 ->field('date')->lte($endDate->format('Y-m-d'))
-                ->group(['date_new' => 1, 'audio_id' => 1, 'total' => 0], ['date' => 1])
-                ->reduce("function ( curr, result ) {
-                            result.total++;
-                            result.date = curr.date;
-                            month = ISODate(curr.date);
-                            result.month = month.getMonth();
-                            curdate = ISODate(curr.date);
-
-                            result.date_new = curdate.getFullYear() + '-'
-                            + ('0' + (curdate.getUTCMonth() + 1) ).slice(-2) + '-'
-                            + curdate.getDate();
-
-                        }")
+//                ->group(['date_new' => 1, 'audio_id' => 1, 'total' => 0], ['date' => 1])
+//                ->reduce("function ( curr, result ) {
+//                            result.total++;
+//                            result.date = curr.date;
+//                            month = ISODate(curr.date);
+//                            result.month = month.getMonth();
+//                            curdate = ISODate(curr.date);
+//
+//                            result.date_new = curdate.getFullYear() + '-'
+//                            + ('0' + (curdate.getUTCMonth() + 1) ).slice(-2) + '-'
+//                            + curdate.getDate();
+//
+//                        }")
                 ->getQuery()
                 ->toArray();
 
             $stats = [];
             foreach ($audioLikeStat as $row) {
+                $row             = $row->toArray();
+                $date            = new \DateTime($row['date']);
+                $row['date_new'] = $date->format('Y') . '-' . $date->format('m'). '-' . $date->format('d');
                 list($row['yr'], $row['mth'], $row['day']) = explode('-', $row['date_new']);
                 $row['mth']                                = $row['mth'] - 1;
+                $row['total']                              = 1;
+
+                if(isset($stats[$row['audio_id']]) && isset($stats[$row['audio_id']][$row['date_new']])) {
+                    $row['total'] = $row['total']+1;
+                }
+
                 $stats[$row['audio_id']][$row['date_new']] = $row;
             }
 
@@ -434,7 +459,7 @@ class StatsController extends AbstractController
 
         // Get who has been liking the audio
         $audioLikeUsers = [];
-        $audioLikeUsers = $dm->createQueryBuilder('App:AudioLike')
+        $audioLikeUsersData = $dm->createQueryBuilder('App:AudioLike')
             ->field('user_id')->equals($user->getId())
             ->field('date')->gte(date('Y-m-d', strtotime('-90 days')))
             ->field('date')->lte(date('Y-m-d', strtotime('+1 day')))
@@ -442,13 +467,17 @@ class StatsController extends AbstractController
                 'date' => 'desc',
             ])
             ->limit(15)
-            ->group(['from_user_id' => 0], ['from_user_id' => 1])
-                ->reduce('function ( curr, result ) {
-                            result.from_user_id = curr.from_user_id;
-                            result.date = curr.date;
-                        }')
+//            ->group(['from_user_id' => 0], ['from_user_id' => 1])
+//                ->reduce('function ( curr, result ) {
+//                            result.from_user_id = curr.from_user_id;
+//                            result.date = curr.date;
+//                        }')
             ->getQuery()
             ->toArray();
+
+        foreach ($audioLikeUsersData as $row) {
+            $audioLikeUsers[] = $row->toArray();
+        }
 
         // Sort in desc
         usort($audioLikeUsers, function ($b, $a) {
@@ -503,6 +532,12 @@ class StatsController extends AbstractController
     /**
      * @Route("/stats/views/{filter}", defaults={"filter" = "7days"}, name="user_stat_views")
      * @Template()
+     *
+     * @param Request            $request
+     * @param ContainerInterface $container
+     *
+     * @return Response
+     * @throws \Exception
      */
     public function viewsAction(Request $request, ContainerInterface $container)
     {

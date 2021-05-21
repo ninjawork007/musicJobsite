@@ -95,5 +95,7 @@ class EmailBidsEndedCommand extends Command
             }
         }
         $output->writeln('SCRIPT END');
+
+        return 1;
     }
 }

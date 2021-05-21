@@ -49,6 +49,8 @@ class EmailRegoFollowUpCommand extends Command
 //            return;
 //        }
         echo "SCRIPT END - Email Vocalist Rego Follow Up\n\n";
+
+        return 1;
     }
 
     private function processVocalists()

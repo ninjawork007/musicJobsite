@@ -61,5 +61,7 @@ class MarketplaceItemAssetPreviewCommand extends Command
         }
 
         $em->flush();
+
+        return 1;
     }
 }

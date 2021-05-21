@@ -3,6 +3,7 @@
 namespace App\Command;
 
 use Slot\MandrillBundle\Dispatcher;
+use Slot\MandrillBundle\Message;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -88,5 +89,7 @@ class EmailProjectAwardReminderCommand extends Command
                 $this->dispatcher->send($message, 'default-luke');
             }
         }
+
+        return 1;
     }
 }

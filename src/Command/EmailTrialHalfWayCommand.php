@@ -40,6 +40,8 @@ class EmailTrialHalfWayCommand extends Command
         $this->processTrialists();
 
         echo "SCRIPT END - Email Trial Half Way\n\n";
+
+        return 1;
     }
 
     private function processTrialists()

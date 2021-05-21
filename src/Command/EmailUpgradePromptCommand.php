@@ -75,6 +75,8 @@ class EmailUpgradePromptCommand extends Command
             $this->message->setSubject("Someone wants to hire you!");
         }
         $this->sendEmailHireNow();
+
+        return 1;
     }
 
     private function newMessage()

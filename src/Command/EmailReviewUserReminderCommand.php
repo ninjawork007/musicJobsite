@@ -111,5 +111,7 @@ class EmailReviewUserReminderCommand extends Command
                 }
             }
         }
+
+        return 1;
     }
 }

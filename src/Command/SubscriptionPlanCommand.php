@@ -72,6 +72,8 @@ class SubscriptionPlanCommand extends Command
         } else {
             $output->writeln('You must specify some options to run this command. Add --help option to see command requirements.');
         }
+
+        return 1;
     }
 
     /**

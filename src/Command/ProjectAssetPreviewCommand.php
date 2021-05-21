@@ -89,5 +89,7 @@ class ProjectAssetPreviewCommand extends Command
 
             $command->run($simulatedInput, $output);
         }
+
+        return 1;
     }
 }

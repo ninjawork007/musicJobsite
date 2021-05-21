@@ -97,6 +97,8 @@ class EmailStudioActivityCommand extends Command
             $this->sendEmail($pf, join($content));
         }
         $output->writeln('done');
+
+        return 1;
     }
 
     /**
