@@ -72,6 +72,12 @@ class Project
      * @ORM\ManyToOne(targetEntity="UserTransaction")
      */
     protected $user_transaction;
+    /**
+     * One Product has One Shipment.
+     * @ORM\OneToOne(targetEntity="PayPalTransaction")
+     * @ORM\JoinColumn(name="paypal_transaction_id", referencedColumnName="id", nullable=true)
+     */
+    private $paypal_transaction;
 
     /**
      * @Assert\NotBlank(message="Required")
@@ -94,9 +100,9 @@ class Project
 
     /**
      * @Assert\NotBlank(message="Required")
-     * @Assert\Length (
-     *      min = 30,
-     *      minMessage = "Please enter at least {{ limit }} characters."
+     * @Assert\MinLength(
+     *     limit=30,
+     *     message="Please enter at least {{ limit }} characters."
      * )
      * @CustomRegex(
      *     pattern="/[^\x20-\x7e\s\p{P}]+/mu",
@@ -289,7 +295,7 @@ class Project
 
     /**
      * @ORM\Column(type="string", length=11, nullable=true)
-     * @Assert\Range (min = "0", invalidMessage = "Error")
+     * @Assert\Min(limit = "0", invalidMessage = "Error")
      */
     protected $bpm = null;
 
@@ -2691,6 +2697,26 @@ class Project
     public function setDaysExtended($days_extended)
     {
         $this->days_extended = $days_extended;
+        return $this;
+    }
+
+    /**
+     * @return PayPalTransaction
+     */
+    public function getPaypalTransaction()
+    {
+        return $this->paypal_transaction;
+    }
+
+    /**
+     * @param PayPalTransaction $paypal_transaction
+     * @return Project
+     */
+    public function setPaypalTransaction($paypal_transaction)
+    {
+        $this->paypal_transaction = $paypal_transaction;
+
+        return $this;
         return $this;
     }
 }

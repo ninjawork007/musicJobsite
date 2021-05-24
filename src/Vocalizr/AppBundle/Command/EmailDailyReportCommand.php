@@ -178,7 +178,8 @@ class EmailDailyReportCommand extends ContainerAwareCommand
                 ->createQueryBuilder('us')
                 ->select('count(us)')
                 ->where('us.is_active = false')
-                ->andWhere('us.date_ended > :yesterday')
+                ->andWhere('us.date_ended > :yesterday and us.date_ended != 0')
+                ->andWhere('us.cancel_date > :yesterday and us.cancel_date != 0')
                 ->setParameter('yesterday', $yesterday);
         $numCancelledSubscribers = $q->getQuery()->getSingleScalarResult();
         echo 'NUM CANCELLED SUBSCRIBERS: ' . $numCancelledSubscribers . "\n";

@@ -20,23 +20,25 @@
                 ga('send', 'event', 'Search', 'Sounds like', $('#user_search_sounds_like').val());
             }
         });
-        function shuffle(localItemName, elementClassName, isUpgrade) {
-            if (!localStorage.getItem(localItemName) || isUpgrade ) {
-                localStorage.setItem(localItemName, 0)
-            }
-
+        function shuffle(localItemName, elementClassName) {
             $(elementClassName).on('click', function (e) {
                 e.preventDefault();
-
-                if (localStorage.getItem(localItemName) >= 2) {
-                    $('#access-pass-popup').modal('show');
-                } else {
-                    localStorage.setItem(localItemName, localStorage.getItem(localItemName) + 1)
-                    location.href = $(this).attr('href');
-                }
+                $('#access-pass-popup').modal('show');
             });
         }
-        shuffle('shuffleVocalists', '.btn-shuffle', {{ app.user.isSubscribed }});
+
+        $(document).ready(function (){
+            {% if app.user.isVocalistsDemo >= 2 and app.user.isSubscribed == false %}
+                $('#access-pass-popup').modal('show');
+                shuffle('shuffleVocalists', '.btn-shuffle');
+                shuffle('shuffleVocalists', '.gig-filter > ul > li > a');
+                shuffle('shuffleVocalists', '.padding > form');
+            {% elseif app.user.isVocalistsDemo < 2 %}
+                {{ numberVocalistDemoPlus(app.user) }}
+            {% endif %}
+
+
+        });
     </script>
 {% endblock %}
 

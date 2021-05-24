@@ -1,0 +1,29 @@
+{
+    "name": "hipaway-travel/mandrill-bundle",
+    "type": "symfony-bundle",
+    "description": "Symfony HipMandrillBundle",
+    "keywords": ["Mandrill", "transaction mail", "transactional", "messages", "email"],
+    "homepage": "https://github.com/Hipaway-Travel/HipMandrillBundle",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Sven Loth",
+            "email": "sven@hipaway.com",
+            "homepage": "http://hipaway.com"
+        },
+        {
+            "name": "Github Community",
+            "homepage": "https://github.com/Hipaway-Travel/HipMandrillBundle/contributors"
+        }
+    ],
+    "require": {
+        "symfony/http-foundation": ">=2.1",
+        "symfony/config": ">=2.1",
+        "mandrill/mandrill": "1.*"
+    },
+    "autoload": {
+        "psr-0": { "Hip\\MandrillBundle": "" }
+    },
+    "target-dir": "Hip/MandrillBundle",
+    "minimum-stability": "alpha"
+}

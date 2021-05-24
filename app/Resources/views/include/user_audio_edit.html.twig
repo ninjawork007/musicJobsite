@@ -32,6 +32,7 @@
 
 <div id="{{ userAudio.slug }}-actions" class="user-audio-actions">
     <button name="edit_title" class="btn btn-sm btn-default title-edit roll-alt">EDIT</button>
+    <a href="{{ path('user_download_audio', {'audio': userAudio.id}) }}" class="btn btn-sm btn-default" download>DOWNLOAD</a>
     <button name="edit_title" data-href="{{ path('title_edit', { id : userAudio.id }) }}" class="btn btn-sm btn-default title-save roll-alt" style="display: none">SAVE</button>
     {% if not userAudio.defaultAudio %}
         <button class="btn btn-sm btn-default" type="submit" name="mark_featured" value="{{ userAudio.id }}">SET FEATURED</button>

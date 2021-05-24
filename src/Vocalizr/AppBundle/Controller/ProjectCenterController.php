@@ -69,7 +69,7 @@ class ProjectCenterController extends Controller
         $qb->select('p, u')
            ->innerJoin('p.user_info', 'u')
            ->where('p.user_info = :user')
-           ->andWhere('p.published_at IS NULL AND p.is_active = 1')
+           ->andWhere('p.published_at IS NULL')
            ->setParameter('user', $this->getUser())
            ->orderBy('p.created_at', 'DESC');
         $unpublishedProjects = $qb->getQuery()->execute();

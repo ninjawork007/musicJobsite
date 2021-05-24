@@ -80,7 +80,7 @@ class DashboardController extends Controller
                             'class'       => 'tag-input',
                             'placeholder' => 'e.g. Beyonce or Justin Timberlake',
                         ],
-                        'mapped' => false,
+                        'property_path' => false,
                     ])
                     ->getForm();
 
@@ -377,7 +377,7 @@ class DashboardController extends Controller
                             'class'       => 'tag-input',
                             'placeholder' => 'e.g. Beyonce or Justin Timberlake',
                         ],
-                        'mapped' => false,
+                        'property_path' => false,
                     ])
                     ->getForm();
 

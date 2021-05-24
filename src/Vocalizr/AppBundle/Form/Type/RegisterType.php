@@ -21,17 +21,17 @@ class RegisterType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('first_name', 'text', [
-                'label' => 'FIRST NAME',
-                'attr'  => [
-                    'class' => 'form-control',
-                ],
-            ])
-            ->add('last_name', 'text', [
-                'label' => 'LAST NAME',
-            ])
             ->add('username', 'text', [
                 'label' => 'USERNAME <small>(this can not be changed)</small><br>',
+            ])
+            ->add('is_producer', null, [
+                'label' => 'Producer',
+                'required' => false,
+            ])
+            ->add('is_vocalist', null, [
+                'label'    => 'Vocalist',
+                'attr' => ['id' => 'is_vocalist'],
+                'required' => false,
             ])
             ->add('password', 'repeated', [
                 'type'            => 'password',

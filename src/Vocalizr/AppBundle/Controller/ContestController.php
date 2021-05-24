@@ -20,12 +20,14 @@ use Vocalizr\AppBundle\Entity\SubscriptionPlan;
 use Vocalizr\AppBundle\Entity\UserInfo;
 use Vocalizr\AppBundle\Entity\UserWalletTransaction;
 use Vocalizr\AppBundle\Event\JustCreatedEvent;
+use Vocalizr\AppBundle\Exception\NotEnoughMoneyException;
 use Vocalizr\AppBundle\Form\Type\LocationType;
 use Vocalizr\AppBundle\Form\Type\NewProjectContestType;
 use Vocalizr\AppBundle\Form\Type\ProjectBidType;
 use Vocalizr\AppBundle\Form\Type\ProjectLyricType;
 use Vocalizr\AppBundle\Form\Type\ProjectSearchType;
 use Vocalizr\AppBundle\Form\Type\PublishType;
+use Vocalizr\AppBundle\Model\ProjectModel;
 use Vocalizr\AppBundle\Repository\SubscriptionPlanRepository;
 
 class ContestController extends Controller
@@ -509,6 +511,57 @@ class ContestController extends Controller
         );
 
         return $this->redirect($this->generateUrl('contest_view', ['uuid' => $uuid]));
+    }
+
+    /**
+     * Confirm the publishing of a project
+     *
+     * @Route("/new/contest/{uuid}/publish/confirm/via/wallet", name="contest_publish_confirm_via_wallet")
+     * @Secure(roles="ROLE_USER")
+     *
+     * @param Request $request
+     * @param string $uuid
+     * @throws \Vocalizr\AppBundle\Exception\NotEnoughMoneyException
+     */
+    public function publishConfirmViaWalletAction(Request $request, $uuid)
+    {
+        $em = $this->getDoctrine()->getManager();
+
+        $projectRepo = $em->getRepository('VocalizrAppBundle:Project');
+
+        /** @var Project $project */
+        $project = $projectRepo->getProjectByUuid($uuid);
+        /** @var ProjectModel $projectModel */
+        $projectModel = $this->container->get('vocalizr_app.model.project');
+        $param = $request->get('project');
+        $projectModel->processPublicationPayment($project, $param['price'], $param['upgrades_amount_cents']);
+        if ($project->getPaymentStatus() == Project::PAYMENT_STATUS_PAID) {
+            if ($param['featured']) {
+                $project->setFeatured(true);
+                $project->setFeaturedAt(new \DateTime());
+            }
+            if ($param['publish_type']) {
+                $project->setShowInNews(true);
+            }
+            if ($param['highlight']) {
+                $project->setHighlight(true);
+            }
+            if ($param['messaging']) {
+                $project->setMessaging(true);
+            }
+            if ($param['to_favorites']) {
+                $project->setToFavorites(true);
+            }
+            if ($param['lock_to_cert']) {
+                $project->setProRequired(true);
+            }
+            if ($param['restrict_to_preferences']) {
+                $project->setRestrictToPreferences(true);
+            }
+            $em->flush();
+            return new JsonResponse(['success' => true]);
+        }
+        return new JsonResponse(['success' => false]);
     }
 
     /**

@@ -110,7 +110,7 @@ class StripeController extends Controller
         ;
 
         $stripe = new StripeModel(
-            ['Stripe-Version: 2020-03-02;identity_beta=v4'],
+            ['Stripe-Version: 2020-03-02;identity_beta=v5'],
             'https://api.stripe.com/v1/identity/verification_sessions',
             $data,
             $this->container->getParameter('stripe_api_key')

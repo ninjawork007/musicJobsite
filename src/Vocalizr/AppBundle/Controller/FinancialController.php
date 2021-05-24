@@ -303,7 +303,7 @@ class FinancialController extends Controller
             if ($refund === false) {
                 $this->get('session')->getFlashBag()->add('error', 'Refund error');
             } else {
-                $this->get('session')->getFlashBag()->add('notice', 'We have refunded $' . (number_format($project->getBudgetTo(), 2)) . ' into your card');
+                $this->get('session')->getFlashBag()->add('notice', 'We have refunded $' . (number_format($project->getBudgetFrom(), 2)) . ' into your card');
             }
             return $this->redirect($this->generateUrl('user_financial'));
         }

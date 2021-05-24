@@ -164,9 +164,9 @@
 </div>
 {% if not app.user.isSubscribed %}
     <div class="subscription">
-        <p class="hide" id="subscription-promo">Unlock savings & messaging with <b>Access Pass</b> <img src="{{ asset('images/vocalizr_pro_stamp.svg') }}" class="svg-stamp-pro in-profile" alt="pro"> for 10.99</p>
-        <p class="hide" id="could-save">You could save $<span id="could-save-amount">0</span> with <b>Access Pass</b> <img src="{{ asset('images/vocalizr_pro_stamp.svg') }}" class="svg-stamp-pro in-profile" alt="pro"> for 10.99</p>
-        <a href="{{ path('membership') }}" class="btn btn-upgrade-pro">Add <b class="pro">Access Pass</b></a>
+        <p class="hide" id="subscription-promo">Unlock savings & messaging with <b>Access Pass</b> <img src="{{ asset('images/vocalizr_pro_stamp.svg') }}" class="svg-stamp-pro in-profile" alt="pro"> for 11.99</p>
+        <p class="hide" id="could-save">You could save $<span id="could-save-amount">0</span> with <b>Access Pass</b> <img src="{{ asset('images/vocalizr_pro_stamp.svg') }}" class="svg-stamp-pro in-profile" alt="pro"> for 11.99</p>
+        <a href="{{ path('membership') }}" class="btn btn-upgrade-pro">Add <b class="pro">Access Pass</b> now</a>
     </div>
 {% endif %}
 
@@ -180,7 +180,7 @@
     </div>
     <div class="calculator-item hide" data-role="pro-subscription">
         <div class="calculator-title">Access Pass subscription</div>
-        <div class="calculator-value">$<span class="number">10.99</span></div>
+        <div class="calculator-value">$<span class="number">11.99</span></div>
     </div>
     {% if project.projectType == 'contest' %}
         <div class="calculator-item" data-role="contest-budget">
@@ -196,7 +196,7 @@
         <div class="calculator-item" data-role="vocalizr-fee">
             <div class="calculator-title">Vocalizr Commission Fee</div>
             <div class="calculator-value">
-                $<span class="number" data-save="{{
+                $<span id="vocalizr-fee" class="number" data-save="{{
                     app.user.isSubscribed
                     ? '' :
                     (projectBudget / 100) * prices.PRO.project_percent_added

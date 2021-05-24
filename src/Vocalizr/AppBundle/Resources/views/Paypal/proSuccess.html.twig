@@ -11,6 +11,16 @@
         <link rel="stylesheet" href="{{ asset_url }}" />
         {% endstylesheets %}
 {% endblock %}
+{% block javascript %}
+    <script>
+        if (localStorage.getItem('uuid')) {
+            var url = '{{ path('project_new_publish', {uuid: 'uuid'}) }}';
+            url = url.replace('uuid', localStorage.getItem('uuid'));
+            localStorage.clear();
+            window.location = url;
+        }
+    </script>
+{% endblock %}
 
 {% block body %}
     <div class="row">

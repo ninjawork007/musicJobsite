@@ -120,8 +120,8 @@
                         <div class="date-sent">{{ message.createdAt|timeAgoString }} ago</div>
                     </div>
                     <div class="content">
-                        {{ message.content|nl2br }}
-                        {% if message.messageFiles|length > 0 %}
+                        {{ can_hire_now() ? message.content|nl2br : '*******' }}
+                        {% if message.messageFiles|length > 0 and can_hire_now() %}
                             <div class="message-dl-list">
                                 {% for messageFile in message.messageFiles %}
                                 <div class="message-file-dl">
@@ -171,7 +171,11 @@
         </div>
         <div class="form-wrap">
             <form id="reply-message-form" action="{{ path('message_reply', {uuid: thread.uuid} ) }}" method="post">
-                {{ form_widget(form.content) }}
+                {% if can_hire_now() %}
+                    {{ form_widget(form.content) }}
+                {% else %}
+                    {{ form_widget(form.content, {'attr': {'disabled': true}}) }}
+                {% endif %}
                 <div style="display: inline" id="upload-file-container" data-url="{{ path('upload_audio') }}"
                      data-extensions="{{ upload_audio_allowed }}" data-form="reply-message-form">
                     <div class="message-file-list">

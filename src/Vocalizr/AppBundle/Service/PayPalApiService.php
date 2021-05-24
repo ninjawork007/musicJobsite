@@ -128,6 +128,19 @@ class PayPalApiService
     }
 
     /**
+     * @param string $paypalEmail
+     * @param int $amount
+     */
+    public function refundForContest($transactionId, $amount)
+    {
+        $this->legacyApiCall('RefundTransaction', [
+            'TRANSACTIONID' => $transactionId,
+            'REFUNDTYPE'    => 'Partial',
+            'AMT'           => $amount,
+        ]);
+    }
+
+    /**
      * @param UserWithdraw[] $withdraws
      *
      * @return PayoutBatch

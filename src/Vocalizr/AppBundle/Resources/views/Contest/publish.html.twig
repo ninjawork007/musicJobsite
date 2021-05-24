@@ -20,36 +20,66 @@
         <script type="text/javascript" src="{{ asset_url }}"></script>
     {% endjavascripts %}
 
-    <script src="https://js.stripe.com/v3/"></script>
     <script>
-        var stripe = Stripe("{{ stripe_checkout_key }}");
-
-        $('#publish-form').on('submit', function (e) {
+       $('#publish-form').on('submit', function (e) {
             e.preventDefault();
-            App.showLoading();
-            var formData = $(this).serialize();
-            $.post($(this).attr('action'), formData, function (data) {
-                if (!$('#payment').hasClass('hide')) {
-                    $.ajax({
-                        url: "{{ path('stipe_session_checkout') }}",
-                        method: 'GET',
-                        data: {
-                            uuid: $('#publish-form').data('uuid'),
-                            upgrade_to_pro: $('#publish-form .js-upgrade-to-pro-check').val() || '0',
-                        },
-                        success: function (data) {
-                            if (data.success) {
-                                if (data.href) {
-                                    location.href = data.href;
-                                }
-                                stripe.redirectToCheckout({ sessionId: data.ssid })
-                            }
+            $('#deposit-amount').val($('#total-price').text());
+            if (localStorage.getItem('{{ project.uuid }}')) {
+                $('#paypal-popup').modal('show');
+            } else {
+                App.showLoading();
+                localStorage.setItem('{{ project.uuid }}', 1);
+                var lock_to_cert = $('input[name="project[lock_to_cert]"]').parent().hasClass('checked');
+                var featured = $('input[name="project[featured]"]').parent().hasClass('checked');
+                var messaging = $('input[name="project[messaging]"]').parent().hasClass('checked');
+                var highlight = $('input[name="project[highlight]"]').parent().hasClass('checked');
+                var publish_type = $('input[name="project[publish_type]"]').parent().hasClass('checked');
+                var to_favorites = $('input[name="project[to_favorites]"]').parent().hasClass('checked');
+                var restrict_to_preferences = $('input[name="project[restrict_to_preferences]"]').parent().hasClass('checked');
+                var vocalizr_fee = $('#vocalizr-fee').text();
+                var uuid = '{{ project.uuid }}';
+                var param = {
+                    'lock_to_cert' : lock_to_cert,
+                    'featured' : featured,
+                    'messaging' : messaging,
+                    'highlight' : highlight,
+                    'publish_type' : publish_type,
+                    'to_favorites' : to_favorites,
+                    'restrict_to_preferences' : restrict_to_preferences,
+                    'uuid' : uuid,
+                    'user_email' : "{{ app.user.email }}",
+                    'vocalizr_fee' : vocalizr_fee,
+                };
+                $('input[name="custom"]').val(JSON.stringify(param));
+                $.ajax({
+                    url: '{{ path('contest_publish_confirm_via_wallet', {uuid: project.uuid}) }}',
+                    method: 'POST',
+                    data: {
+                        project: {
+                            price: $('#total-price').text() * 100,
+                            lock_to_cert : lock_to_cert,
+                            featured : featured,
+                            messaging : messaging,
+                            highlight : highlight,
+                            publish_type : publish_type,
+                            to_favorites : to_favorites,
+                            restrict_to_preferences : restrict_to_preferences,
+                            upgrades_amount_cents : (lock_to_cert + featured + messaging + highlight + publish_type + to_favorites + restrict_to_preferences) * 10,
                         }
-                    });
-                } else {
-                    window.location = $('#publish').data('confirm');
-                }
-            });
+                    },
+                    success: function (data) {
+                        if (data.success) {
+                            window.location = $('#publish').data('confirm');
+                        } else {
+                            $('#payment-submit').click();
+                        }
+                    },
+                    error: function () {
+                        $('#payment-submit').click();
+                    }
+                });
+            }
+
         });
     </script>
 {% endblock %}
@@ -114,6 +144,22 @@
                         <a href="{{ path('contest_publish_confirm', {uuid: project.uuid}) }}" class="btn btn-primary">Publish Now</a>
                     </div>
                 {% endif %}
+
+                <form id="payment-form" action="{{ paypal.url }}" method="post" target="_top" style="display:inline">
+                    <input type="hidden" name="cmd" value="_xclick">
+                    <input type="hidden" name="item_name" value="Deposit into Vocalizr Wallet" />
+                    <input type="hidden" name="custom" value="DEPOSIT{{ app.user.uniqueStr }}" />
+                    <input type="hidden" name="no_shipping" value="1" />
+                    <input type="hidden" name="return" value="{{ url('project_publish_confirm', {uuid: project.uuid}) }}?success=1" />
+                    <input type="hidden" name="cancel_return" value="{{ path('project_publish_confirm', {uuid: project.uuid}) }}?cancel=1" />
+                    <input type="hidden" name="business" value="{{ paypal.primaryEmail }}">
+                    <input type="hidden" name="lc" value="US">
+                    <input type="hidden" name="currency_code" value="{{ paypal.currency }}">
+                    <input type="hidden" name="no_note" value="0">
+                    <input type="hidden" name="notify_url" value="{{ paypal.notifyUrl }}" />
+                    <input id="deposit-amount" type="hidden" name="amount" value="0" />
+                    <input id="payment-submit" type="submit" name="submit" value="submit" style="display:none;" />
+                </form>
             </div>
         </div>
 
@@ -131,4 +177,10 @@
     </div>
 </div>
 
+{% endblock %}
+
+{% block modals %}
+    <div id="paypal-popup" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="vocalizr-modal" aria-hidden="true">
+        {% include 'include/panel/block_pay_paypal.twig' %}
+    </div>
 {% endblock %}

@@ -2,6 +2,7 @@
 
 namespace Vocalizr\AppBundle\Entity;
 
+require_once __DIR__ . '/../../../../vendor/simpleimage/lib/SimpleImage.php';
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -10,7 +11,6 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 use Vocalizr\AppBundle\Validator\Constraints\CustomRegex;
-use abeautifulsite\SimpleImage;
 
 /**
  * @ORM\Entity(repositoryClass="Vocalizr\AppBundle\Repository\UserInfoRepository")
@@ -87,13 +87,11 @@ class UserInfo implements UserInterface
 
     /**
      * @ORM\Column(type="string", length=64, nullable=true)
-     * @Assert\NotBlank(message="First name is required", groups={"register_step1"})
      */
     protected $first_name = null;
 
     /**
      * @ORM\Column(type="string", length=64, nullable=true)
-     * @Assert\NotBlank(message="Last name is required", groups={"register_step1"})
      */
     protected $last_name = null;
 
@@ -234,6 +232,21 @@ class UserInfo implements UserInterface
      * @ORM\Column(type="boolean")
      */
     protected $is_songwriter = false;
+
+    /**
+     * @ORM\Column(type="integer")
+     */
+    protected $is_vocalists_demo = false;
+
+    /**
+     * @ORM\Column(type="integer")
+     */
+    protected $is_producers_demo = false;
+
+    /**
+     * @ORM\Column(type="integer")
+     */
+    protected $is_job_demo = false;
 
     /**
      * @ORM\Column(type="boolean")
@@ -3996,5 +4009,62 @@ class UserInfo implements UserInterface
     public function setGetCertifiedMailSend($getCertifiedMailSend)
     {
         $this->getCertifiedMailSend = $getCertifiedMailSend;
+    }
+
+    /**
+     * @return int
+     */
+    public function isIsVocalistsDemo()
+    {
+        return $this->is_vocalists_demo;
+    }
+
+    /**
+     * @param int $is_vocalists_demo
+     * @return UserInfo
+     */
+    public function setIsVocalistsDemo($is_vocalists_demo)
+    {
+        $this->is_vocalists_demo = $is_vocalists_demo;
+
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function isIsProducersDemo()
+    {
+        return $this->is_producers_demo;
+    }
+
+    /**
+     * @param int $is_producers_demo
+     * @return UserInfo
+     */
+    public function setIsProducersDemo($is_producers_demo)
+    {
+        $this->is_producers_demo = $is_producers_demo;
+
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function isIsJobDemo()
+    {
+        return $this->is_job_demo;
+    }
+
+    /**
+     * @param int $is_job_demo
+     * @return UserInfo
+     */
+    public function setIsJobDemo($is_job_demo)
+    {
+        $this->is_job_demo = $is_job_demo;
+
+        return $this;
     }
 }

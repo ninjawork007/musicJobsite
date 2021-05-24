@@ -934,7 +934,7 @@ class ProjectStudioController extends Controller
         $uwt->setUserInfo($this->projectBid->getUserInfo());
         $uwt->setAmount('-' . $fee); // In cents
         $uwt->setCurrency($this->container->getParameter('default_currency'));
-        $description = 'Gig fee taken for {project}';
+        $description = 'Platform commission fee for {project}';
         $uwt->setDescription($description);
         $data = [
             'projectTitle' => $this->project->getTitle(),
@@ -1426,6 +1426,9 @@ class ProjectStudioController extends Controller
      */
     public function downloadAssetsAction(Request $request, $uuid)
     {
+        ini_set('max_execution_time', '3600');
+        set_time_limit(3600);
+
         $em   = $this->getDoctrine()->getManager();
         $user = $this->getUser();
 
@@ -1462,17 +1465,14 @@ class ProjectStudioController extends Controller
         // Create new Zip Archive.
         $zip = new \ZipArchive();
 
-        $responseFileName = str_replace(
-            array_merge(
-                array_map('chr', range(0,31)),
-                ['<', '>', ':', '"', '/', "\\", '|', '?', '*', ' ']
-            ),
-            '-',
-            sprintf('Vocalizr-Assets-for-%s-with-%s.zip',
-                $project->getTitle(),
-                $project->getBidderUser()->getUsername()
-            )
+        $responseFileName = sprintf('Vocalizr-Assets-for-%s-with-%s.zip',
+            $project->getTitle(),
+            $project->getBidderUser()->getUsername()
         );
+
+        // Only alphanumeric and underscore
+        $fileNamePattern  = '/[^a-z0-9_.]+/miu';
+        $responseFileName = preg_replace($fileNamePattern, '-', $responseFileName);
 
         $tempFilePath = $this->get('service.helper')->getUploadTmpDir()
             . DIRECTORY_SEPARATOR . uniqid('voc-asset') . '.zip';
@@ -1481,25 +1481,26 @@ class ProjectStudioController extends Controller
             throw new CommonException('Could not create archive');
         }
 
-        $fileNamesInResponseArchive = [];
+        $fileNameCounters = [];
         foreach ($assets as $asset) {
             // If we have two files with same names, we need give them unique names
             // Because we should add them in one zip file
             $fileName = $asset->getAbsolutePath();
-            if (file_exists($fileName)) {
-                $baseName = str_replace(' ', '-', $asset->getTitle());
-                if (array_key_exists($baseName, $fileNamesInResponseArchive)) {
-                    ++$fileNamesInResponseArchive[$baseName];
-                    $uniqueFileName = sprintf(
-                        '%d_%s',
-                        $fileNamesInResponseArchive[$baseName],
-                        $baseName
-                    );
-                } else {
-                    $fileNamesInResponseArchive[$baseName] = 0;
-                    $uniqueFileName                        = $baseName;
-                }
-                $zip->addFile($fileName, $uniqueFileName);
+            if (!file_exists($fileName)) {
+                continue;
+            }
+
+            $baseFileNameInArchive = preg_replace($fileNamePattern, '-', $asset->getTitle());
+            if (isset($fileNameCounters[$baseFileNameInArchive])) {
+                $zip->addFile($fileName, sprintf(
+                    '%d_%s',
+                    $fileNameCounters[$baseFileNameInArchive],
+                    $baseFileNameInArchive
+                ));
+                $fileNameCounters[$baseFileNameInArchive]++;
+            } else {
+                $fileNameCounters[$baseFileNameInArchive] = 1;
+                $zip->addFile($fileName, $baseFileNameInArchive);
             }
         }
 

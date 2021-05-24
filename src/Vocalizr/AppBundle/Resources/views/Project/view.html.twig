@@ -41,16 +41,16 @@
     {% endif %}
 
     {% if userBid and not userBid.highlightOption and not project.awardedAt and project.bidsDue > date() %}
-        <div id="bid-highlight" style="display: none">
-            {% include 'include/panel/highlight_bid.html.twig' %}
-        </div>
-        <script>
-            $(document).ready(function() {
-                {% if userBid.highlightOption is null %}
-                    $(document).trigger('vocalizr.modal.bid-highlight', {bid_uuid: '{{ userBid.uuid }}'});
-                {% endif %}
-            });
-        </script>
+{#        <div id="bid-highlight" style="display: none">#}
+{#            {% include 'include/panel/highlight_bid.html.twig' %}#}
+{#        </div>#}
+{#        <script>#}
+{#            $(document).ready(function() {#}
+{#                {% if userBid.highlightOption is null %}#}
+{#                    $(document).trigger('vocalizr.modal.bid-highlight', {bid_uuid: '{{ userBid.uuid }}'});#}
+{#                {% endif %}#}
+{#            });#}
+{#        </script>#}
     {% endif %}
 
     {% if app.user and project.isOwner(app.user) and not app.user.verified %}

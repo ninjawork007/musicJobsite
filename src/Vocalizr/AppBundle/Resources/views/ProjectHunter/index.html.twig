@@ -32,27 +32,28 @@
         <script type="text/javascript">
             let isCertified = '{{ app.user.isCertified }}';
             $(document).ready(function (){
-                if (!isCertified) {
-                    $('#certified-popup').modal('show');
-                }
+                {% if app.user.isJobDemo >= 1 and app.user.isSubscribed == false %}
+                    $('#access-pass-popup').modal('show');
+                    shuffle('shuffleJob', '#gig-results > .paging > ul > li > a');
+                    shuffle('shuffleJob', '.gig-filter > ul > li > a');
+                    shuffle('shuffleJob', '.padding > form');
+                {% elseif app.user.isJobDemo < 1 %}
+                    if (!isCertified) {
+                        $('#certified-popup').modal('show');
+                    }
+                    {{ numberJobDemoPlus(app.user) }}
+                {% else %}
+                    if (!isCertified) {
+                        $('#certified-popup').modal('show');
+                    }
+                {% endif %}
             });
-            function shuffle(localItemName, elementClassName, isUpgrade) {
-                if (!localStorage.getItem(localItemName) || isUpgrade ) {
-                    localStorage.setItem(localItemName, 0)
-                }
-
+            function shuffle(localItemName, elementClassName) {
                 $(elementClassName).on('click', function (e) {
                     e.preventDefault();
-
-                    if (localStorage.getItem(localItemName) >= 2) {
-                        $('#access-pass-popup').modal('show');
-                    } else {
-                        localStorage.setItem(localItemName, localStorage.getItem(localItemName) + 1)
-                        location.href = $(this).attr('href');
-                    }
+                    $('#access-pass-popup').modal('show');
                 });
             }
-            shuffle('shuffleJob', '#gig-results > .paging > ul > li > a', {{ app.user.isSubscribed }});
 
         </script>
 

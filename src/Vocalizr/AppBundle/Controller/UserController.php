@@ -2,6 +2,7 @@
 
 namespace Vocalizr\AppBundle\Controller;
 
+use JMS\SecurityExtraBundle\Annotation\Secure;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Stripe\Customer;
@@ -9,11 +10,13 @@ use Stripe\Stripe;
 use Stripe\Subscription;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Form\FormError;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
@@ -22,6 +25,7 @@ use Symfony\Component\Security\Core\Encoder\MessageDigestPasswordEncoder;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Vocalizr\AppBundle\Entity\Counter;
 use Vocalizr\AppBundle\Entity\EmailChangeRequest;
+use Vocalizr\AppBundle\Entity\UserAudio;
 use Vocalizr\AppBundle\Entity\UserCancelSub;
 use Vocalizr\AppBundle\Entity\UserInfo;
 use Vocalizr\AppBundle\Entity\UserProProfile;
@@ -1775,6 +1779,10 @@ class UserController extends Controller
 
         try {
             $connectionModel->requestConnection($user, $toUser, $request->get('message'));
+            if (!$toUser->isSubscribed()) {
+                $mailService = $this->container->get('service.mail');
+                $mailService->sendRequestConnect($toUser);
+            }
         } catch (UserConnectionNotAllowedException $e) {
             if ($e->hasViolation(UserConnectModel::CONSTRAINT_NOT_SUBSCRIBED)) {
                 return $this->render('include/panel/unlimited_connections_panel.html.twig');
@@ -2477,5 +2485,30 @@ class UserController extends Controller
                 ->getProjectsAwardedNeedAction($user->getId());
 
         return ['projectsAwarded' => $projectsAwarded];
+    }
+
+    /**
+     * Download master track
+     *
+     * @Secure(roles="ROLE_USER")
+     * @Route("/user/download/{audio}", name="user_download_audio")
+     * @param UserAudio $audio
+     */
+    public function downloadMasterAction($audio)
+    {
+        $em   = $this->getDoctrine()->getManager();
+        $audio = $em->getRepository("VocalizrAppBundle:UserAudio")->find($audio);
+        $name = explode(".", $audio->getPath());
+
+        $response = new BinaryFileResponse(
+            $audio->getAbsolutePath()
+        );
+
+        $response->setContentDisposition(
+            ResponseHeaderBag::DISPOSITION_ATTACHMENT,
+            $audio->_getSlug($audio->getTitle()) . '.' . $name[1]
+        );
+
+        return $response;
     }
 }

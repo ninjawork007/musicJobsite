@@ -55,19 +55,21 @@
     </li>
     {% endif %}
 </ul>
-<script>
+<script type="text/javascript">
 
     {% if not can_hire_now() %}
-        setTimeout(function (){
-
-            $('.invite-project').click(function (e) {
-                showModal(e, '#hire_now_modal')
+        setTimeout(800, function (){
+            $(document).ready(function (){
+                $('.invite-project').click(function (e) {
+                    showModal(e, '#hire_now_modal')
+                });
+                $('.notify-dd li').off('click');
+                $('.notify-dd li').on('click', function (e) {
+                    $('.t_Tooltip_light-vskin').fadeOut(0);
+                    showModal(e, '#hire_now_modal')
+                });
             });
-            $('.notify-dd li').off('click');
-            $('.notify-dd li').on('click', function (e) {
-                showModal(e, '#hire_now_modal')
-            });
-        }, 500);
+        });
 
         {% if app.session.flashBag().get('hire_now_modal') %}
             showModal(null, '#hire_now_modal');

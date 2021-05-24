@@ -86,20 +86,3 @@ Regenerate seed data
 
 To see a list of all symfony commands
 - php app/console
-
-## Docker/Makefile commands :
-
-After cloning the project, run :
-- make build
-
-This will install the bundles and create the database.
-
-To run the server :
-- make start
-
-Then you have to run 
-- make ips
-
-And copy the php_vocalizr ip address and add the port 8000 to it, example : if the ip is 123.12.14.1 the url of your website will be 123.12.14.1:8000
-
-More details in the makefile comments

@@ -26,7 +26,7 @@
 
 }
 .voc-panel > .content {
-    display: flex;
+    /*display: flex;*/
     flex-direction: column;
     flex-grow: 1;
     justify-content: space-between;
@@ -93,7 +93,7 @@
 }
 .popup-panel .voc-panel .content {
     padding: 24px 19px 23px;
-    min-height: 198px;
+    min-height: 148px;
     justify-content: space-between;
 
 }
@@ -111,6 +111,7 @@
 .popup-panel .voc-panel .content .main .body {
     color: #fff;
     font-size: 14px;
+    margin-bottom: 24px;
 }
 .popup-panel .voc-panel .content .main .pre-footer-text {
     color: #00BBD4;

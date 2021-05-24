@@ -33,12 +33,12 @@
                 theme: "dark", 
             });
         });
-        {% if not can_hire_now() %}
-            setTimeout(function (){
+        $( document ).ready(function() {
+            {% if not can_hire_now() %}
                 showModal(null, '#hire_now_modal');
-            }, 500);
+            {% endif %}
+        });
 
-        {% endif %}
     </script>
 {% endblock %}
 

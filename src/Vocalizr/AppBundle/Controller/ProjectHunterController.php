@@ -13,7 +13,7 @@ use Vocalizr\AppBundle\Form\Type\ProjectSearchType;
 class ProjectHunterController extends Controller
 {
     /**
-     * @Route("/gig-hunter/{filter}", defaults={"filter" = "latest"}, name="gig_hunter")
+     * @Route("/jobs/{filter}", defaults={"filter" = "latest"}, name="gig_hunter")
      * @Template()
      */
     public function indexAction(Request $request)

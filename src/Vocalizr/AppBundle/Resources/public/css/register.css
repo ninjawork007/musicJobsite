@@ -304,6 +304,9 @@ p {
     list-style: none;
     padding-left: 22px;
 }
+.voc-panel.plan.free ul {
+    margin-bottom: 114px;
+}
 .voc-panel.payment {
     align-self: flex-start;
     width: 332px;
@@ -848,6 +851,7 @@ p {
 
     .voc-panel.plan.free ul {
         padding-left: 16px;
+        margin-bottom: 122px;
     }
 }
 @media screen and (min-width: 700px) and (max-width: 1000px) {

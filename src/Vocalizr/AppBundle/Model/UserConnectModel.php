@@ -185,8 +185,8 @@ class UserConnectModel extends Model
         }
 
         if (!$counters) {
-            return $user->getSubscriptionPlan()->getConnectMonthLimit();
-        }
+                return $user->getSubscriptionPlan()->getConnectMonthLimit();
+            }
 
         return $totalLeft;
     }

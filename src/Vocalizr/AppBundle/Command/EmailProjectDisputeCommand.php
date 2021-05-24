@@ -256,7 +256,7 @@ class EmailProjectDisputeCommand extends ContainerAwareCommand
         $uwt->setUserInfo($projectBid->getUserInfo());
         $uwt->setAmount('-' . $fee); // In cents
         $uwt->setCurrency($this->getContainer()->getParameter('default_currency'));
-        $description = 'Gig fee taken for {project}';
+        $description = 'Platform commission fee for {project}';
         $uwt->setDescription($description);
         $data = [
             'projectTitle' => $project->getTitle(),

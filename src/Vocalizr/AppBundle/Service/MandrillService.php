@@ -207,7 +207,7 @@ class MandrillService
         $message = new Message();
         //$message->setBccAddress('invoices@3ct36b04ct.referralcandy.com');
 
-        $this->sendMessage($user->getEmail(), $subject, $template, $vars, $message);
+//        $this->sendMessage($user->getEmail(), $subject, $template, $vars, $message);
     }
 
     /**

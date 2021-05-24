@@ -11,7 +11,7 @@
             <div class="modal-row">
                 <p>You agree to not use any or part of the entries that were submitted. This is subject to international copyright law.</p>
 
-                <p>By clicking confirm you agree to the before terms and <strong>${{ project.budgetTo }} USD</strong> will be refunded into your Vocalizr Wallet.</p>
+                <p>By clicking confirm you agree to the before terms and <strong>${{ project.budgetFrom }} USD</strong> will be refunded into your Vocalizr Wallet or PayPal account.</p>
             </div>
             <div class="modal-row modal-confirm-btns">
                 <form action="{{ path('finances_contest_refund', {uuid: project.uuid} ) }}" method="post">

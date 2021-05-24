@@ -130,13 +130,15 @@ class UserSubscriptionRepository extends EntityRepository
     public function findCountCancelledSubsByUser()
     {
 
-        $yesterday = new \DateTime();
-        $yesterday->sub(new \DateInterval('P1D'));
+        $yesterday = new \DateTime('-1 day midnight');
+        $today = new \DateTime('midnight');
         $qb = $this->createQueryBuilder('us')
             ->select('count(us)')
-            ->andWhere('us.cancel_date > :yesterday')
+            ->andWhere('us.cancel_date between :yesterday and :today')
             ->andWhere('us.cancel_date < us.date_ended')
-            ->setParameter('yesterday', $yesterday);
+            ->setParameter('yesterday', $yesterday)
+            ->setParameter('today', $today)
+        ;
 
         return $qb->getQuery()->getSingleScalarResult();
     }
@@ -144,14 +146,43 @@ class UserSubscriptionRepository extends EntityRepository
     public function findCountCancelledSubsByStripe()
     {
 
-        $yesterday = new \DateTime();
-        $yesterday->sub(new \DateInterval('P1D'));
+        $yesterday = new \DateTime('-1 day midnight');
+        $today = new \DateTime('midnight');
+        $qb = $this->createQueryBuilder('us')
+            ->select('count(distinct ui)')
+            ->leftJoin('us.user_info', 'ui')
+            ->where('us.is_active = false')
+            ->andWhere('ui.subscription_plan is null')
+            ->andWhere('us.date_ended IS NOT NULL')
+            ->andWhere('us.date_ended between :yesterday and :today')
+            ->setParameter('yesterday', $yesterday)
+            ->setParameter('today', $today)
+        ;
+
+        return $qb->getQuery()->getSingleScalarResult();
+    }
+
+    /**
+     * @param $year
+     * @param $quarter
+     */
+    public function findSubscriptionsByYearAndMonths($year, $months)
+    {
+        $dateStart = new \DateTime();
+        $dateStart->setDate($year, $months, 1);
+        $dateEnd = new \DateTime();
+        $dateEnd->setDate($year, $months, 31);
         $qb = $this->createQueryBuilder('us')
             ->select('count(us)')
-            ->where('us.is_active = false')
-            ->andWhere('us.cancel_date > :yesterday')
-            ->andWhere('us.cancel_date >= us.date_ended')
-            ->setParameter('yesterday', $yesterday);
+            ->leftJoin('us.user_info', 'ui')
+            ->andWhere('us.date_commenced <= :dateStart')
+            ->andWhere('us.date_ended >= :dateEnd')
+            ->andWhere('us.date_ended is not null')
+            ->andWhere('ui.country = :country')
+            ->setParameter('dateStart', $dateStart)
+            ->setParameter('dateEnd', $dateEnd)
+            ->setParameter('country', 'AU')
+        ;
 
         return $qb->getQuery()->getSingleScalarResult();
     }

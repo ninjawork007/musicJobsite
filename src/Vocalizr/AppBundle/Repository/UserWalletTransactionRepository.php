@@ -157,11 +157,12 @@ class UserWalletTransactionRepository extends EntityRepository
 
         $qb = $this->createQueryBuilder('uwt')
             ->andWhere('uwt.created_at between :dateStart and :dateEnd')
-            ->andWhere('uwt.description like :fee OR uwt.description like :feeContest')
+            ->andWhere('uwt.description like :fee OR uwt.description like :feeContest OR uwt.description like :feeNew')
             ->setParameter('dateStart', $dateStart)
             ->setParameter('dateEnd', $dateEnd)
             ->setParameter('fee', 'Gig fee taken%')
             ->setParameter('feeContest', 'Contest fee taken for%')
+            ->setParameter('feeNew', 'Platform commission fee for%')
         ;
 
         return $qb->getQuery()->getResult();
@@ -196,9 +197,88 @@ class UserWalletTransactionRepository extends EntityRepository
     public function findCommissionsAllTime()
     {
         $qb = $this->createQueryBuilder('uwt')
-            ->andWhere('uwt.description like :fee OR uwt.description like :feeContest')
+            ->andWhere('uwt.description like :fee OR uwt.description like :feeContest OR uwt.description like :feeNew')
             ->setParameter('fee', 'Gig fee taken%')
             ->setParameter('feeContest', 'Contest fee taken for%')
+            ->setParameter('feeNew', 'Platform commission fee for%')
+        ;
+
+        return $qb->getQuery()->getResult();
+    }
+
+    /**
+     * @param $year
+     * @param $quarter
+     */
+    public function findGigCommissionsByYearAndQuarter($year, $quarter)
+    {
+        $quarterDate = [
+            1 => ['startMonth' => 1, 'startDay' => 1, 'endMonth' => 3, 'endDay' => 31],
+            2 => ['startMonth' => 4, 'startDay' => 1, 'endMonth' => 6, 'endDay' => 30],
+            3 => ['startMonth' => 7, 'startDay' => 1, 'endMonth' => 9, 'endDay' => 30],
+            4 => ['startMonth' => 10, 'startDay' => 1, 'endMonth' => 12, 'endDay' => 31]
+        ];
+        $dateStart = new \DateTime();
+        $dateStart->setDate($year, $quarterDate[$quarter]['startMonth'], $quarterDate[$quarter]['startDay']);
+        $dateEnd = new \DateTime();
+        $dateEnd->setDate($year, $quarterDate[$quarter]['endMonth'], $quarterDate[$quarter]['endDay']);
+        $qb = $this->createQueryBuilder('uwt')
+            ->select('sum(uwt.amount)')
+            ->leftJoin('uwt.user_info', 'ui')
+            ->andWhere('uwt.created_at between :dateStart and :dateEnd')
+            ->andWhere('uwt.description LIKE :gigFee')
+            ->andWhere('ui.country = :country')
+            ->setParameter('dateStart', $dateStart)
+            ->setParameter('dateEnd', $dateEnd)
+            ->setParameter('gigFee', 'Gig fee taken%')
+            ->setParameter('country', 'AU')
+        ;
+
+        return -$qb->getQuery()->getSingleScalarResult() / 100;
+    }
+
+    /**
+     * @param $year
+     * @param $quarter
+     */
+    public function findUpgradesByYearAndQuarter($year, $quarter)
+    {
+        $quarterDate = [
+            1 => ['startMonth' => 1, 'startDay' => 1, 'endMonth' => 3, 'endDay' => 31],
+            2 => ['startMonth' => 4, 'startDay' => 1, 'endMonth' => 6, 'endDay' => 30],
+            3 => ['startMonth' => 7, 'startDay' => 1, 'endMonth' => 9, 'endDay' => 30],
+            4 => ['startMonth' => 10, 'startDay' => 1, 'endMonth' => 12, 'endDay' => 31]
+        ];
+        $dateStart = new \DateTime();
+        $dateStart->setDate($year, $quarterDate[$quarter]['startMonth'], $quarterDate[$quarter]['startDay']);
+        $dateEnd = new \DateTime();
+        $dateEnd->setDate($year, $quarterDate[$quarter]['endMonth'], $quarterDate[$quarter]['endDay']);
+        $qb = $this->createQueryBuilder('uwt')
+            ->select('sum(uwt.amount)')
+            ->leftJoin('uwt.user_info', 'ui')
+            ->andWhere('uwt.created_at between :dateStart and :dateEnd')
+            ->andWhere('uwt.description LIKE :gigFee')
+            ->andWhere('ui.country = :country')
+            ->setParameter('dateStart', $dateStart)
+            ->setParameter('dateEnd', $dateEnd)
+            ->setParameter('gigFee', 'Upgrade charges for%')
+            ->setParameter('country', 'AU')
+        ;
+
+        return -$qb->getQuery()->getSingleScalarResult() / 100;
+    }
+
+    public function findYearsWithRecords()
+    {
+        $qb = $this->createQueryBuilder('uwt')
+            ->select('date_format(uwt.created_at, \'%Y\') as year')
+            ->leftJoin('uwt.user_info', 'ui')
+            ->andWhere('uwt.description LIKE :gigFee')
+            ->andWhere('ui.country = :country')
+            ->setParameter('gigFee', 'Gig fee taken%')
+            ->setParameter('country', 'AU')
+            ->groupBy('year')
+
         ;
 
         return $qb->getQuery()->getResult();

@@ -44,6 +44,13 @@
         </script>
 
 {% endblock %}
+{% block stylesheet %}
+
+    {% stylesheets
+        '@VocalizrAppBundle/Resources/public/css/projects.css'
+    %}<link rel="stylesheet" href="{{ asset_url }}" />{% endstylesheets %}
+
+{% endblock %}
 
 {% block body %}
 

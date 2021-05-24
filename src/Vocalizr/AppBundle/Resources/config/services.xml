@@ -217,6 +217,7 @@
             <argument type="service" id="vocalizr_app.project_price_calculator" />
             <argument type="service" id="vocalizr_app.model.wallet_transaction" />
             <argument type="service" id="vocalizr_app.stripe_manager" />
+            <argument type="service" id="vocalizr_app.paypal_api" />
         </service>
 
         <service id="vocalizr_app.model.counter" class="Vocalizr\AppBundle\Model\CounterModel" parent="vocalizr_app.model.base_model">

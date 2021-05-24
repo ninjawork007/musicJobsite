@@ -4736,6 +4736,9 @@ div.legend ul li {
     display: inline-block;
     margin-bottom: 0;
 }
+.admin-search-form .form-group > .form-control {
+    margin-bottom: 10px;
+}
 .admin-search-form .form-control {
     display: inline-block;
     width: 400px;
@@ -6789,4 +6792,11 @@ b.w500 {
 #access-pass-popup .popup-panel .voc-panel .content .content-footer a.btn {
     font-weight: 800;
     font-size: 13px;
+}
+.popup-panel .voc-panel .content .main .about-access-pass, .about-access-pass:hover {
+    display: block;
+    color: #01c2e5;
+    font-weight: 800;
+    font-size: 13px;
+    margin-bottom: 15px;
 }

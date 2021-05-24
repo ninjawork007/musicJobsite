@@ -1,0 +1,9 @@
+{% extends '@VocalizrApp/Admin/layout.html.twig' %}
+{% block admin_content %}
+    <h1>Email</h1>
+    <div class="light-content">
+        <a href="{{ path('admin_email_vocalists') }}" class="btn" target="_blank">Vocalists</a>
+        <a href="{{ path('admin_email_producers') }}" class="btn" target="_blank">Producers</a>
+        <a href="{{ path('admin_email_all_users') }}" class="btn" target="_blank">All users</a>
+    </div>
+{% endblock %}

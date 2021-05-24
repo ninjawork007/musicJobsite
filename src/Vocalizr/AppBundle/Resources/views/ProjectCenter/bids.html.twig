@@ -14,9 +14,9 @@
         var stripe = Stripe("{{ stripe_checkout_key }}");
     </script>
 
-    <div id="bid-highlight" style="display: none">
-        {% include 'include/panel/highlight_bid.html.twig' %}
-    </div>
+{#    <div id="bid-highlight" style="display: none">#}
+{#        {% include 'include/panel/highlight_bid.html.twig' %}#}
+{#    </div>#}
 {% endblock %}
 
 {% block body %}
@@ -81,7 +81,7 @@
                                                 <div class="item user-info">
                                                     Employer: <a href="{{ path('user_view', {'username':projectBid.project.userInfo.username}) }}">{{ projectBid.project.userInfo.displayName }}</a>
                                                     {% if not projectBid.project.isContest and not projectBid.highlightOption %}
-                                                        <a href="#" class="btn btn-sm btn-show-bid-highlight-modal btn-primary" data-uuid="{{ projectBid.uuid }}">Highlight Bid</a>
+{#                                                        <a href="#" class="btn btn-sm btn-show-bid-highlight-modal btn-primary" data-uuid="{{ projectBid.uuid }}">Highlight Bid</a>#}
                                                     {% endif %}
                                                     <div class="avatar">
                                                         {% if projectBid.project.userInfo.path is null %}

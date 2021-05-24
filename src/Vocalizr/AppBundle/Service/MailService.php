@@ -90,6 +90,60 @@ class MailService
 
     /**
      * ADDED TO MANDRILL
+     * @param UserInfo $user
+     */
+    public function sendRequestConnect($user)
+    {
+        $this->message = new \Hip\MandrillBundle\Message();
+        $this->message->setPreserveRecipients(false);
+        $this->message
+            ->setTrackOpens(true)
+            ->setTrackClicks(true)
+            ->setSubject("You have a connection request")
+            ->addTo($user->getEmail())
+        ;
+        $dispatcher = $this->container->get('hip_mandrill.dispatcher');
+        $dispatcher->send($this->message, 'upgrade-prompt-connections');
+    }
+
+    /**
+     * ADDED TO MANDRILL
+     * @param UserInfo $user
+     */
+    public function sendHireNow($user)
+    {
+        $this->message = new \Hip\MandrillBundle\Message();
+        $this->message->setPreserveRecipients(false);
+        $this->message
+            ->setTrackOpens(true)
+            ->setTrackClicks(true)
+            ->setSubject("Someone wants to hire you!")
+            ->addTo($user->getEmail())
+        ;
+        $dispatcher = $this->container->get('hip_mandrill.dispatcher');
+        $dispatcher->send($this->message, 'upgrade-prompt-hire-now');
+    }
+
+    /**
+     * ADDED TO MANDRILL
+     * @param UserInfo $user
+     */
+    public function sendInviteTiBid($user)
+    {
+        $this->message = new \Hip\MandrillBundle\Message();
+        $this->message->setPreserveRecipients(false);
+        $this->message
+            ->setTrackOpens(true)
+            ->setTrackClicks(true)
+            ->setSubject("You have been invited to bid")
+            ->addTo($user->getEmail())
+        ;
+        $dispatcher = $this->container->get('hip_mandrill.dispatcher');
+        $dispatcher->send($this->message, 'upgrade-prompt-invite-to-bid');
+    }
+
+    /**
+     * ADDED TO MANDRILL
      *
      * Send reset password link
      *

@@ -6,7 +6,7 @@ use Doctrine\ORM\EntityManager;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-use Vocalizr\AppBundle\Entity\Project;
+use Vocalizr\AppBundle\Entity\UserInfo;
 use Vocalizr\AppBundle\Repository\ProjectRepository;
 use Vocalizr\AppBundle\Repository\UserInfoRepository;
 
@@ -64,7 +64,11 @@ class HelperExtension extends \Twig_Extension
             'routeStartsWith' => new \Twig_Function_Method($this, 'routeStartsWith'),
             'countProducers'  => new \Twig_Function_Method($this, 'countProducers'),
             'countJob'        => new \Twig_Function_Method($this, 'countJob'),
-            'countVocalists'  => new \Twig_Function_Method($this, 'countVocalists')
+            'countVocalists'  => new \Twig_Function_Method($this, 'countVocalists'),
+            'numberJobDemoPlus'  => new \Twig_Function_Method($this, 'numberJobDemoPlus'),
+            'numberProducerDemoPlus'  => new \Twig_Function_Method($this, 'numberProducerDemoPlus'),
+            'numberVocalistDemoPlus'  => new \Twig_Function_Method($this, 'numberVocalistDemoPlus'),
+            'getUserReview'  => new \Twig_Function_Method($this, 'getUserReview')
         ];
     }
 
@@ -83,7 +87,7 @@ class HelperExtension extends \Twig_Extension
         /** @var UserInfoRepository $userInfoRepo */
         $userInfoRepo = $em->getRepository('VocalizrAppBundle:UserInfo');
 
-        return count($userInfoRepo->findBy(['is_producer' => true]));
+        return $userInfoRepo->findCountProducers();
     }
 
     public function countVocalists()
@@ -92,7 +96,7 @@ class HelperExtension extends \Twig_Extension
         /** @var UserInfoRepository $userInfoRepo */
         $userInfoRepo = $em->getRepository('VocalizrAppBundle:UserInfo');
 
-        return count($userInfoRepo->findBy(['is_vocalist' => true]));
+        return $userInfoRepo->findCountVocalists();
     }
 
     public function countJob()
@@ -101,7 +105,49 @@ class HelperExtension extends \Twig_Extension
         /** @var ProjectRepository $projectRepo */
         $projectRepo = $em->getRepository('VocalizrAppBundle:Project');
 
-        return count($projectRepo->findBy(['is_active' => true]));
+        return $projectRepo->findCountActiveJob() - 10;
+    }
+
+    /**
+     * @param UserInfo $user
+     * @return void
+     */
+    public function numberJobDemoPlus($user)
+    {
+        $em = $this->container->get('doctrine.orm.entity_manager');
+        $user->setIsJobDemo((int)$user->isIsJobDemo() + 1);
+        $em->flush();
+    }
+
+    /**
+     * @param UserInfo $user
+     * @return void
+     */
+    public function numberProducerDemoPlus($user)
+    {
+        $em = $this->container->get('doctrine.orm.entity_manager');
+        $user->setIsProducersDemo((int)$user->isIsProducersDemo() + 1);
+        $em->flush();
+    }
+
+    /**
+     * @param UserInfo $user
+     * @return void
+     */
+    public function numberVocalistDemoPlus($user)
+    {
+        $em = $this->container->get('doctrine.orm.entity_manager');
+        $user->setIsVocalistsDemo((int)$user->isIsVocalistsDemo() + 1);
+        $em->flush();
+    }
+
+    /**
+     * @param UserInfo $user
+     * @return void
+     */
+    public function getUserReview($user)
+    {
+        return $user->getUserReviews()->last();
     }
 
     public function daysOffsetFilter($datetime)

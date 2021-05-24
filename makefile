@@ -26,30 +26,9 @@ stop:
 start:
 	docker-compose $(DC_PARAMETERS) -p $(PROJECT_NAME) up -d
 
-build :
-	docker-compose up --build
-
-up :
-	docker-compose up
-
-down :
-	docker-compose down
-
-#Start symfony server
-start :
-	docker exec -it php_vocalizr php app/console server:run 0.0.0.0:8000
-
-#Clear symfony cache
-cache :
-	docker exec -it php_vocalizr php app/console cache:clear
-
-#Show all running containers ips
-ips :
-	docker inspect -f '{{.Name}} - {{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $(docker ps -aq)
-
-#Load the symfony data fixtures
-fixtures :
-	docker exec -it php_vocalizr php app/console d:f:l
+build:
+	if [ ! -d "vendor" ]; then composer install; fi;
+	docker-compose $(DC_PARAMETERS) -p $(PROJECT_NAME) build
 
 shell:
 	docker exec -it $(PROJECT_NAME)_$(APP_CONTAINER) /bin/sh

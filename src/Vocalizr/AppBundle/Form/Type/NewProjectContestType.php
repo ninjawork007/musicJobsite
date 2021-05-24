@@ -160,7 +160,7 @@ class NewProjectContestType extends AbstractType
                     'choices' => [
                         '1' => 'Vocalist to provide lyrics',
                         '0' => 'I will provide lyrics', ],
-                    'mapped' => false,
+                    'property_path' => false,
                     'multiple'      => false,
                     'expanded'      => true,
                     'data'          => 1,
@@ -177,7 +177,7 @@ class NewProjectContestType extends AbstractType
                 ])
                 ->add('agree', 'checkbox', [
                     'label'         => 'I agree to the terms & conditions',
-                    'mapped' => false,
+                    'property_path' => false,
                 ]);
     }
 

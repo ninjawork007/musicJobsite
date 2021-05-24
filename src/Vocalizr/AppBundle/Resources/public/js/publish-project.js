@@ -20,29 +20,8 @@ $(function () {
 
 $('form#publish-form .btn-upgrade-pro').click(function (event) {
     event.preventDefault();
-    var $btn  = $(this);
-    var $form = $('form#publish-form');
-    var wasPro = $form.hasClass('subscribed');
-
-    $('.js-upgrade-to-pro-check').val(wasPro ? 0 : 1);
-
-    $form.toggleClass('subscribed');
-    $btn.toggleClass('subscribed');
-    $('.fee-calculator .calculator-item[data-role=pro-subscription]').toggleClass('hide');
-
-    var originalFee = getCalcRow('vocalizr-fee');
-    setCalcRow('vocalizr-fee', getCalcRow('vocalizr-fee', 'save'));
-    setCalcRow('vocalizr-fee', originalFee, 'save');
-
-    if (wasPro) {
-        $('#subscription-promo').removeClass('hide');
-        $('#could-save').removeClass('hide');
-    } else {
-        $('#subscription-promo').addClass('hide');
-        $('#could-save').addClass('hide');
-    }
-
-    updateCalculator();
+    localStorage.setItem('uuid', $('#publish-form').data('uuid'));
+    window.location = $(this).attr('href');
 })
 
 $('.addon-item [type=checkbox]').on('ifChecked', function (e) {

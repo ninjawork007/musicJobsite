@@ -11,6 +11,38 @@
         <input type="{{ type }}" {{ block('widget_attributes') }} {% if value is not empty %}value="{{ value }}" {% endif %}/>
     {% endspaceless %}
 {% endblock form_widget_simple %}
+{% block javascript %}
+    {{ parent() }}
+    <script>
+        $(document).ready(function() {
+            $('input').iCheck('destroy');
+            $(document).on('click', 'input[name="user[is_producer]"]', function(e) {
+                if($(this).parent().hasClass('checked')) {
+                    $(this).parent().removeClass('checked');
+                    $(this).val(0);
+                } else {
+                    $(this).parent().addClass('checked');
+                    $(this).val(1);
+                    $($('input[name="user[is_vocalist]"]')).parent().removeClass('checked');
+                }
+
+            });
+            $(document).on('click', 'input[name="user[is_vocalist]"]', function(e) {
+                if($(this).parent().hasClass('checked')) {
+                    $(this).parent().removeClass('checked');
+                    $(this).val(0);
+                } else {
+                    $(this).parent().addClass('checked');
+                    $(this).val(1);
+                    $($('input[name="user[is_producer]"]')).parent().removeClass('checked');
+                }
+
+            });
+
+        });
+
+    </script>
+{% endblock %}
 {% block wrap %}
     <div class="centered-content">
         <div class="left-offset"></div>
@@ -31,7 +63,18 @@
                     <div class="content">
                         <div class="main">
                             <form id="user" method="post" name="user">
-                                {{ form_widget(form) }}
+                                <div id="user" class="voc-form">
+                                    {{ form_row(form._token) }}
+                                    {{ form_row(form.username) }}
+                                    <div>
+                                        <label>I AM A:</label>
+                                        <label class="question"><div class="icheckbox_polaris" style="position: relative;"><input id="question-radio-first" type="checkbox" name="user[{{ form.is_producer.name }}]" value="0" style="position: absolute; opacity: 0;"></div>Producer</label>
+                                        <label class="question"><div class="icheckbox_polaris" style="position: relative;"><input type="checkbox" name="user[{{ form.is_vocalist.name }}]" value="0" style="position: absolute; opacity: 0;"></div>Vocalist</label>
+                                    </div>
+                                    {{ form_row(form.password) }}
+                                    {{ form_row(form.email) }}
+
+                                </div>
                             </form>
                         </div>
                         <div class="content-footer">

@@ -16,7 +16,7 @@
                 {% elseif bid.userInfo.id == app.user.id and project.projectBid is null %}
                     <a href="{{ path('gig_bid_delete', {uuid: project.uuid, bidUuid: bid.uuid}) }}" class="btn btn-sm btn-remove-bid btn-default btn-danger">Remove Bid</a>
                     {% if not bid.highlightOption %}
-                        <a href="#" class="btn btn-sm btn-show-bid-highlight-modal btn-primary" data-uuid="{{ bid.uuid }}">Highlight Bid</a>
+{#                        <a href="#" class="btn btn-sm btn-show-bid-highlight-modal btn-primary" data-uuid="{{ bid.uuid }}">Highlight Bid</a>#}
                     {% endif %}
                 {% endif %}
             {% endif %}

@@ -12,6 +12,7 @@ use Vocalizr\AppBundle\Entity\UserInfo;
 use Vocalizr\AppBundle\Entity\UserWalletTransaction;
 use Vocalizr\AppBundle\Exception\NotEnoughMoneyException;
 use Vocalizr\AppBundle\Service\MandrillService;
+use Vocalizr\AppBundle\Service\PayPalApiService;
 use Vocalizr\AppBundle\Service\ProjectPriceCalculator;
 use Vocalizr\AppBundle\Service\StripeManager;
 
@@ -41,6 +42,10 @@ class ProjectModel extends Model
      * @var StripeManager
      */
     private $stripeManager;
+    /**
+     * @var PayPalApiService
+     */
+    private $paypalApiService;
 
     /**
      * ProjectModel constructor.
@@ -56,13 +61,15 @@ class ProjectModel extends Model
         RouterInterface $router,
         ProjectPriceCalculator $priceCalculator,
         UserWalletTransactionModel $walletTransactionModel,
-        StripeManager $stripeManager
+        StripeManager $stripeManager,
+        PayPalApiService $payPalApiService
     ) {
         $this->router          = $router;
         $this->mandrillService = $mandrillService;
         $this->priceCalculator = $priceCalculator;
         $this->walletTransactionModel = $walletTransactionModel;
         $this->stripeManager = $stripeManager;
+        $this->paypalApiService = $payPalApiService;
     }
 
     /**
@@ -139,7 +146,7 @@ class ProjectModel extends Model
      * @param int $paymentAmountCents
      * @throws NotEnoughMoneyException
      */
-    public function processPublicationPayment(Project $project, $paymentAmountCents)
+    public function processPublicationPayment(Project $project, $paymentAmountCents, $upgradesAmountCents = 0)
     {
         if ($project->getPaymentStatus() !== Project::PAYMENT_STATUS_PENDING) {
             return;
@@ -152,11 +159,11 @@ class ProjectModel extends Model
             $project
         );
 
-        if ($paymentAmountCents + $user->getWallet() < array_sum($calculatedPrices) * 100) {
+        if ($user->getWallet() < $paymentAmountCents + $upgradesAmountCents) {
             throw new NotEnoughMoneyException();
         }
 
-        $fees = $calculatedPrices['features_price'] * 100;
+        $fees = ($upgradesAmountCents + $calculatedPrices['features_price']) * 100;
 
         $project->setFees($fees);
 
@@ -188,7 +195,7 @@ class ProjectModel extends Model
                 $user,
                 -$calculatedPrices['vocalizr_fee'] * 100,
                 null,
-                'Contest fee taken for {project}',
+                'Platform commission fee for {project}',
                 [
                     'projectTitle' => $project->getTitle(),
                     'projectUuid'  => $project->getUuid(),
@@ -299,7 +306,7 @@ class ProjectModel extends Model
             $paymentSessionData = $this->em->getRepository('VocalizrAppBundle:PaymentSessionData')
                 ->findPaymentSessionDataByProjectAndCharge($project);
 
-            if (!$paymentSessionData) {
+            if (!$paymentSessionData && !$project->getPaypalTransaction()) {
                 $uwt = $this->walletTransactionModel->create(
                     $project->getUserInfo(),
                     $project->getBudgetFrom() * 100,
@@ -313,12 +320,14 @@ class ProjectModel extends Model
                 );
                 $this->em->persist($uwt);
             } else {
-                if ($paymentSessionData->getStripeCharge() && $paymentSessionData->getStripeCharge()->getData()) {
+                if (isset($paymentSessionData) && $paymentSessionData->getStripeCharge() && $paymentSessionData->getStripeCharge()->getData()) {
                     $chargeData = json_decode($paymentSessionData->getStripeCharge()->getData(), true);
                     $refundResponseData = $this->stripeManager->getRefundContest($chargeData['data']['object']['id'], $project->getBudgetFrom() * 100);
                     if (!$refundResponseData || $refundResponseData['status'] != 'succeeded') {
                         return false;
                     }
+                } elseif ($project->getPaypalTransaction()) {
+                    $this->paypalApiService->refundForContest($project->getPaypalTransaction()->getTxnId(), $project->getBudgetFrom());
                 }
             }
 

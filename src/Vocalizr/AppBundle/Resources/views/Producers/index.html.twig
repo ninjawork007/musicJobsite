@@ -6,27 +6,28 @@
 {% block javascript %}
     {{ parent() }}
     <script>
-        function shuffle(localItemName, elementClassName, isUpgrade) {
-            if (!localStorage.getItem(localItemName) || isUpgrade ) {
-                localStorage.setItem(localItemName, 0)
-            }
-
+        function shuffle(localItemName, elementClassName) {
             $(elementClassName).on('click', function (e) {
                 e.preventDefault();
-
-                if (localStorage.getItem(localItemName) >= 2) {
-                    $('#access-pass-popup').modal('show');
-                } else {
-                    localStorage.setItem(localItemName, localStorage.getItem(localItemName) + 1)
-                    location.href = $(this).attr('href');
-                }
+                $('#access-pass-popup').modal('show');
             });
         }
-        shuffle('shuffleProd', '.btn-shuffle-prod', {{ app.user.isSubscribed }});
+        $(document).ready(function (){
+            {% if app.user.isProducersDemo >= 2 and app.user.isSubscribed == false %}
+                $('#access-pass-popup').modal('show');
+                shuffle('shuffleProd', '.btn-shuffle-prod');
+                shuffle('shuffleProd', '.gig-filter > ul > li > a');
+                shuffle('shuffleProd', '.padding > form');
+            {% elseif app.user.isProducersDemo < 2 %}
+                {{ numberProducerDemoPlus(app.user) }}
+            {% endif %}
+
+
+        });
     </script>
 {% endblock %}
 {% block activity_header %}
-    <h1>Find Music Producers</h1>{{ app.user.isSubscribed }}
+    <h1>Find Music Producers</h1>
     <div class="gig-filter">
         <ul>
             <li>Sort:</li>

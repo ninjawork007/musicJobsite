@@ -233,4 +233,22 @@ class ProjectRepository extends EntityRepository
         return $qb->getQuery()->getOneOrNullResult();
     }
 
+    /**
+     * @return int
+     */
+    public function findCountActiveJob()
+    {
+        $qb = $this->createQueryBuilder('p')
+            ->select('count(p.id) as countJob')
+            ->andWhere('p.is_active = true')
+            ->andWhere('p.bids_due >= :bidsDue')
+            ->andWhere('p.publish_type = :publishType')
+            ->andWhere('p.employee_user_info is null')
+            ->setParameter('publishType', Project::PUBLISH_PUBLIC)
+            ->setParameter('bidsDue', new \DateTime())
+        ;
+
+        return $qb->getQuery()->getResult()[0]['countJob'];
+    }
+
 }

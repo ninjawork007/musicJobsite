@@ -37,24 +37,24 @@
                     <th>Subs PayPal</th>
                     <th>Commissions</th>
                     <th>Job Upgrades</th>
-                    <th>Bid Upgrades</th>
+{#                    <th>Bid Upgrades</th>#}
                     <th>Certs</th>
-                    <th>Connections</th>
-                    <th>Contest Ext</th>
+{#                    <th>Connections</th>#}
+{#                    <th>Contest Ext</th>#}
                 </tr>
                 </thead>
                 <tbody>
                     <tr>
-                        <td>{{ revenueCurrentMonth['total'] }}</td>
-                        <td>{{ revenueCurrentMonth['subs_total'] }}</td>
-                        <td>{{ revenueCurrentMonth['stripe_subs'] }}</td>
-                        <td>{{ revenueCurrentMonth['paypal_subs'] }}</td>
-                        <td>{{ revenueCurrentMonth['commissions'] }}</td>
-                        <td>{{ revenueCurrentMonth['job_upgrade'] }}</td>
-                        <td>{{ revenueCurrentMonth['bid_upgrade'] }}</td>
-                        <td>{{ revenueCurrentMonth['cert'] }}</td>
-                        <td>{{ revenueCurrentMonth['connections'] }}</td>
-                        <td>{{ revenueCurrentMonth['contest_ext'] }}</td>
+                        <td>{{ revenueCurrentMonth['total']|number_format(2, '.', ' ') }}</td>
+                        <td>{{ revenueCurrentMonth['subs_total']|number_format(2, '.', ' ') }}</td>
+                        <td>{{ revenueCurrentMonth['stripe_subs']|number_format(2, '.', ' ') }}</td>
+                        <td>{{ revenueCurrentMonth['paypal_subs']|number_format(2, '.', ' ') }}</td>
+                        <td>{{ revenueCurrentMonth['commissions']|number_format(2, '.', ' ') }}</td>
+                        <td>{{ revenueCurrentMonth['job_upgrade']|number_format(2, '.', ' ') }}</td>
+{#                        <td>{{ revenueCurrentMonth['bid_upgrade']|number_format(2, '.', ' ') }}</td>#}
+                        <td>{{ revenueCurrentMonth['cert']|number_format(2, '.', ' ') }}</td>
+{#                        <td>{{ revenueCurrentMonth['connections']|number_format(2, '.', ' ') }}</td>#}
+{#                        <td>{{ revenueCurrentMonth['contest_ext']|number_format(2, '.', ' ') }}</td>#}
                     </tr>
                 </tbody>
             </table>
@@ -69,9 +69,9 @@
                         <th>Subs Total</th>
                         <th>Commissions</th>
                         <th>Job Upgrades</th>
-                        <th>Bid Upgrades</th>
+{#                        <th>Bid Upgrades</th>#}
                         <th>Certs</th>
-                        <th>Connections</th>
+{#                        <th>Connections</th>#}
                         <th>Month/Year</th>
                         <th>Download CSV</th>
                     </tr>
@@ -80,13 +80,13 @@
                 <tbody>
                 {% for date, revenue in revenueAllTime %}
                     <tr>
-                        <td>{{ revenue['total'] }}</td>
-                        <td>{{ revenue['subs_total'] }}</td>
-                        <td>{{ revenue['commissions'] }}</td>
-                        <td>{{ revenue['job_upgrade'] }}</td>
-                        <td>{{ revenue['bid_upgrade'] }}</td>
-                        <td>{{ revenue['cert'] }}</td>
-                        <td>{{ revenue['connections'] }}</td>
+                        <td>{{ revenue['total']|number_format(2, '.', ' ') }}</td>
+                        <td>{{ revenue['subs_total']|number_format(2, '.', ' ') }}</td>
+                        <td>{{ revenue['commissions']|number_format(2, '.', ' ') }}</td>
+                        <td>{{ revenue['job_upgrade']|number_format(2, '.', ' ') }}</td>
+{#                        <td>{{ revenue['bid_upgrade']|number_format(2, '.', ' ') }}</td>#}
+                        <td>{{ revenue['cert']|number_format(2, '.', ' ') }}</td>
+{#                        <td>{{ revenue['connections']|number_format(2, '.', ' ') }}</td>#}
                         <td>{{ revenue['date'] }}</td>
                         <td><button class="btn btn-primary create buttonRowTable2csv">Download row</button></td>
                     </tr>

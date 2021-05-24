@@ -358,6 +358,10 @@ class ProjectController extends Controller
                 $em->persist($project);
                 $em->flush();
 
+                if (!$hireUser->isSubscribed()) {
+                    $mailService = $this->container->get('service.mail');
+                    $mailService->sendHireNow($hireUser);
+                }
                 // Attempt to save file
                 if ($request->get('audio_file')) {
                     $projectAudio = $projectAudioRepo
@@ -1527,7 +1531,7 @@ class ProjectController extends Controller
                     $uwt->setUserInfo($user);
                     $uwt->setAmount('-' . $fee); // Minus amount
                     $uwt->setCurrency($this->container->getParameter('default_currency'));
-                    $description = 'Gig fee taken for {project}';
+                    $description = 'Platform commission fee for {project}';
                     $uwt->setDescription($description);
                     $data = [
                         'projectTitle' => $project->getTitle(),
@@ -1809,6 +1813,10 @@ class ProjectController extends Controller
         $em->persist($projectInvite);
         $em->flush();
 
+        if (!$userInfo->isSubscribed()) {
+            $mailService = $this->container->get('service.mail');
+            $mailService->sendInviteTiBid($userInfo);
+        }
         // Get user preference for the person who was just invited
         if ($userPref = $userInfo->getUserPref()) {
             $sendEmail = $userPref->getEmailProjectInvites();

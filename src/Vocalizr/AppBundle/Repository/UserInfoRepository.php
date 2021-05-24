@@ -7,6 +7,7 @@ use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\QueryBuilder;
 use Vocalizr\AppBundle\Entity\PayPalTransaction;
 use Vocalizr\AppBundle\Entity\UserInfo;
+use Vocalizr\AppBundle\Entity\UserReview;
 use Vocalizr\AppBundle\Entity\UserWalletTransaction;
 
 class UserInfoRepository extends EntityRepository
@@ -86,6 +87,10 @@ class UserInfoRepository extends EntityRepository
                 ->setParameter('deposit', UserWalletTransaction::TYPE_DEPOSIT)
                 ->setParameter('withdraw', UserWalletTransaction::TYPE_WITHDRAW)
             ;
+        }
+        if (in_array('review', $ppSearchFields)) {
+            $qb->leftJoin('u.user_reviews', 'ur');
+            $qb->andWhere('ur.content IS NOT NULL');
         }
 
 
@@ -392,5 +397,65 @@ class UserInfoRepository extends EntityRepository
             ->setParameter(':dateEnd', $checkDateEnd)
         ;
         return $qb->getQuery()->getResult();
+    }
+
+    /**
+     * @return int
+     */
+    public function findCountVocalists()
+    {
+        $qb = $this->createQueryBuilder('ui')
+            ->select('count(ui.id) as countVocalists')
+            ->andWhere('ui.is_active = true')
+            ->andWhere('ui.is_vocalist = true')
+        ;
+
+        return $qb->getQuery()->getResult()[0]['countVocalists'];
+    }
+
+    /**
+     * @return int
+     */
+    public function findCountProducers()
+    {
+        $qb = $this->createQueryBuilder('ui')
+            ->select('count(ui.id) as countProducers')
+            ->andWhere('ui.is_active = true')
+            ->andWhere('ui.is_producer = true')
+        ;
+
+        return $qb->getQuery()->getResult()[0]['countProducers'];
+    }
+
+    public function findVocalistsEmail()
+    {
+        $qb = $this->createQueryBuilder('ui')
+            ->select('ui.email')
+            ->andWhere('ui.is_active = true')
+            ->andWhere('ui.is_vocalist = true')
+        ;
+
+        return $qb->getQuery()->getScalarResult();
+    }
+
+    public function findProducersEmail()
+    {
+        $qb = $this->createQueryBuilder('ui')
+            ->select('ui.email')
+            ->andWhere('ui.is_active = true')
+            ->andWhere('ui.is_producer = true')
+        ;
+
+        return $qb->getQuery()->getScalarResult();
+    }
+
+    public function findAllUsersEmail()
+    {
+        $qb = $this->createQueryBuilder('ui')
+            ->select('ui.email')
+            ->andWhere('ui.is_active = true')
+        ;
+
+        return $qb->getQuery()->getScalarResult();
     }
 }

@@ -152,7 +152,7 @@ class SubscriptionListener
             'user' => $user,
         ]);
 
-        $this->mandrillService->sendMessage($user->getEmail(), 'Your PRO Membership has been cancelled', 'default', [
+        $this->mandrillService->sendMessage($user->getEmail(), 'Your Access Pass subscription has been cancelled', 'default', [
             'body' => $body,
         ]);
 

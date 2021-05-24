@@ -81,14 +81,14 @@ class InvoiceListener
             throw new WebhookProcessingException('Subscription not found for user with failed payment.');
         }
 
-        $body = $this->twig->render('VocalizrAppBundle:Mail:stripeFailedCharge.html.twig', [
-            'user'                 => $user,
-            'next_payment_attempt' => isset($object['next_payment_attempt']) ? $object['next_payment_attempt'] : 0,
-        ]);
+//        $body = $this->twig->render('VocalizrAppBundle:Mail:stripeFailedCharge.html.twig', [
+//            'user'                 => $user,
+//            'next_payment_attempt' => isset($object['next_payment_attempt']) ? $object['next_payment_attempt'] : 0,
+//        ]);
 
-        $this->mandrill->sendMessage($user->getEmail(), 'PRO Membership charge failed', 'default', [
-            'body' => $body,
-        ]);
+//        $this->mandrill->sendMessage($user->getEmail(), 'PRO Membership charge failed', 'default', [
+//            'body' => $body,
+//        ]);
 
         return 'ok notified user';
     }

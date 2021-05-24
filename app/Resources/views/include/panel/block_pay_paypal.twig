@@ -1,0 +1,14 @@
+{% extends 'include/panel/popup_panel.html.twig' %}
+{% block header_left %}PayPal{% endblock %}
+{% block header_right %}{% endblock %}
+{% block note %}{% endblock %}
+{% block body %}
+    <p class="body" style="line-height: 1.25;">
+        You have already paid for this job. When we receive the payment confirmation, the job will be automatically published
+    </p>
+{% endblock %}
+{% block footer %}
+    <a href="{{ path('dashboard') }}" class="btn btn-primary" id="identity-intents">
+        GO TO DASHBOARD
+    </a>
+{% endblock %}

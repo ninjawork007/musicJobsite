@@ -6,9 +6,15 @@
     <p class="body" style="line-height: 1.25;">
         There are <b>{{ countProducers() }}</b> more music producers on Vocalizr ready to be discovered by you. Upgrade now to access them all.
     </p>
+    <p class="note">SUBCRIPTION ALSO INCLUDES:</p>
+    <p class="body" style="line-height: 1.25; margin-bottom: 13px">
+        0% job commission fee for employers<br>
+        All job posting upgrades are FREE
+    </p>
+    <a href="https://vocalizrhelp.zendesk.com/hc/en-us/articles/115006804248" class="about-access-pass">Learn more about Access Pass</a>
 {% endblock %}
 {% block footer %}
-    <a href="{{ path('stripe_identity_intents') }}" class="btn btn-primary" id="identity-intents">
+    <a href="{{ path('membership') }}" class="btn btn-primary" id="identity-intents">
         UPGRADE TO ACCESS PASS
     </a>
 {% endblock %}

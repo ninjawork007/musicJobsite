@@ -210,6 +210,229 @@
                     }
                 });
             });
+        },
+        initReview: function () {
+            var $results = $('.results-container');
+            var $searchForm = $('form.admin-search-form');
+            $searchForm.submit(function (event) {
+                event.stopPropagation();
+                event.preventDefault();
+                $results.empty();
+                $.ajax({
+                    method: 'POST',
+                    url: $(this).attr('action'),
+                    data: $(this).serialize(),
+                    success: function (response) {
+                        if (typeof response.html !== "undefined") {
+                            if (response.numResults === 0 || $.trim(response.html) == "") {
+                                alert('No results.');
+                            }
+                            $results.html(response.html);
+                        } else if (response.message) {
+                            $results.text(response.message);
+                        } else {
+                            alert('Could not recognize backend response.');
+                        }
+                    }
+                });
+                return false;
+            });
+
+            $results.on('click', '.change-review', function (e) {
+                e.stopPropagation();
+                e.preventDefault();
+                var $button = $(this);
+                var $result = $button.parents('.result');
+                $.ajax({
+                    url: $button.data('url'),
+                    data: {
+                        id: $result.data('id'),
+                        review: $result.find('textarea.review').val()
+                    },
+                    success: function (response) {
+                        if (response.success) {
+                            alert('Review changed');
+                            $searchForm.trigger('submit');
+                        } else {
+                            alert('Could not change review');
+                        }
+                    },
+                    error: function (xhr) {
+                        if (xhr.status === 400) {
+                            alert('Could not change review: validation failed.');
+                        } else {
+                            alert('Could not change review: server returned ' + xhr.status + ' status.')
+                        }
+                    }
+                });
+            });
+            $results.on('click', '.delete-review', function (e) {
+                e.stopPropagation();
+                e.preventDefault();
+                var $button = $(this);
+                var $result = $button.parents('.result');
+                $.ajax({
+                    url: $button.data('url'),
+                    data: {
+                        id: $result.data('id')
+                    },
+                    success: function (response) {
+                        if (response.success) {
+                            alert('Review deleted');
+                            $searchForm.trigger('submit');
+                        } else {
+                            alert('Could not delete review');
+                        }
+                    },
+                    error: function (xhr) {
+                        if (xhr.status === 400) {
+                            alert('Could not delete review: validation failed.');
+                        } else {
+                            alert('Could not delete review: server returned ' + xhr.status + ' status.')
+                        }
+                    }
+                });
+            });
+        },
+        initPassword: function () {
+            var $results = $('.results-container');
+            var $searchForm = $('form.admin-search-form');
+            $searchForm.submit(function (event) {
+                event.stopPropagation();
+                event.preventDefault();
+                $results.empty();
+                $.ajax({
+                    method: 'POST',
+                    url: $(this).attr('action'),
+                    data: $(this).serialize(),
+                    success: function (response) {
+                        if (typeof response.html !== "undefined") {
+                            if (response.numResults === 0) {
+                                alert('No results.');
+                            }
+                            $results.html(response.html);
+                        } else if (response.message) {
+                            $results.text(response.message);
+                        } else {
+                            alert('Could not recognize backend response.');
+                        }
+                    }
+                });
+                return false;
+            });
+
+            $results.on('click', '.change-password', function (e) {
+                e.stopPropagation();
+                e.preventDefault();
+                var $button = $(this);
+                var $result = $button.parents('.result');
+                $.ajax({
+                    url: $button.data('url'),
+                    data: {
+                        id: $result.data('id'),
+                        password: $result.find('input.password').val()
+                    },
+                    success: function (response) {
+                        if (response.success) {
+                            alert('Review changed');
+                            $searchForm.trigger('submit');
+                        } else {
+                            alert('Could not change review');
+                        }
+                    },
+                    error: function (xhr) {
+                        if (xhr.status === 400) {
+                            alert('Could not change review: validation failed.');
+                        } else {
+                            alert('Could not change review: server returned ' + xhr.status + ' status.')
+                        }
+                    }
+                });
+            });
+        },
+        initGstGigCommissions: function () {
+            var $results = $('#gig-commissions');
+            var $searchForm = $('form#gig-commissions-form');
+            $searchForm.submit(function (event) {
+                event.stopPropagation();
+                event.preventDefault();
+                $results.empty();
+                $.ajax({
+                    method: 'POST',
+                    url: $(this).attr('action'),
+                    data: $(this).serialize(),
+                    success: function (response) {
+                        if (typeof response.html !== "undefined") {
+                            if (response.numResults === 0) {
+                                alert('No results.');
+                            }
+                            $results.html(response.html);
+                        } else if (response.message) {
+                            $results.text(response.message);
+                        } else {
+                            alert('Could not recognize backend response.');
+                        }
+                    }
+                });
+                return false;
+            });
+
+        },
+        initGstUpgrades: function () {
+            var $results = $('#upgrades');
+            var $searchForm = $('form#upgrades-form');
+            $searchForm.submit(function (event) {
+                event.stopPropagation();
+                event.preventDefault();
+                $results.empty();
+                $.ajax({
+                    method: 'POST',
+                    url: $(this).attr('action'),
+                    data: $(this).serialize(),
+                    success: function (response) {
+                        if (typeof response.html !== "undefined") {
+                            if (response.numResults === 0) {
+                                alert('No results.');
+                            }
+                            $results.html(response.html);
+                        } else if (response.message) {
+                            $results.text(response.message);
+                        } else {
+                            alert('Could not recognize backend response.');
+                        }
+                    }
+                });
+                return false;
+            });
+
+        },
+        initGstSubscriptions: function () {
+            var $results = $('#subscriptions');
+            var $searchForm = $('form#subscriptions-form');
+            $searchForm.submit(function (event) {
+                event.stopPropagation();
+                event.preventDefault();
+                $results.empty();
+                $.ajax({
+                    method: 'POST',
+                    url: $(this).attr('action'),
+                    data: $(this).serialize(),
+                    success: function (response) {
+                        if (typeof response.html !== "undefined") {
+                            if (response.numResults === 0) {
+                                alert('No results.');
+                            }
+                            $results.html(response.html);
+                        } else if (response.message) {
+                            $results.text(response.message);
+                        } else {
+                            alert('Could not recognize backend response.');
+                        }
+                    }
+                });
+                return false;
+            });
+
         }
     };
 

@@ -9,9 +9,12 @@ use Hip\MandrillBundle\Dispatcher;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 use Symfony\Bridge\Twig\TwigEngine;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpFoundation\Response;
 use Vocalizr\AppBundle\Entity\EngineOrder;
 use Vocalizr\AppBundle\Entity\Notification;
 use Vocalizr\AppBundle\Entity\PayPalTransaction;
+use Vocalizr\AppBundle\Entity\Project;
+use Vocalizr\AppBundle\Entity\ProjectEscrow;
 use Vocalizr\AppBundle\Entity\UserInfo;
 use Vocalizr\AppBundle\Entity\UserSubscription;
 use Vocalizr\AppBundle\Entity\UserWalletTransaction;
@@ -211,7 +214,132 @@ class PayPalService
         if (!isset($data['custom']) || empty($data['custom'])) {
             return false;
         }
+        $transactionDescription = 'Paypal payment from ' . $data['payer_email'] . ' (' . $data['txn_id'] . ')';
 
+        // Calculate values
+        $paymentGross   = $data['payment_gross'] - 0.30;
+        $depositAmount  = number_format(($paymentGross * 100) / 103.6, 2);
+        $transactionFee = $data['payment_gross'] - $helper->getMoneyAsInt($depositAmount);
+
+        $custom = json_decode($data['custom'], true);
+
+        if (isset($custom['user_email'])) {
+            $user = $this->em->getRepository('VocalizrAppBundle:UserInfo')->findOneBy(['email' => $custom['user_email']]);
+            $projectRepository = $this->em->getRepository('VocalizrAppBundle:Project');
+            /** @var Project $project */
+            $project = $projectRepository->findOneBy(['uuid' => $custom['uuid']]);
+            $this->setUserToPayPalTransaction($user);
+            $uwt = new UserWalletTransaction();
+            $uwt
+                ->setUserInfo($user)
+                ->setAmount($data['payment_gross'] * 100) // In cents
+                ->setCurrency($data['mc_currency'])
+                ->setDescription($transactionDescription)
+                ->setType(UserWalletTransaction::PROJECT_PAYMENT)
+                ->setEmail($payerEmail)
+            ;
+            $this->em->persist($uwt);
+            if (isset($custom['vocalizr_fee'])) {
+                $uwt = new UserWalletTransaction();
+                $uwt->setUserInfo($user)
+                    ->setAmount('-' . ($custom['vocalizr_fee'] * 100)) // In cents
+                    ->setCurrency($data['mc_currency'])
+                    ->setDescription('Vocalizr fee')
+                    ->setType(UserWalletTransaction::TYPE_TRANSACTION_FEE)
+                    ->setEmail($payerEmail)
+                ;
+                $this->em->persist($uwt);
+
+            }
+            $uwt = new UserWalletTransaction();
+            $uwt->setUserInfo($user)
+                ->setAmount('-' . ($transactionFee * 100)) // In cents
+                ->setCurrency($data['mc_currency'])
+                ->setDescription('Transaction fee')
+                ->setType(UserWalletTransaction::TYPE_TRANSACTION_FEE)
+                ->setEmail($payerEmail)
+            ;
+
+            $this->em->persist($uwt);
+
+            $uwt = new UserWalletTransaction();
+            if (!isset($custom['vocalizr_fee'])) {
+                $custom['vocalizr_fee'] = 0;
+            }
+            if ($project->getProjectType() !== Project::PROJECT_TYPE_CONTEST) {
+                $uwt
+                    ->setUserInfo($user)
+                    ->setAmount('-' . ($data['payment_gross'] * 100) + ($transactionFee * 100) + ($custom['vocalizr_fee'] * 100)) // In cents
+                    ->setCurrency($data['mc_currency'])
+                    ->setDescription(sprintf(
+                        'Upgrade charges for %s ' . $project->getTitle(),
+                        $project->getPublishType() === Project::PROJECT_TYPE_CONTEST ? 'contest' : 'gig'
+                    ))
+                    ->setType(UserWalletTransaction::PROJECT_PAYMENT)
+                    ->setEmail($payerEmail)
+                ;
+            } else {
+                $uwt
+                    ->setUserInfo($user)
+                    ->setAmount((($project->getBudgetFrom() * 100) + ($transactionFee * 100) + ($custom['vocalizr_fee'] * 100)) - ($data['payment_gross'] * 100)) // In cents
+                    ->setCurrency($data['mc_currency'])
+                    ->setDescription(sprintf(
+                        'Upgrade charges for %s ' . $project->getTitle(),
+                        $project->getPublishType() === Project::PROJECT_TYPE_CONTEST ? 'contest' : 'gig'
+                    ))
+                    ->setType(UserWalletTransaction::PROJECT_PAYMENT)
+                    ->setEmail($payerEmail)
+                ;
+                $this->em->persist($uwt);
+                $uwt = new UserWalletTransaction();
+                $uwt
+                    ->setUserInfo($user)
+                    ->setAmount('-' . ($project->getBudgetFrom() * 100)) // In cents
+                    ->setCurrency($data['mc_currency'])
+                    ->setDescription(sprintf(
+                        'Paypal payment for project "%s" from %s (%s)',
+                        $project->getTitle(),
+                        $data['payer_email'],
+                        $data['txn_id']
+                    ))
+                    ->setType(UserWalletTransaction::PROJECT_PAYMENT)
+                    ->setEmail($payerEmail)
+                ;
+            }
+
+            $this->em->persist($uwt);
+            if (!$project) {
+                return false;
+            }
+            $project->setPaymentStatus(Project::PAYMENT_STATUS_PAID);
+            $project->setPaypalTransaction($this->payPalTransaction);
+            $project->setFeatured($custom['featured']);
+            $project->setFeaturedAt(new \DateTime());
+            $project->setShowInNews(!$custom['publish_type']);
+            $project->setHighlight($custom['highlight']);
+            $project->setMessaging($custom['messaging']);
+            $project->setToFavorites($custom['to_favorites']);
+            $project->setProRequired($custom['lock_to_cert']);
+            $project->setRestrictToPreferences($custom['restrict_to_preferences']);
+            $dt = new \DateTime();
+            $dt->modify('+28 days');
+            $dt->modify('+23 hours');
+            $dt->modify('+59 minutes');
+            $project->setBidsDue($dt);
+            $project->setIsActive(true);
+            $project->setPublishedAt(new \DateTime());
+            $amount = $project->getBudgetTo() * 100;
+
+            // Add to project escrow
+            $pe = new ProjectEscrow();
+            $pe->setFee(0);
+            $pe->setAmount($amount);
+            $pe->setUserInfo($user);
+            $this->em->persist($pe);
+
+            $project->setProjectEscrow($pe);
+            $this->em->flush();
+        }
         // If custom var starts with DEPOSIT
         if (substr($data['custom'], 0, 7) == 'DEPOSIT') {
             // Get user unique string from custom field
@@ -231,8 +359,6 @@ class PayPalService
                 $user->setWithdrawEmail($payerEmail);
                 $this->em->flush();
             }
-
-            $transactionDescription = 'Paypal payment from ' . $data['payer_email'] . ' (' . $data['txn_id'] . ')';
 
             if ($user->getWithdrawEmail() != $payerEmail) {
                 $this->log('WARN', "IPN: DEPOSIT: User deposited on a different email address");
@@ -303,11 +429,6 @@ class PayPalService
 
                 return false;
             }
-
-            // Calculate values
-            $paymentGross   = $data['payment_gross'] - 0.30;
-            $depositAmount  = number_format(($paymentGross * 100) / 103.6, 2);
-            $transactionFee = $data['payment_gross'] - $helper->getMoneyAsInt($depositAmount);
 
             // Create user wallet transaction
             $uwt = new UserWalletTransaction();
