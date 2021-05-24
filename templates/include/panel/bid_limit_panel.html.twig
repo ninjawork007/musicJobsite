@@ -1,0 +1,15 @@
+{% extends 'include/panel/upgrade_to_unlock_panel.html.twig' %}
+{% block note %}UPGRADE TO <b>ACCESS PASS</b> TO UNLOCK BIDDING{% endblock %}
+{#{% block note %}UNLOCK MORE BIDS AND THESE <b>PRO</b> BENEFITS{% endblock %}#}
+{% block benefits_li %}
+    {#<li>Unlimited bids (Up from 5 per month)</li>#}
+    {#<li>Gig fees dropped from 20 to 10%</li>#}
+    {#<li>Connections & Messaging</li>#}
+    <li>Start working on Vocalizr</li>
+    <li>Unlimited bids on jobs</li>
+    <li>Payouts to PayPal within 24hrs</li>
+{% endblock %}
+{% block footer_link %}{{ path('user_upgrade', {
+    'source': constant('App\\Service\\MembershipSourceHelper::SUB_SOURCE_BID_LIMIT_MODAL'),
+    'return': true
+}) }}{% endblock %}

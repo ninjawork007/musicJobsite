@@ -1,0 +1,8 @@
+{% extends 'email.txt.twig' %}
+
+{% block body %}
+Hello {{ user.getFirstName }},
+     
+{{ project.UserInfo.username }} as asked for you to upload your assets for {{ project.title }}.
+    
+{% endblock %}

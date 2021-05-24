@@ -1,0 +1,212 @@
+{#{{ form_row(form._token) }}#}
+
+{% embed 'Project/include/addon_item.html.twig' with {
+    'isChecked': form.vars.value.restrictToPreferences ? true : false,
+    'inputName' : form.restrict_to_preferences.vars.full_name,
+    'inputValue' : 1,
+    'proPrice' : prices.PRO.restrict,
+    'freePrice' : prices.FREE.restrict
+} %}
+    {% block icon %}
+        <div class="addon-icon">
+            <svg style="left: 5px; top: 5px;" width="14" height="15" viewBox="0 0 14 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12.3237 4.07216C11.6974 4.06037 11.1847 4.57676 11.1847 5.19345V7.5912H10.9612V2.74649C10.9612 2.1298 10.4485 1.6134 9.82219 1.6252C9.21523 1.63664 8.72679 2.12454 8.72679 2.72477V7.5912H8.50334V1.67422C8.50334 1.05753 7.99065 0.541138 7.36431 0.552933C6.75735 0.56437 6.2689 1.05228 6.2689 1.6525V7.5912H6.04546V2.77398C6.04546 2.15729 5.53277 1.6409 4.90643 1.65269C4.29947 1.66413 3.81102 2.15204 3.81102 2.75226V9.24062L2.92708 8.04411C2.56418 7.5529 1.86547 7.44428 1.36641 7.80153C0.867428 8.15879 0.757102 8.84658 1.12 9.33782L4.6281 14.0862C4.75247 14.2545 4.91554 14.3915 5.10397 14.486C5.29241 14.5804 5.50087 14.6297 5.71233 14.6297H11.2311C11.8532 14.6297 12.3936 14.2083 12.5361 13.6122L13.2765 10.5148C13.3712 10.1185 13.4191 9.71278 13.4191 9.3057V5.17173C13.4191 4.57151 12.9307 4.0836 12.3237 4.07216Z" fill="white"/>
+            </svg>
+        </div>
+    {% endblock %}
+    {% block info %}
+        <div class="addon-title">RESTRICT ENTRIES TO JOB PREFERENCES</div>
+        <div class="addon-desc">Only users matching your brief / criteria can enter</div>
+    {% endblock %}
+{% endembed %}
+
+{% embed 'Project/include/addon_item.html.twig' with {
+    'isChecked': form.vars.value.toFavorites ? true : false,
+    'inputName' : form.to_favorites.vars.full_name,
+    'inputValue' : 1,
+    'proPrice' : prices.PRO.favorites,
+    'freePrice' : prices.FREE.favorites
+} %}
+    {% block icon %}
+        <div class="addon-icon">
+            <svg style="left: 3px; top: 5px;" width="18" height="15" viewBox="0 0 18 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M17.3755 1.60476L14.8578 13.5504C14.6679 14.3935 14.1725 14.6034 13.4686 14.2062L9.63249 11.3621L7.78147 13.1532C7.57663 13.3593 7.4053 13.5317 7.01052 13.5317L7.28612 9.60102L14.396 3.13732C14.7051 2.86003 14.3289 2.7064 13.9155 2.98369L5.12598 8.55184L1.342 7.36027C0.518911 7.10172 0.504013 6.53216 1.51332 6.13497L16.314 0.398206C16.9993 0.139658 17.599 0.551836 17.3755 1.60476Z" fill="white"/>
+            </svg>
+        </div>
+    {% endblock %}
+    {% block info %}
+        <div class="addon-title">INVITE FAVORITES</div>
+        <div class="addon-desc">Invite all your favorites to this job instantly</div>
+    {% endblock %}
+{% endembed %}
+
+{% embed 'Project/include/addon_item.html.twig' with {
+    'isChecked': form.vars.value.publishType == "private" ? true : false,
+    'inputName' : form.publish_type.vars.full_name,
+    'inputValue' : 'private',
+    'proPrice' : prices.PRO.private,
+    'freePrice' : prices.FREE.private
+} %}
+    {% block icon %}
+        <div class="addon-icon">
+            <svg style="left: 5px; top: 6px;" width="16" height="15" viewBox="0 0 16 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M8.04448 11.1205L8.94021 12.4001C8.65441 12.4271 8.36749 12.4406 8.08042 12.4407C4.78635 12.4407 1.8951 10.6824 0.344848 8.05174C0.225207 7.84873 0.162109 7.61738 0.162109 7.38173C0.162109 7.14608 0.225207 6.91473 0.344848 6.71171C1.00534 5.59089 1.90962 4.62835 2.98494 3.89255L4.55422 6.13439C4.41645 6.52448 4.34122 6.94423 4.34122 7.38174C4.34122 9.43654 5.99458 11.1012 8.04448 11.1205ZM15.816 8.05174C14.9453 9.52919 13.6509 10.7313 12.0995 11.5016L12.0998 11.502L13.24 13.1296C13.4489 13.4282 13.3763 13.8395 13.0777 14.0485L12.7173 14.3009C12.4187 14.5098 12.0074 14.4372 11.7984 14.1387L2.92088 1.63383C2.71192 1.33524 2.78451 0.923932 3.08309 0.714977L3.44354 0.462581C3.74213 0.253626 4.15344 0.32621 4.36239 0.624796L5.76564 2.62133C6.50446 2.42665 7.28048 2.32283 8.08042 2.32283C11.3745 2.32283 14.2657 4.08105 15.816 6.71174C15.9356 6.91476 15.9987 7.1461 15.9987 7.38174C15.9987 7.61738 15.9356 7.84873 15.816 8.05174ZM11.8196 7.38174C11.8196 5.3149 10.1469 3.64255 8.08042 3.64255C7.5872 3.64255 7.11659 3.73803 6.68567 3.91122L7.21628 4.65515C7.92752 4.4305 8.72966 4.48571 9.4268 4.85888H9.42598C8.77574 4.85888 8.24868 5.38595 8.24868 6.03618C8.24868 6.68576 8.77511 7.21348 9.42598 7.21348C10.0762 7.21348 10.6033 6.68642 10.6033 6.03618V6.03536C11.1109 6.98363 11.0518 8.17753 10.3764 9.08582V9.0861L10.9075 9.83012C11.4758 9.17436 11.8196 8.31857 11.8196 7.38174ZM7.36596 10.1511L5.23434 7.10598C5.09649 8.54631 6.0403 9.81013 7.36596 10.1511Z" fill="white"/>
+            </svg>
+        </div>
+    {% endblock %}
+    {% block info %}
+        <div class="addon-title">Make job private</div>
+        <div class="addon-desc"> Your job will be invite only and hidden from search</div>
+    {% endblock %}
+    {% block input_options %}
+        id="check-private"
+    {% endblock %}
+{% endembed %}
+
+<div class="public-upgrades">
+    {% embed 'Project/include/addon_item.html.twig' with {
+        'isChecked': form.vars.value.highlight ? true : false,
+        'inputName' : form.highlight.vars.full_name,
+        'inputValue' : 1,
+        'proPrice' : prices.PRO.highlight,
+        'freePrice' : prices.FREE.highlight
+    } %}
+        {% block item_classes %}highlight-addon{% endblock %}
+        {% block icon %}
+            <div class="addon-icon">
+                <svg style="left: 5px;top: 5px" width="16" height="17" viewBox="0 0 16 17" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M8.52008 0.771079L9.29956 2.67712C9.42826 2.9918 9.80884 3.11546 10.0979 2.93654L11.8489 1.85269C12.3221 1.55979 12.9122 1.98854 12.7798 2.52911L12.2901 4.52929C12.2093 4.85953 12.4445 5.18328 12.7836 5.20843L14.8372 5.36077C15.3922 5.40195 15.6176 6.09569 15.1928 6.45522L13.621 7.78553C13.3615 8.00518 13.3615 8.40534 13.621 8.62498L15.1928 9.95533C15.6177 10.3149 15.3922 11.0086 14.8372 11.0498L12.7836 11.2021C12.4445 11.2273 12.2093 11.551 12.2902 11.8812L12.7799 13.8814C12.9122 14.422 12.3221 14.8508 11.8489 14.5579L10.098 13.474C9.80887 13.2951 9.42826 13.4187 9.29959 13.7334L8.52011 15.6395C8.30944 16.1546 7.57999 16.1546 7.36933 15.6395L6.58984 13.7334C6.46114 13.4187 6.08056 13.2951 5.79148 13.474L4.04051 14.5579C3.56731 14.8508 2.97716 14.422 3.10953 13.8814L3.59923 11.8812C3.68009 11.551 3.44487 11.2273 3.10581 11.2021L1.05219 11.0498C0.497206 11.0086 0.271786 10.3149 0.696568 9.95533L2.2684 8.62501C2.52791 8.40537 2.52791 8.00521 2.2684 7.78556L0.696538 6.45522C0.271725 6.09569 0.497145 5.40195 1.05216 5.36077L3.10577 5.20843C3.44484 5.18328 3.68006 4.85953 3.5992 4.52929L3.1095 2.52911C2.97716 1.98854 3.56731 1.55979 4.04048 1.85269L5.79145 2.93654C6.08053 3.11549 6.46111 2.99183 6.58981 2.67712L7.3693 0.771079C7.57996 0.255994 8.30941 0.255994 8.52008 0.771079ZM12.0993 8.20527C12.0993 5.91438 10.2355 4.05062 7.94469 4.05062C5.6538 4.05062 3.79004 5.91438 3.79004 8.20527C3.79004 10.4962 5.6538 12.3599 7.94469 12.3599C10.2355 12.3599 12.0993 10.4962 12.0993 8.20527ZM11.1218 8.20527C11.1218 9.95713 9.69654 11.3824 7.94469 11.3824C6.19283 11.3824 4.7676 9.95713 4.7676 8.20527C4.7676 6.45342 6.19283 5.02819 7.94469 5.02819C9.69654 5.02819 11.1218 6.45342 11.1218 8.20527Z" fill="white"/>
+                </svg>
+            </div>
+        {% endblock %}
+        {% block info %}
+            <div class="addon-title">HIGHLIGHT</div>
+            <div class="addon-desc">Make your job stand out from the rest with a bright border</div>
+        {% endblock %}
+    {% endembed %}
+</div>
+    {% embed 'Project/include/addon_item.html.twig' with {
+        'isChecked': form.vars.value.messaging ? true : false,
+        'inputName' : form.messaging.vars.full_name,
+        'inputValue' : 1,
+        'proPrice' : prices.PRO.messaging,
+        'freePrice' : prices.FREE.messaging
+    } %}
+        {% block icon %}
+            <div class="addon-icon">
+                <svg style="left: 5px;top: 6px" width="17" height="14" viewBox="0 0 17 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M6.7059 10.0609C5.61685 10.0609 4.59069 9.872 3.68942 9.5386C2.78064 10.2243 1.66567 10.6421 0.481151 10.7618C0.472587 10.7627 0.463983 10.7631 0.455372 10.7631C0.347159 10.7631 0.249403 10.6934 0.223161 10.5939C0.194775 10.4832 0.28364 10.4151 0.371635 10.334C0.8066 9.93068 1.33391 9.61365 1.54014 8.25882C0.710611 7.49211 0.217773 6.5351 0.217773 5.49628C0.217773 2.97503 3.12286 0.931641 6.7059 0.931641C10.2889 0.931641 13.194 2.975 13.194 5.49628C13.194 8.01929 10.2889 10.0609 6.7059 10.0609ZM16.7587 13.0543C16.3548 12.6877 15.8651 12.3995 15.6736 11.1678C17.6666 9.36439 17.1848 6.78454 14.5824 5.38439C14.5833 5.42165 14.5843 5.45888 14.5843 5.49628C14.5843 8.91756 10.831 11.5403 6.351 11.3958C7.45517 12.2606 9.07338 12.8061 10.8768 12.8061C11.8881 12.8061 12.841 12.6343 13.6778 12.3312C14.5217 12.9546 15.557 13.3344 16.657 13.4433C16.7666 13.4543 16.8702 13.3882 16.8965 13.2906C16.9229 13.19 16.8404 13.1281 16.7587 13.0543Z" fill="white"/>
+                </svg>
+            </div>
+        {% endblock %}
+        {% block info %}
+            <div class="addon-title">BID & ENTRY MESSAGING</div>
+            <div class="addon-desc">Message users & discuss their Gig bid or Contest entry</div>
+        {% endblock %}
+    {% endembed %}
+<div class="public-upgrades">
+
+    {% embed 'Project/include/addon_item.html.twig' with {
+        'isChecked': form.vars.value.featured ? true : false,
+        'inputName' : form.featured.vars.full_name,
+        'inputValue' : 1,
+        'proPrice' : prices.PRO.feature,
+        'freePrice' : prices.FREE.feature
+    } %}
+        {% block icon %}
+            <div class="addon-icon">
+                <svg style="left: 7px;top: 6px" width="12" height="15" viewBox="0 0 12 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M0.665039 14.2107V1.4535C0.665039 0.724635 1.25589 0.133789 1.98475 0.133789H9.90303C10.6319 0.133789 11.2227 0.724635 11.2227 1.4535V14.2107L5.94389 11.1314L0.665039 14.2107Z" fill="white"/>
+                </svg>
+            </div>
+        {% endblock %}
+        {% block info %}
+            <div class="addon-title">FEATURED</div>
+            <div class="addon-desc">Attract more entries, shown at the top for 7 days</div>
+            <div class="blue-line"></div>
+        {% endblock %}
+    {% endembed %}
+
+    {% embed 'Project/include/addon_item.html.twig' with {
+        'isChecked': form.vars.value.proRequired ? true : false,
+        'inputName' : form.lock_to_cert.vars.full_name,
+        'inputValue' : 1,
+        'proPrice' : prices.PRO.lock_to_cert,
+        'freePrice' : prices.FREE.lock_to_cert
+    } %}
+        {% block item_classes %}
+            lock-cert
+        {% endblock %}
+        {% block icon %}
+            <svg width="42" height="25" viewBox="0 0 42 25" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <g filter="url(#filter0_d)">
+                    <rect x="4.5498" y="4.01172" width="32.5424" height="15.6182" rx="1.04274" fill="#268AFF"/>
+                    <path d="M10.6093 15.7075H12.4341V13.4031H13.7062C15.1556 13.4031 16.1358 12.3186 16.1358 10.8171C16.1358 9.31555 15.1556 8.25196 13.7062 8.25196H10.6093V15.7075ZM12.4341 11.839V9.81606H13.3621C13.9669 9.81606 14.2797 10.2227 14.2797 10.8171C14.2797 11.4114 13.9669 11.839 13.3308 11.839H12.4341ZM17.4266 15.7075H19.2514V13.1945H20.1064L21.4307 15.7075H23.464L22.0146 13.1007C21.8374 12.7879 21.7331 12.6523 21.7331 12.6523V12.6314C22.4734 12.2561 22.8488 11.3906 22.8488 10.5981C22.8488 9.51367 22.317 8.75247 21.4724 8.42923C21.1492 8.3041 20.7842 8.25196 20.023 8.25196H17.4266V15.7075ZM19.2514 11.6304V9.81606H19.8666C20.7842 9.81606 20.9927 10.1497 20.9927 10.7128C20.9927 11.3072 20.6278 11.6304 20.0439 11.6304H19.2514ZM24.2115 11.9328C24.2115 14.1226 25.8591 15.8326 28.1114 15.8326C30.3637 15.8326 32.0112 14.1226 32.0112 11.9328C32.0112 9.79521 30.3637 8.12683 28.1114 8.12683C25.8591 8.12683 24.2115 9.79521 24.2115 11.9328ZM26.0989 11.9328C26.0989 10.7128 26.9956 9.79521 28.1114 9.79521C29.2271 9.79521 30.1238 10.7128 30.1238 11.9328C30.1238 13.205 29.2271 14.1643 28.1114 14.1643C26.9956 14.1643 26.0989 13.205 26.0989 11.9328Z" fill="white"/>
+                </g>
+                <defs>
+                    <filter id="filter0_d" x="0.378862" y="0.362144" width="40.8843" height="23.9601" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+                        <feFlood flood-opacity="0" result="BackgroundImageFix"/>
+                        <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"/>
+                        <feOffset dy="0.521368"/>
+                        <feGaussianBlur stdDeviation="2.08547"/>
+                        <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.21 0"/>
+                        <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow"/>
+                        <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow" result="shape"/>
+                    </filter>
+                </defs>
+            </svg>
+        {% endblock %}
+        {% block info %}
+            <div class="addon-title">LOCK JOB TO CERTIFIED PROFESSIONALS</div>
+            <div class="addon-desc">Only high quality Vocalizr certified professionals will be able to bid or enter</div>
+        {% endblock %}
+    {% endembed %}
+</div>
+{% if not app.user.isSubscribed %}
+    <div class="subscription">
+        <p class="hide" id="subscription-promo">Unlock savings & messaging with <b>Access Pass</b> <img src="{{ asset('images/vocalizr_pro_stamp.svg') }}" class="svg-stamp-pro in-profile" alt="pro"> for 10.99</p>
+        <p class="hide" id="could-save">You could save $<span id="could-save-amount">0</span> with <b>Access Pass</b> <img src="{{ asset('images/vocalizr_pro_stamp.svg') }}" class="svg-stamp-pro in-profile" alt="pro"> for 10.99</p>
+        <a href="{{ path('membership') }}" class="btn btn-upgrade-pro">Add <b class="pro">Access Pass</b></a>
+    </div>
+{% endif %}
+
+{% set projectBudget = max(project.budgetFrom, project.budgetTo) %}
+{% set vocalizrCommissionFeePercent = app.user.isSubscribed ? prices.PRO.project_percent_added : prices.FREE.project_percent_added %}
+
+<div class="fee-calculator">
+    <div class="calculator-item" data-role="upgrades">
+        <div class="calculator-title">Upgrades</div>
+        <div class="calculator-value">$<span class="number">0</span></div>
+    </div>
+    <div class="calculator-item hide" data-role="pro-subscription">
+        <div class="calculator-title">Access Pass subscription</div>
+        <div class="calculator-value">$<span class="number">10.99</span></div>
+    </div>
+    {% if project.projectType == 'contest' %}
+        <div class="calculator-item" data-role="contest-budget">
+            <div class="calculator-title">Contest Budget</div>
+            <div class="calculator-value">$<span class="number">{{ projectBudget }}</span></div>
+        </div>
+    {% endif %}
+    <div class="calculator-item" data-role="transaction-fee">
+        <div class="calculator-title">Transaction Fee</div>
+        <div class="calculator-value">$<span class="number">0</span></div>
+    </div>
+    {% if project.projectType == 'contest' %}
+        <div class="calculator-item" data-role="vocalizr-fee">
+            <div class="calculator-title">Vocalizr Commission Fee</div>
+            <div class="calculator-value">
+                $<span class="number" data-save="{{
+                    app.user.isSubscribed
+                    ? '' :
+                    (projectBudget / 100) * prices.PRO.project_percent_added
+                }}">{{ (projectBudget / 100) * vocalizrCommissionFeePercent }}</span>
+            </div>
+        </div>
+    {% endif %}
+    <div class="calculator-item ignore" data-role="wallet">
+        <div class="calculator-title">From Vocalizr Wallet</div>
+        <div class="calculator-value">$<span class="number" data-wallet="{{ app.user.wallet / 100 }}">0</span></div>
+    </div>
+    {{ form_row(form.upgrade_to_pro) }}
+</div>

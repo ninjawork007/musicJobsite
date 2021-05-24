@@ -1,8 +1,0 @@
-{% extends '::email.txt.twig' %}
-
-{% block body %}
-Hello {{ user.getFirstName }},
-    
-{{ project.UserInfo.username }} has released payment of ${{project.ProjectEscrow.amount }} into your vocalizr wallet for the work you did on 
-{{ project.title }}.
-{% endblock %}

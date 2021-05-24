@@ -1,0 +1,442 @@
+# This file is the entry point to configure your own services.
+# Files in the packages/ subdirectory configure your dependencies.
+
+# Put parameters here that don't need to change on each machine where the app is deployed
+# https://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
+parameters:
+    env(MONGODB_URL): ''
+    env(MONGODB_DB): ''
+
+services:
+    # default configuration for services in *this* file
+    _defaults:
+        autowire: true      # Automatically injects dependencies in your services.
+        autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
+#        public: true
+
+    # makes classes in src/ available to be used as services
+    # this creates a service per class whose id is the fully-qualified class name
+    App\:
+        resource: '../src/'
+        exclude:
+            - '../src/DependencyInjection/'
+            - '../src/Entity/'
+            - '../src/Kernel.php'
+            - '../src/Tests/'
+            - '../src/Form/'
+
+#     controllers are imported separately to make sure services can be injected
+#     as action arguments even if you don't extend any base controller class
+    App\Controller\:
+        resource: '../src/Controller/'
+        tags: ['controller.service_arguments']
+
+    # add more service definitions when explicit configuration is needed
+
+
+    # please note that last definitions always *replace* previous ones
+
+# START: create dependency injection for service
+    Slot\MandrillBundle\Dispatcher:
+        arguments:
+            - "@slot_mandrill.client"
+            - "%slot_mandrill.default.sender%"
+            - "%slot_mandrill.default.sender_name%"
+            - "%slot_mandrill.default.subaccount%"
+            - "%slot_mandrill.disable_delivery%"
+            - "%slot_mandrill.proxy%"
+            - "%slot_mandrill.debug%"
+# END: create dependency injection for service
+
+# START: Event Listeners
+#    event.subscriber.vocalizr_event_subscriber:
+#        class: App\EventListener\VocalizrEventSubscriber
+#        arguments:
+#            - '@service_container'
+#        tags:
+#            - { name: 'kernel.event_listener' }
+
+    event.listener.vocalizr_controller_listener:
+        class: App\EventListener\ControllerListener
+        arguments:
+            - '@service_container'
+        tags:
+            - { name: kernel.event_listener, event: onKernelController }
+
+    event.listener.user_wallet:
+        class: App\EventListener\UserWalletListener
+        arguments:
+            - '@service_container'
+        tags:
+            - { name: doctrine.event_listener, event: prePersist }
+
+    event.listener.user_review:
+        class: App\EventListener\UserReviewListener
+        arguments:
+            - '@service_container'
+        tags:
+            - { name: doctrine.event_listener, event: prePersist }
+
+    event.listener.just_created:
+        class: App\EventListener\GigContestCreateListener
+        arguments:
+            - '@hip_mandrill.dispatcher'
+            - '@router'
+        tags:
+            - { name: kernel.event_listener, event: contest_or_gig.just_created, method: onCreateAction }
+
+    event.listener.withdraw_status:
+        class: App\EventListener\WithdrawStatusListener
+        arguments:
+            - '@vocalizr_app.service.mandrill'
+            - '@service_container'
+        tags:
+            - { name: doctrine.event_listener, event: onFlush }
+
+    event.subscriber.access_request:
+        class: App\EventListener\AccessRequestSubscriber
+        arguments:
+            - '@service_container'
+        tags:
+            - { name: kernel.event_subscriber }
+
+    event.listener.payment.project:
+        class: App\EventListener\Payment\ProjectPaymentListener
+        arguments:
+            - '@vocalizr_app.model.project'
+            - '@vocalizr_app.model.wallet_transaction'
+            - '@vocalizr_app.stripe_configuration_provider'
+            - '@vocalizr_app.project_price_calculator'
+        tags:
+            - { name: kernel.event_listener, event: vocalizr_app.payment.completed, method: onPaymentSessionCompleted }
+
+    event.listener.payment.user_upgrade:
+        class: App\EventListener\Payment\UserUpgradeListener
+        arguments:
+            - '@vocalizr_app.stripe_configuration_provider'
+            - '@doctrine.orm.entity_manager'
+            - '@vocalizr_app.model.wallet_transaction'
+        tags:
+            - { name: kernel.event_listener, event: vocalizr_app.payment.completed, method: onPaymentSessionCompleted }
+
+    event.listener.payment.project_bid:
+        class: App\EventListener\Payment\ProjectBidPaymentListener
+        arguments:
+            - '@vocalizr_app.model.wallet_transaction'
+            - '@vocalizr_app.stripe_configuration_provider'
+        tags:
+            - { name: kernel.event_listener, event: vocalizr_app.payment.completed, method: onPaymentSessionCompleted }
+
+    event.listener.payment.user_certification:
+        class: App\EventListener\UserCertificationListener
+        arguments:
+            - '@doctrine.orm.entity_manager'
+        tags:
+            - { name: kernel.event_listener, event: vocalizr_app.payment.completed, method: onPaymentSessionCompleted }
+
+    event.listener.stripe.webhook.identity:
+        class: App\EventListener\StripeWebhook\IdentityListener
+        arguments:
+            - '@doctrine.orm.entity_manager'
+        tags:
+            - { name: kernel.event_listener, event: vocalizr_app.stripe.webhook, method: onWebhook }
+
+    event.listener.stripe.webhook.checkout_session:
+        class: App\EventListener\StripeWebhook\CheckoutSessionListener
+        arguments:
+            - '@service_container'
+            - '@doctrine.orm.entity_manager'
+        tags:
+            - { name: kernel.event_listener, event: vocalizr_app.stripe.webhook, method: onWebhook }
+
+    event.listener.stripe.webhook.subscription:
+        class: App\EventListener\StripeWebhook\SubscriptionListener
+        arguments:
+            - '@doctrine.orm.entity_manager'
+            - '@twig'
+            - '@vocalizr_app.service.mandrill'
+            - '@vocalizr_app.model.user_subscription'
+        tags:
+            - { name: kernel.event_listener, event: vocalizr_app.stripe.webhook, method: onWebhook }
+
+    event.listener.stripe.webhook.charge:
+        class: App\EventListener\StripeWebhook\ChargeListener
+        arguments:
+            - '@doctrine.orm.entity_manager'
+        tags:
+            - { name: kernel.event_listener, event: vocalizr_app.stripe.webhook, method: onWebhook }
+
+    event.listener.stripe.webhook.invoice:
+        class: App\EventListener\StripeWebhook\InvoiceListener
+        arguments:
+            - '@doctrine.orm.entity_manager'
+            - '@twig'
+            - '@vocalizr_app.service.mandrill'
+        tags:
+            - { name: kernel.event_listener, event: vocalizr_app.stripe.webhook, method: onWebhook }
+
+
+# END: Event Listeners
+    service.mail:
+        class: App\Service\MailService
+        autowire: true
+        autoconfigure: true
+        arguments:
+            - '@doctrine.orm.entity_manager'
+            - '@service_container'
+            - '@twig'
+        public: true
+
+    authentication_handler:
+        class: App\Handler\AuthenticationHandler
+        autowire: true
+        autoconfigure: true
+        arguments:
+            - '@doctrine.orm.entity_manager'
+            - '@service_container'
+            - '@router'
+            - '@vocalizr_app.model.user_audit'
+        public: true
+
+    vocalizr_app.service.membership_source_helper:
+        class: App\Service\MembershipSourceHelper
+        autowire: true
+        autoconfigure: true
+        arguments:
+            - '@session'
+            - '@router'
+        public: true
+
+    vocalizr_app.service.waveform:
+        class: App\Service\WaveformService
+        autowire: true
+        autoconfigure: true
+        arguments:
+            - '@doctrine.orm.default_entity_manager'
+            - '@vocalizr_app.media_info'
+        public: true
+
+    hip_mandrill.dispatcher:
+        class: Slot\MandrillBundle\Dispatcher
+        autowire: true
+        autoconfigure: true
+        arguments:
+            - "@slot_mandrill.client"
+            - "%slot_mandrill.default.sender%"
+            - "%slot_mandrill.default.sender_name%"
+            - "%slot_mandrill.default.subaccount%"
+            - "%slot_mandrill.disable_delivery%"
+            - "%slot_mandrill.proxy%"
+            - "%slot_mandrill.debug%"
+        public: true
+
+    vocalizr_app.service.mandrill:
+        class: App\Service\MandrillService
+        autowire: true
+        autoconfigure: true
+        arguments:
+            - '@hip_mandrill.dispatcher'
+        public: true
+
+    service.sc:
+        class: App\Service\SoundcloudService
+        autowire: true
+        autoconfigure: true
+        arguments:
+            - '@doctrine.orm.default_entity_manager'
+            - '@service_container'
+        public: true
+
+    service.paypal:
+        class: App\Service\PayPalService
+        autowire: true
+        autoconfigure: true
+        arguments:
+            - '@doctrine.orm.default_entity_manager'
+            - '@service_container'
+            - '@vocalizr_app.service.mandrill'
+            - '@hip_mandrill.dispatcher'
+        public: true
+
+
+    # Model
+    vocalizr_app.model.base_model:
+        class: App\Model\Model
+        autowire: true
+        arguments:
+            - '@doctrine.orm.default_entity_manager'
+            - '@service_container'
+            - '@request_stack'
+        public: true
+
+    vocalizr_app.model.user_video:
+        class: App\Model\UserVideoModel
+        autowire: true
+        public: true
+
+    vocalizr_app.model.user_info:
+        class: App\Model\UserInfoModel
+        autowire: true
+        public: true
+
+    vocalizr_app.model.user_connect:
+        class: App\Model\UserConnectModel
+        autowire: true
+        public: true
+
+    vocalizr_app.model.user_subscription:
+        class: App\Model\UserSubscriptionModel
+        autowire: true
+        public: true
+
+    vocalizr_app.model.user_spotify_playlist:
+        class: App\Model\UserSpotifyPlaylistModel
+        public: true
+
+    vocalizr_app.model.country:
+        class: App\Model\CountryModel
+        public: true
+
+    vocalizr_app.model.project:
+        class: App\Model\ProjectModel
+        public: true
+        autowire: true
+        arguments:
+            - '@vocalizr_app.service.mandrill'
+            - '@router'
+            - '@vocalizr_app.project_price_calculator'
+            - '@vocalizr_app.model.wallet_transaction'
+            - '@vocalizr_app.stripe_manager'
+
+    vocalizr_app.model.counter:
+        class: App\Model\CounterModel
+        public: true
+        autowire: true
+
+    vocalizr_app.model.wallet_transaction:
+        class: App\Model\UserWalletTransactionModel
+        public: true
+        autowire: true
+
+    vocalizr_app.model.paypal_api:
+        class: App\Service\PayPalApiService
+        public: true
+        autowire: true
+        autoconfigure: true
+        arguments:
+            - '@service_container'
+
+    vocalizr_app.model.google_sheets:
+        class: App\Service\GoogleSheetsService
+        public: true
+        autowire: true
+        autoconfigure: true
+        arguments:
+            - '@service_container'
+
+    vocalizr_app.model.hint:
+        class: App\Model\HintModel
+        public: true
+        autowire: true
+        arguments:
+            - '@session'
+            - '@security.helper'
+            - '@doctrine.orm.default_entity_manager'
+
+    vocalizr_app.model.user_audit:
+        class: App\Model\UserActionAuditModel
+        public: true
+        autowire: true
+
+    service.helper:
+        class: App\Service\HelperService
+        autowire: true
+        arguments:
+            - '@doctrine.orm.default_entity_manager'
+            - '@service_container'
+            - '@twig'
+        public: true
+
+    vocalizr_app.model.user_info_language:
+        class: App\Model\UserInfoLanguageModel
+        autowire: true
+        public: true
+
+    vocalizr_app.user_restriction:
+        class: App\Service\UserRestrictionService
+        autowire: true
+        autoconfigure: true
+        arguments:
+            - '@service_container'
+            - '@doctrine.orm.default_entity_manager'
+            - '@security.token_storage'
+
+    vocalizr_app.media_info:
+        class: App\Service\MediaInfoService
+        public: true
+        autowire: true
+        autoconfigure: true
+
+    vocalizr_app.service.process_image:
+        class: App\Service\ProcessImageService
+        autowire: true
+        autoconfigure: true
+        public: true
+
+    vocalizr_app.model.user_audio:
+        class: App\Service\UserAudioModel
+        autowire: true
+        autoconfigure: true
+        arguments:
+            - '@doctrine.orm.default_entity_manager'
+            - '@vocalizr_app.media_info'
+            - '@vocalizr_app.service.process_image'
+        public: true
+
+    vocalizr_app.service.statistics:
+        class: App\Service\StatisticsService
+        autowire: true
+        arguments:
+            - '@doctrine_mongodb.odm.document_manager'
+            - '@session'
+        public: true
+
+    vocalizr_app.project_price_calculator:
+        class: App\Service\ProjectPriceCalculator
+        autowire: true
+        arguments:
+            - '@doctrine.orm.entity_manager'
+        public: true
+
+    vocalizr_app.stripe_configuration_provider:
+        class: App\Service\StripeConfigurationProvider
+        autowire: true
+        autoconfigure: true
+        public: true
+
+    vocalizr_app.stripe_manager:
+        class: App\Service\StripeManager
+        autowire: true
+        autoconfigure: true
+        arguments:
+            - '@service_container'
+        public: true
+
+    vocalizr_app.revenue_manager:
+        class: App\Service\RevenueManager
+        autowire: true
+        arguments:
+            - '@service_container'
+        public: true
+
+    vocalizr_app.service.mongo_core_query:
+        class: App\Service\MongoCoreQueryService
+        autowire: true
+        autoconfigure: true
+        arguments:
+            - '@service_container'
+        public: true
+
+
+
+

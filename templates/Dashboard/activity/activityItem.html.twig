@@ -1,0 +1,19 @@
+<div class="activity-list-item">
+    <div class="avatar">
+        {% block avatar %}
+            {% include 'Dashboard/activity/parts/avatar.html.twig' with {user: activityItem.actioned_user_info} %}
+        {% endblock %}
+    </div>
+    <div class="activity-item">
+        <div class="activity-status">
+            {{ block('badge') }}
+            {% block date_created %}
+                <span class="activity-created">{{ activityItem.created_at|timeAgoString }} ago</span>
+            {% endblock %}
+        </div>
+        <div class="activity-info">
+            {% block activity_info %}{% endblock %}
+        </div>
+    </div>
+    {% block activity_footer %}{% endblock %}
+</div>

@@ -1,9 +1,0 @@
-<a href="{{ path('user_tag_vote', {type: type, id: id}) }}" data-role="ajax-trigger" class="js-vote-tag" data-id="{{ id }}">
-{% set dir = '/bundles/vocalizrapp/bootstrap4/img/' %}
-{% set likeImg = dir ~ 'icon_like.svg' %}
-{% set likedImg = dir ~ 'icon_like_liked.svg' %}
-<span class="about-me__tooltip">
-    {{ title }}<span class="tooltip-text">
-        <img src="{{ asset(agreed ? likedImg : likeImg) }}" data-swap-image="{{ asset(agreed ? likeImg : likedImg) }}" alt="like">
-        <span class="js-vote-tag-count" data-id="{{ id }}">{{ agree }}</span>
-</span></span></a>

@@ -1,0 +1,27 @@
+{% extends 'app.html.twig' %}
+
+{% block title %}Admin{% endblock %}
+
+{% block javascript %}
+    <script type="text/javascript" src="{{ asset('js/admin.js') }}"></script>
+
+    {% block admin_scripts %}
+    {% endblock %}
+{% endblock %}
+
+
+{% block body %}
+    <div class="row">
+        <div class="col-sm-2">
+            <ul class="nav">
+                {% block admin_menu %}
+                    {% include 'Admin/include/menu.html.twig' %}
+                {% endblock %}
+            </ul>
+        </div>
+        <div class="col-sm-10 admin-projects">
+            {% block admin_content %}
+            {% endblock %}
+        </div>
+    </div>
+{% endblock %}

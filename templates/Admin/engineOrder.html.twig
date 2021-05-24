@@ -1,0 +1,91 @@
+{% extends 'app.html.twig' %}
+
+{% block title %}View Order {{ order.uid }}{% endblock %}
+
+{% block javascript %}
+
+
+{% endblock %}
+
+
+{% block body %}
+    <div class="row">
+        <div class="col-sm-12">
+            <a href="{{ path('admin_engine') }}" class="btn btn-sm btn-default pull-right">BACK TO LIST</a>
+            <h1>View Order</h1>
+            
+            {% include 'messages.html.twig' %}
+            
+            <form method="POST">
+                <table class="table">
+                    <tr>
+                        <td width="200">ID</td>
+                        <td>#{{ order.id }}</td>
+                    </tr>
+                    <tr>
+                        <td>Title</td>
+                        <td>{{ order.title }}</td>
+                    </tr>
+                    <tr>
+                        <td>Notes</td>
+                        <td>
+                            {% if order.notes %}
+                                {{ order.notes|nl2br }}
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Service</td>
+                        <td>{{ order.EngineProduct.title }}</td>
+                    </tr>
+                    <tr>
+                        <td>Amount Split</td>
+                        <td>Total: ${{ order.amount / 100|number_format(2) }}, Engineer: ${{ ((order.amount - order.fee) / 100)|number_format(2) }}, Vocalizr: ${{ (order.fee / 100)|number_format(2) }}</td>
+                    </tr>
+                    <tr>
+                        <td>User</td>
+                        <td><a href="{{ path('user_view', {username: order.UserInfo.username}) }}">{{ order.UserInfo.username }}</a></td>
+                    </tr>
+                    <tr>
+                        <td>Contact Email</td>
+                        <td><a href="mailto:{{ order.email }}">{{ order.email }}</a></td>
+                    </tr>
+
+                    <tr>
+                        <td>Assets</td>
+                        <td>
+                            {% for asset in order.assets %}
+                                <a href="{{ path('admin_engine_asset', {uid: order.uid, slug: asset.slug} ) }}">{{ asset.title }}</a><br>
+                            {% endfor %}
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Asset Text Links</td>
+                        <td>
+                            {% for asset in order.assets %}
+                                {{ url('admin_engine_asset', {uid: order.uid, slug: asset.slug} ) }}<br>
+                            {% endfor %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Status</td>
+                        <td>
+                            <div style="width: 120px">
+                                <select name="status" class="form-control">
+                                    <option value="PAID"{% if order.status == "PAID" %} selected{% endif %}>PAID</option>
+                                    <option value="IN PROCESS"{% if order.status == "IN PROCESS" %} selected{% endif %}>IN PROCESS</option>
+                                    <option value="COMPLETED"{% if order.status == "COMPLETED" %} selected{% endif %}>COMPLETED</option>
+                                </select>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+                <p><button name="save" type="submit" class="btn btn-sm btn-primary" value="SAVE">SAVE</button></p>
+            </form>
+        </div>
+    </div>
+    
+{% endblock %}

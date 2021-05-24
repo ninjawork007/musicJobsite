@@ -1,0 +1,68 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Please complete your registration{% endblock %}
+
+{% block description %}Please complete your registration{% endblock %}
+
+{% block body %}
+
+<div class="row">
+    <h1 class="span12">Please complete your registration</h1>
+</div>
+
+{% include 'messages_app.html.twig' %}
+
+<div class="row">
+
+    <div class="form-wrap span7">
+
+        <form id="complete-form" class="register-form clearfix" action="{{ path('register_complete') }}" method="post" novalidate>
+            {% form_theme form 'App:Form:fields.html.twig' %}
+
+            <div class="fields-row">
+                <label class="checkbox-m0"><strong>I am a... {% if app.request.get('type_error') %}<span class="error">{{ app.request.get('type_error') }}</span>{% endif %}</strong></label>
+                {{ form_widget(form.is_producer) }}
+                {{ form_widget(form.is_vocalist) }}
+                <div class="clearfix"></div>
+            </div>
+            
+            <div class="field-wrap">
+            {{ form_label(form.password) }}
+            {{ form_widget(form.password) }}
+            </div>
+            
+            <div class="field-wrap">
+            {{ form_label(form.referral_code) }}
+            {{ form_widget(form.referral_code) }}
+            </div>
+
+            {{ form_rest(form) }}
+
+            <div class="fields-row">
+                <label class="checkbox">
+                    <input type="checkbox" name="terms" value="terms" id="terms"> I agree to the vocalizr <a href="terms.html">Terms of Use</a>
+                </label>
+            </div>
+            <div class="btn-wrap margin-left-minus-10">
+                <input type="submit" name="login_submit" value="Submit" class="btn btn-submit" tabindex="3">
+            </div>
+    </div>
+</form>
+</div>
+
+{% endblock %}
+
+{% block javascript %}
+<script>
+    $(function () {
+        $('#complete-form').submit(function () {
+            if ($('#terms').is(':checked')) {
+                return true;
+            }
+            alert("Please agree to the terms and conditions");
+            return false;
+        
+        });
+    });
+</script>
+{% endblock %}

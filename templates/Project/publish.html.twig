@@ -1,0 +1,155 @@
+{% extends 'app.html.twig' %}
+
+{% block title %}Publish your Gig{% endblock %}
+{% block stylesheet %}
+    <link rel="stylesheet" href="{{ asset('css/publish-project.css') }}" />
+
+{% endblock %}
+{% block javascript %}
+
+            <script type="text/javascript" src="{{ asset('js/uploader/plupload.full.min.js') }}"></script>
+            <script type="text/javascript" src="{{ asset('js/audio-uploader.js') }}"></script>
+            <script type="text/javascript" src="{{ asset('js/publish-project.js') }}"></script>
+
+        <script>
+        $(document).on('ready', function() {
+            calcPaymentSummary();
+
+        })
+        </script>
+        <script src="https://js.stripe.com/v3/"></script>
+        <script>
+        var stripe = Stripe("{{ stripe_checkout_key }}");
+
+        $('#publish-form').on('submit', function (e) {
+            e.preventDefault();
+
+            App.showLoading();
+
+            $.post($(this).attr('action'), $(this).serialize(), function (data) {
+                if (!$('#payment').hasClass('hide')) {
+
+                    $.ajax({
+                        url: "{{ path('stipe_session_checkout') }}",
+                        method: 'GET',
+                        data: {
+                            uuid: $('#publish-form').data('uuid'),
+                            upgrade_to_pro: $('#publish-form .js-upgrade-to-pro-check').val() || '0',
+                        },
+                        success: function (data) {
+                            if (data.success) {
+                                if (data.href) {
+                                    location.href = data.href;
+                                }
+                                stripe.redirectToCheckout({ sessionId: data.ssid })
+                            }
+                        }
+                    });
+                } else {
+                    window.location = $('#publish').data('confirm');
+                }
+            });
+        });
+        </script>
+{% endblock %}
+
+{% block body %}
+<div class="publish-container row publish-gig">
+    <div class="col-sm-8">
+        <div class="row no-margin">
+            <div class="col-sm-12">
+                <div class="job-title-block">
+                    <h1>Publish Your Job</h1>
+                    <a href="{{ path('project_new', {uuid: project.uuid}) }}" class="btn btn-default edit-job">Edit Job</a>
+                </div>
+            </div>
+        </div>
+
+        {% include 'messages_app.html.twig' %}
+
+        <div class="row no-margin">
+                <div class="col-sm-12">
+                    {% if not app.request.get('success', false) %}
+                    <h2>{{ project.title }}</h2>
+
+                        <div class="headers">
+                            <div class="free-header">Free Users</div><div class="pro-header"><b>Access Pass</b> Subscribers</div>
+                        </div>
+                    <form {% if app.user.isSubscribed %}class="subscribed" {% endif %}id="publish-form" action="{{ path('project_new_publish', {uuid: project.uuid}) }}" method="post" data-uuid="{{ project.uuid }}">
+                    {{ form_row(form._token) }}
+
+                        {% include 'Project/include/addon_list.html.twig' %}
+
+                        <div class="total-upgrades">
+                            <div class="upgrades-label">
+                                Total
+                            </div>
+                            <div class="upgrades-value">
+                                $<span id="total-price">0</span>
+                            </div>
+                        </div>
+                        <div class="form-actions">
+                            <div id="payment" class="pull-right hide">
+                                <a href="{{ path('project_new_cancel', {uuid: project.uuid}) }}" class="link-cancel" onclick="return confirm('Are you sure? All data for this gig will be lost.');">Cancel Job</a>
+                                <button type="submit" name="pay" class="btn btn-primary pull-right" value="Pay & Publish">Pay & Publish Job</button>
+                            </div>
+                            <div id="publish" class="pull-right" data-confirm="{{ path('project_publish_confirm', {uuid: project.uuid}) }}">
+                                <a href="{{ path('project_new_cancel', {uuid: project.uuid}) }}" class="link-cancel" onclick="return confirm('Are you sure? All data for this gig will be lost.');">Cancel Job</a>
+                                <button type="submit" name="publish" class="btn btn-primary pull-right" value="Publish Now">Publish Job</button>
+                            </div>
+                        </div>
+                    <div id="userwallet-total" class="hide">{{ app.user.wallet }}</div>
+                    <div id="price-amount" class="hide">0</div>
+                    </form>
+
+
+                    <form id="payment-form" action="{{ paypal.url }}" method="post" target="_top" style="display:inline">
+                        <input type="hidden" name="cmd" value="_xclick">
+                        <input type="hidden" name="item_name" value="Deposit into Vocalizr Wallet" />
+                        <input type="hidden" name="custom" value="DEPOSIT{{ app.user.uniqueStr }}" />
+                        <input type="hidden" name="no_shipping" value="1" />
+                        <input type="hidden" name="return" value="{{ url('project_publish_confirm', {uuid: project.uuid}) }}?success=1" />
+                        <input type="hidden" name="cancel_return" value="{{ path('project_publish_confirm', {uuid: project.uuid}) }}?cancel=1" />
+                        <input type="hidden" name="business" value="{{ paypal.primaryEmail }}">
+                        <input type="hidden" name="lc" value="US">
+                        <input type="hidden" name="currency_code" value="{{ paypal.currency }}">
+                        <input type="hidden" name="no_note" value="0">
+                        <input type="hidden" name="notify_url" value="{{ paypal.notifyUrl }}" />
+                        <input id="deposit-amount" type="hidden" name="amount" value="0" />
+                        <input id="payment-submit" type="submit" name="submit" value="submit" style="display:none" />
+                    </form>
+                    {% else %}
+                    <h2>{{ project.title }}</h2>
+                    <p>Payment for your gig has been successful.</p>
+
+                    <div class="form-actions">
+                        <a href="{{ path('project_publish_confirm', {uuid: project.uuid}) }}" class="btn btn-primary">Publish Job</a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+    </div>
+    <div class="col-sm-4">
+        <div class="panel panel-default welcome-panel">
+            <div class="panel-heading">
+                NO RISK!
+            </div>
+            <div class="panel-body">
+                <p>Pay the vocalist/producer when you're <strong>100%</strong> satisfied. If the vocal/audio isn't what you're after, hit the "Negotiate" button (in the studio under payment), and explain why and your money will be refunded within a week.</p>
+                <p><a href="{{ path('website_faq') }}#disputes" target="_blank">Read our FAQ</a></p>
+            </div>
+        </div>
+        <div class="panel panel-default welcome-panel">
+            <div class="panel-heading">
+                UPGRADE YOUR LISTING!
+            </div>
+            <div class="panel-body">
+                <p>Add upgrades to your listing to increase the exposure of your gig and improve the quality and number of bids you receive.</p>
+                <p>Listing upgrades are not refundable.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

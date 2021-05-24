@@ -1,0 +1,14 @@
+{% extends 'email.html.twig' %}
+
+{% block body %}
+
+<p>Hello {{ dispute.fromUserInfo.firstName }},</p>
+
+{% if dispute.accepted %}
+<p>We wanted to let you know that {{ dispute.userInfo.username }} accepted the amount of ${{ dispute.amountDollars }} for {{ dispute.project.title }}.</p>
+<p>Payment has been released.</p>
+{% else %}
+<p>{{ dispute.userInfo.username }} declined the amount of ${{ dispute.amountDollars }} for {{ dispute.project.title }}.</p>
+{% endif %}
+
+{% endblock %}

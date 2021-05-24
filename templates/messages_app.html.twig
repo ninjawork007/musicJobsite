@@ -1,0 +1,26 @@
+{% if app.request.query.has('notice') %}
+    <div class="alert alert-success">
+        {{ app.request.query.get('notice') }}
+    </div>
+{% endif %}
+{% if app.request.query.has('error') %}
+    <div class="alert alert-error">
+        {{ app.request.query.get('error') }}
+    </div>
+{% endif %}
+
+{% if app.session.flashbag.has('notice') %}
+    {% for message in app.flashes('notice') %}
+        <div class="alert alert-success">
+            {{ message }}
+        </div>
+    {% endfor %}
+{% endif %}
+
+{% if app.session.flashbag.has('error') %}
+    {% for message in app.flashes('error') %}
+        <div class="alert alert-error">
+            {{ message }}
+        </div>
+    {% endfor %}
+{% endif %}

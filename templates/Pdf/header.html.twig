@@ -1,0 +1,16 @@
+<div id="header">
+    <table style="width: 100%;">
+        <tr>
+            <td style="width: 70%;">
+                <div class="title" style="font-size: 25px; font-weight: 300; float: left; width: 80%; padding-top: 12px; color: white;">
+                    {% if title is defined %}{{ title }}{% else %}GIG AGREEMENT{% endif %}
+                </div>
+            </td>
+            <td style=" width:30%; text-align: right;">
+                <div class="logo" style="text-align: right; ">
+                    <img src="{{ asset('images/logo-pdf.jpg') }}">
+                </div>
+            </td>
+        </tr>
+    </table>
+</div>

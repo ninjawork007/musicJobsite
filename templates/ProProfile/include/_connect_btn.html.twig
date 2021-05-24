@@ -1,0 +1,29 @@
+{% if connectionStatus == 'not_connected' %}
+    <a class="header__link js-connect" href="{{ path('user_connect', {username: user.username}) }}" data-role="ajax-trigger" data-after="refresh">
+        <span class="img-wrp">
+            <img class="img-svg" src="{{ asset('bootstrap4/img/logged/icon_connect.svg') }}" alt="c">
+        </span>
+        <span class="text">Connect</span>
+    </a>
+{% elseif connectionStatus == 'connected' %}
+    <a class="header__link js-send-message {{ not userConnect ? 'hide' }}" href="{{ path('message_warning_private', {userId: user.id}) }}" data-toggle="vmodal">
+        <span class="img-wrp">
+            <img class="img-svg" src="{{ asset('bootstrap4/img/logged/icon_message.svg') }}" alt="m">
+        </span>
+        <span class="text">Message</span>
+    </a>
+{% elseif connectionStatus == 'request_sent' %}
+    <a class="header__link js-send-message {{ not userConnect ? 'hide' }}" href="{{ path('user_connect_cancel', {username: user.username}) }}" data-role="ajax-trigger" data-after="refresh" data-hover-text="Cancel">
+        <span class="img-wrp">
+            <img class="img-svg" src="{{ asset('bootstrap4/img/logged/icon_connect.svg') }}" alt="x">
+        </span>
+        <span class="text">Requested</span>
+    </a>
+{% elseif connectionStatus == 'await_answer' %}
+    <a class="header__link js-send-message {{ not userConnect ? 'hide' }}" href="{{ path('user_connect_accept', {username: user.username}) }}" data-role="ajax-trigger" data-after="refresh">
+        <span class="img-wrp">
+            <img class="img-svg" src="{{ asset('bootstrap4/img/logged/icon_connect.svg') }}" alt="c">
+        </span>
+        <span class="text">Accept Connection</span>
+    </a>
+{% endif %}

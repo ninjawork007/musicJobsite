@@ -1,0 +1,29 @@
+{% extends 'app.html.twig' %}
+
+{% block title %}Thank you for signing up to PRO{% endblock %}
+
+{% block description %}PRO Membership for producers and singers{% endblock %}
+
+{% block stylesheet %}
+    <link rel="stylesheet" href="{{ asset('css/membership.css') }}" />
+{% endblock %}
+
+{% block body %}
+    <div class="row">
+        <div class="col-sm-12 page-content">
+            <h1 class="main-title">You are now an <b>Access Pass</b> Member of Vocalizr</h1>
+            {% if user.isSubscribed %}
+                You will now experience all the benefits of being an <b>Access Pass</b> Member. Thank you for using and supporting Vocalizr.
+            {% else %}
+               Your <b>Access Pass</b> membership will be activated within the next few minutes. Thank you for using and supporting Vocalizr.
+            {% endif %}
+            
+            <p><br><br>{% if user.isVocalist %}<a href="{{ path('gig_hunter') }}" class="btn btn-primary">Bid on Jobs</a> <a href="{{ path('producers') }}" class="btn btn-default">Find Producers</a>{% else %} 
+                <a href="{{ path('vocalists') }}" class="btn btn-primary">Find Vocalists</a> <a href="{{ path('project_start') }}" class="btn btn-default" data-toggle="vmodal">Create Project</a>{% endif %}</p>
+        </div>
+    </div>
+    <div class="gleam-data-layer" data-name="UserAlreadyPro" data-value="Email: {{ user.email }}, Source: new subscription from {{ track.source }}"></div>
+{% endblock %}
+
+{% block body_end_trackers %}
+{% endblock %}

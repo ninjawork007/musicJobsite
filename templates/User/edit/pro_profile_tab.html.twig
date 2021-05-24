@@ -1,0 +1,57 @@
+<!-- PRO PROFILE TAB -->
+<div class="tab-pane fade in" id="pro-profile-page">
+    {% if proPageForm %}
+        <h3>Profile</h3>
+        {% form_theme proPageForm 'form_theme/bootstrap_3_layout.html.twig' %}
+        {% form_theme proPageForm.socialLinks 'form_div_layout.html.twig' %}
+        <form enctype="{{ form_enctype(proPageForm) }}" method="post">
+            {{ form_row(proPageForm.enabled) }}
+            <div class="hero-image-row">
+                <div class="hero-image-wrap">
+                    {% if proProfile.heroImage %}
+                        <img src="{{ proProfile.heroImageWebPath }}" alt="" id="hero-image">
+                    {% else %}
+                        <img src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" alt="" id="hero-image">
+                    {% endif %}
+                </div>
+                <div id="upload-hero-image-container" data-username="{{ app.user.username }}" data-url="{{ path('user_upload_pro_background') }}">
+                    <a id="upload-background-btn" class="btn btn-sm btn-default" href="#">CHANGE IMAGE</a>
+                    <div id="upload-background-status" class="avatar-info"></div>
+                    <div id="upload-background-error" class="avatar-info"></div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    {{ form_row(proPageForm.facebookLink) }}
+                    {{ form_row(proPageForm.instagramLink) }}
+                </div>
+                <div class="col-md-6">
+                    {{ form_row(proPageForm.soundcloudLink) }}
+                    {{ form_row(proPageForm.spotifyLink) }}
+                </div>
+            </div>
+            {{ form_row(proPageForm.youtubeLink) }}
+            {{ form_row(proPageForm.socialLinks) }}
+            {{ form_widget(proPageForm) }}
+            <button class="btn btn-sm btn-default save-pro-basic-info" type="submit">SAVE</button>
+        </form>
+        <h3>Images</h3>
+        <div class="profile-images">
+            {% for i in 0..2 %}
+                <a href="#" data-url="{{ path('user_upload_pro_image', {'id': i + 1}) }}" class="profile-image-wrap" data-role="image-upload" id="upload-pro-image-{{ i + 1 }}">
+                    {% if proProfile.aboutMeImages[i] is defined %}
+                        <img src="{{ proProfile.aboutMeImageWebPath(i) }}" alt="Profile image" class="profile-image" data-role="image">
+                        <div class="change-image">Change image</div>
+                    {% else %}
+                        <img src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" alt="Choose profile-image" class="profile-image is-empty" data-role="image">
+                        <div class="change-image" data-role="upload-status">Add image</div>
+                    {% endif %}
+                    <i class="fad fa-plus change-image-icon"></i>
+                </a>
+            {% endfor %}
+        </div>
+        <h3>Videos</h3>
+        {% include 'User/edit/videoForm.html.twig' with {return_tab: '#pro-profile-page'} %}
+    {% endif %}
+</div>
+<!--/END PRO PROFILE TAB -->

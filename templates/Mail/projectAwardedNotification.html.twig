@@ -1,0 +1,15 @@
+{% extends 'email.html.twig' %}
+
+{% block body %}
+
+
+    <p>Congratulations {{ projectBid.userInfo.getFirstName }}!</p>
+
+    <p>Your bid of <strong>${{ projectBid.amount|number_format(2) }}</strong> on gig <strong>{{ projectBid.project.title }}</strong> was chosen.</p>
+    
+    <p>Payment has been received and now awaiting your acceptance.</p>
+
+    <p>Please visit this link to confirm you accept this gig and start work straight away!</p>
+    LINK HERE!!
+
+{% endblock %}

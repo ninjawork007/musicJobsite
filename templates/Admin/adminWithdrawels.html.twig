@@ -1,0 +1,50 @@
+{% extends 'app.html.twig' %}
+
+{% block title %}Admin{% endblock %}
+
+{% block javascript %}
+<script type="text/javascript" src="{{ asset('') }}"></script>
+
+
+{% endblock %}
+
+
+{% block body %}
+    <div class="row">
+        <div class="col-sm-2">
+            <ul class="nav">
+                {% include 'Admin/include/menu.html.twig' %}
+            </ul>
+        </div>
+        <div class="col-sm-10 admin-users">
+            <h1>Withdrawel Requests</h1>
+
+            {% if app.session.flashbag.has('notice') %}
+                {% for message in app.flashes('notice') %}
+                    <div class="alert alert-success">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            <p>This page should be monitored on a daily basis to ensure withdrawels are acted upon promptly</p>
+            <div class="results-container">
+
+              {% for withdrawel in results %}
+                  <div class="result clearfix" id="user-result-{{ withdrawel.id}}">
+                      <div class="info col-sm-6">
+                          <ul>
+                              <li>Email: <span>{{ withdrawel.UserInfo.email }}</span></li>
+                              <li>Withdraw Amount: <span>${{ (withdrawel.amount / 100)|number_format(2) }} USD</span></li>
+                              <li>Date requested: <span>{{ withdrawel.createdAt|date('d/m/Y') }}</span></li>
+                          </ul>
+                      </div>
+                      <div class="actions col-sm-6">
+                          <a href="{{ path('admin_withdrawel', {id : withdrawel.id}) }}" class="btn btn-primary">Process</a>
+                      </div>
+                  </div>
+              {% endfor %}
+            </div>
+        </div>
+    </div>
+{% endblock %}

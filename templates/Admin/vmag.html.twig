@@ -1,0 +1,52 @@
+{% extends 'app.html.twig' %}
+
+{% block title %}VMag Admin{% endblock %}
+
+{% block javascript %}
+
+
+{% endblock %}
+
+
+{% block body %}
+    <div class="row">
+        <div class="col-sm-12">
+            <h1>Vmag Articles</h1>
+
+            {% if app.session.flashbag.has('notice') %}
+                {% for message in app.flashes('notice') %}
+                    <div class="alert alert-success">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+            
+            <p class="pull-right"><a href="{{ path('admin_vmag_authors') }}" class="btn btn-sm btn-default">AUTHORS</a></p>
+            <p><a href="{{ path('admin_vmag_article') }}" class="btn btn-sm btn-primary">NEW ARTICLE</a></p>
+            
+            <table cellspacing="0" cellpadding="0" border="0" class="table table-dark" width="100%">
+                <thead>
+                    <tr>
+                        <th width="400">Title</th>
+                        <th>Category</th>
+                        <th width="80">Status</th>
+                        <th>Modified</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for article in pagination %}
+                    <tr>
+                        <td><a href="{{ path('admin_vmag_article', {id: article.id}) }}">{{ article.title }}</a></td>
+                        <td>{{ article.articleCategory.title }}</td>
+                        <td>{% if article.publishedAt %}PUBLISHED{% else %}DRAFT{% endif %}</td>
+                        <td>{% if article.publishedAt %}{{ article.publishedAt|date('d-m-Y') }}{% else %}{{ article.createdAt|date('d-m-Y') }}{% endif %}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+                
+            {{ knp_pagination_render(pagination) }}
+        </div>
+    </div>
+    
+{% endblock %}

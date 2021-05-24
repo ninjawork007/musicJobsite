@@ -1,0 +1,360 @@
+{% extends 'app.html.twig' %}
+
+{% block title %}{{ project.title }} by {{ project.userInfo.username }} - Looking for a {% if not project.gender is null %}{{ project.gender|capitalize }} {% endif %}{{ project.lookingFor|capitalize }}{% endblock %}
+
+{% block stylesheet %}
+    <link rel="stylesheet" href="{{ asset('css/projects.css') }}" />
+    <link rel="stylesheet" href="{{ asset('css/highlight-bid-modal.css') }}" />
+{% endblock %}
+
+{% block javascript %}
+
+    <script type="text/javascript" src="{{ asset('js/wavesurfer.min.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('js/wavesurfer.min.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('js/jquery.formatCurrency.min.js') }}"></script>
+        <script type="text/javascript" src="{{ asset('js/uploader/plupload.full.min.js') }}"></script>
+        <script type="text/javascript" src="{{ asset('js/recorder.js') }}"></script>
+        <script type="text/javascript" src="{{ asset('js/audio-uploader.js') }}"></script>
+        <script type="text/javascript" src="{{ asset('js/bid-audition.js') }}"></script>
+        <script type="text/javascript" src="{{ asset('js/jquery.cycle2.js') }}"></script>
+        <script type="text/javascript" src="{{ asset('js/project.js') }}"></script>
+        <script type="text/javascript" src="{{ asset('js/hint-popup.js') }}"></script>
+        <script type="text/javascript" src="{{ asset('js/waveforms.js') }}"></script>
+
+
+    <script src="https://js.stripe.com/v3/"></script>
+    <script>
+        var stripe = Stripe("{{ stripe_checkout_key }}");
+    </script>
+
+    {% if app.session.flashbag.has('just_published') %}
+        <script>
+            var html = $('#whatsnext').html();
+            $('#vocalizrModal').html(html);
+            $('#vocalizrModal').modal('show');
+        </script>
+    {% endif %}
+
+    {% if userBid and not userBid.highlightOption and not project.awardedAt and project.bidsDue > date() %}
+        <div id="bid-highlight" style="display: none">
+            {% include 'include/panel/highlight_bid.html.twig' %}
+        </div>
+        <script>
+            $(document).ready(function() {
+                {% if userBid.highlightOption is null %}
+                    $(document).trigger('vocalizr.modal.bid-highlight', {bid_uuid: '{{ userBid.uuid }}'});
+                {% endif %}
+            });
+        </script>
+    {% endif %}
+
+    {% if app.user and project.isOwner(app.user) and not app.user.verified %}
+        <script>
+            $('.btn.award-bid').on('click', function(e) {
+                e.preventDefault();
+                $('#verify-popup').modal('show');
+            });
+
+            $(document).on('click', 'a#identity-intents', function(e) {
+                e.preventDefault();
+                let link = $(this);
+
+                $.ajax({
+                    url: link.attr('href') + '?type=project&project={{ project.uuid }}',
+                    success: function(data) {
+                        if (data.success) {
+                            window.location.href = data.identity_url;
+                        }
+                    }
+                });
+            });
+        </script>
+    {% endif %}
+{% endblock %}
+
+{% block modals %}
+    {% if app.user %}
+        <div id="verify-popup" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="vocalizr-modal" aria-hidden="true">
+            {% include 'include/panel/verify_identity_modal.html.twig' %}
+        </div>
+    {% endif %}
+{% endblock %}
+
+{% block body %}
+
+    <div class="row">
+        <div id="gig-view" class="col-sm-8">
+            <div class="row">
+               <div class="col-sm-12">
+                    {% include 'messages_app.html.twig' %}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-12">
+                    <h1>{{ project.title }}</h1>
+
+                    <div class="gig-genre">Genre: <span class="white-highlight">
+                    {% if project.genres|length > 0 %}
+                        <ul class="comma-list">
+                        {% for genre in project.genres %}
+                        <li>{{ genre.title }}</li>
+                        {% endfor %}
+                        </ul>
+                    {% endif %}
+                    </span></div>
+                    {% if defaultProjectAudio %}
+                        {% include 'Project/view/include/waveformed_player.html.twig' with {
+                            audioUrl: path('project_audio', {uuid: project.uuid, slug: defaultProjectAudio.slug}),
+                            audio: defaultProjectAudio
+                        } %}
+                    {% endif %}
+                </div>
+            </div>
+
+            <hr>
+
+            <div class="gig-created-by">
+                <a href="{{ path('user_view', { username: project.userInfo.username }) }}" class="profile-link">
+                {% if project.userInfo.path is empty %}
+                <img src="{{ asset('images/default_avatar.svg') }}" width="40" height="40" class="img-circle avatar" alt="{{ project.userInfo.username }}" />
+                {% else %}
+                <img src="{{ asset('uploads/avatar/small/' ~ project.userInfo.path ) }}" width="40" height="40" class="img-circle avatar" alt="{{ project.userInfo.username }}" />
+                {% endif %}
+
+                </a>
+
+                {% if project.userInfo.isSubscribed %}
+                    <img alt="pro" src="{{ asset('images/vocalizr_pro_stamp.svg') }}" class="svg-stamp-pro gig-stamp-pro" data-text="<div class='tip-header'>This Vocalizr user is an <a href='{{ path('membership') }}' class=stamp-pro-hover>Access Pass</a> member</div>">
+                {% endif %}
+                <a href="{{ path('user_view', { username: project.userInfo.username }) }}">{{ project.userInfo.displayName }}</a> <span class="white-highlight">created this gig</span> <small>{{ project.publishedAt|timeAgoString }} ago</small>
+
+                {% if project.projectType == 'paid' %}
+                <div class="gig-budget">Budget: <span class="white-highlight">
+                {% if project.budgetFrom and project.budgetTo %}
+                ${{ project.budgetFrom }} to ${{ project.budgetTo }}
+                {% elseif project.budgetFrom %}
+                ${{ project.budgetFrom }} upwards
+                {% elseif project.budgetTo %}
+                up to ${{ project.budgetTo }}
+                {% endif %}
+                </span></div>
+                {% endif %}
+                {% if project.royalty > 0 %}
+                    <div class="gig-royalty">
+                        Royalty:
+                        <span class="white-highlight">
+                            {{ project.royalty}}%
+                        </span>
+                        {% if project.royaltyMechanical %}
+                            <span class="icon-royalty-mechanical" data-text="Mechanical royalties offered">M</span>
+                        {% endif %}
+                        {% if project.royaltyPerformance %}
+                            <span class="icon-royalty-performance" data-text="Performance royalties offered">P</span>
+                        {% endif %}
+                    </div>
+                {% endif %}
+                {% if project.projectType == 'collaboration' %}
+                        <span class="badge badge-orange gig-type">COLLABORATION</span>
+                {% endif %}
+            </div>
+
+            <hr>
+
+            <div id="gig-key-info">
+                <span class="key-info gender"><i class="vocalizr-icon icon-gender"></i> Looking for:
+                    <span class="highlight">
+                        {% if not project.gender is null %}{{ project.gender|upper }}{% endif %}
+                        {{ project.lookingFor|upper }}
+                    </span>
+                </span>
+                <span class="key-info mic"><i class="vocalizr-icon icon-mic"></i> Studio Access Required:
+                    <span class="highlight">{% if project.studioAccess %}YES{% else %}NO{% endif %}</span>
+                </span>
+                {% if project.dueDate %}
+                <span class="key-info">Completed by:
+                    <span class="highlight">{{ project.dueDate|date(default_date_format) }}</span>
+                </span>
+                {% endif %}
+                <div class="location-info">
+                    <span class="key-info country"><i class="vocalizr-icon icon-country"></i> Country:
+                        <span class="highlight">{% if not project.country is null %}{{ project.country|countryName }}{% else %}ANY{% endif %}</span>
+                    </span>
+                    <span class="key-info">City:
+                        <span class="highlight">{% if not project.city is null %}{{ project.city|upper }}{% else %}ANY{% endif %}</span>
+                    </span>
+                    <span class="key-info">Language:
+                        <span class="highlight">{% if not project.language is null %}{{ project.language.title|upper }}{% else %}ENLGISH{% endif %}</span>
+                    </span>
+                </div>
+            </div>
+
+
+            {% if project.vocalCharacteristics|length > 0 or project.vocalStyles|length > 0 %}
+            <hr>
+
+            <div id="gig-tags">
+                {% if project.vocalCharacteristics|length > 0 %}
+                Vocal Characteristics: <span class="white-highlight">
+                    <ul class="comma-list">
+                    {% for vocalCharacteristic in project.vocalCharacteristics %}
+                        <li>{{ vocalCharacteristic.title }}</li>
+                    {% endfor %}
+                    </ul>
+                </span><br>
+                {% endif %}
+                {% if project.vocalStyles|length > 0 %}
+                Vocal Styles: <span class="white-highlight">
+                    <ul class="comma-list">
+                    {% for vocalStyle in project.vocalStyles %}
+                        <li>{{ vocalStyle.title }}</li>
+                    {% endfor %}
+                    </ul>
+                </span>
+                {% endif %}
+            </div>
+            {% endif %}
+
+            {% if not project.description is null %}
+            <hr>
+
+            <div id="gig-desc">
+                 {{ project.description|nl2br }}
+                 {% if project.audioBrief %}
+                     <div style="height: 20px"></div>
+                     <p><a href="{{ path('project_audiobrief', {uuid: project.uuid}) }}" class="btn btn-sm btn-default roll-alt" target="_blank">LISTEN TO AUDIO BRIEF</a></p>
+                 {% endif %}
+            </div>
+            {% endif %}
+
+            <hr>
+
+            <div id="bids-wrap" class="project">
+                <div class="well">
+                    <div class="bids-made"><span class="white-highlight">Bids made</span> ({{ bidStats.totalBids }})</div> {% if bidStats.totalBids > 0 %}<div class="seperator"></div>{% endif %}
+                    {% if bidStats.totalBids > 0 %}
+                    <div class="sort">Sort by:
+                        <div class="btn-group">
+                            <a href="" class="dropdown-toggle" data-toggle="dropdown">
+                                {% if app.request.get('filter') is null %}
+                                    Date
+                                {% elseif app.request.get('filter') == 'amount' %}
+                                    Price
+                                {% elseif app.request.get('filter') == 'alpha' %}
+                                    Name
+                                {% else %}
+                                    {{ app.request.get('filter')|capitalize }}
+                                {% endif %}
+                            <i class="fa fa-angle-down"></i></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="?filter=default&dir={% if app.request.get('filter') == 'default' and app.request.get('dir') == 'desc' %}asc{%else%}desc{%endif%}#bids">Default</a></li>
+                                <li><a href="?filter=date&dir={% if app.request.get('filter') == 'date' and app.request.get('dir') == 'desc' %}asc{%else%}desc{%endif%}#bids">Date</a></li>
+                                <li><a href="?filter=amount&dir={% if app.request.get('filter') == 'amount' and app.request.get('dir') == 'desc' %}asc{%else%}desc{%endif%}#bids">Price</a></li>
+                                <li><a href="?filter=alpha&dir={% if app.request.get('filter') == 'alpha' and app.request.get('dir') == 'asc' %}desc{%else%}asc{%endif%}#bids">Name</a></li>
+                                <li><a href="?filter=rating&dir={% if app.request.get('filter') == 'rating' and app.request.get('dir') == 'desc' %}asc{%else%}desc{%endif%}#bids">Rating</a></li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    {% endif %}
+                </div>
+
+                {% if bidStats.totalBids > 0 %}
+                    {% if app.user and project.isOwner(app.user) %}
+                        {% include 'Project/view/owner_bids.html.twig' with {
+                            freePlan: subscriptionPlan.free
+                        } %}
+                    {% else %}
+                        {% for bid in bids %}
+                            {{ include('Project/view/bid.html.twig') }}
+                        {% endfor %}
+                    {% endif %}
+                {% endif %}
+        </div>
+        </div>
+
+        <div class="col-sm-4">
+            <div class="row">
+                <div id="project-status-widget" class="col-sm-12">
+                    {{ render(controller('App\\Controller\\ProjectController:projectStatusWidgetAction', {
+                        'uuid': project.uuid,
+                        'fromPage' : 'view'
+                    })) }}
+                </div>
+
+                {% if not project.isOwner(app.user) and app.user is not null and not app.user.isSubscribed and not projectAwarded %}
+                <div class="col-sm-12">
+                    <div class="panel panel-default welcome-panel">
+                        <div class="panel-heading">
+                            UPGRADE TO Access Pass
+                        </div>
+                        <div class="panel-body">
+                            {% if userBid and subscriptionPlan.pro %}
+                                {% set saving = (userBid.amount|getPricePercent(subscriptionPlan.free.paymentPercentTaken, false) / 100) - (userBid.amount|getPricePercent(subscriptionPlan.pro.paymentPercentTaken, false) / 100) %}
+                                <p class="white-highlight">You could earn <strong>${{ saving }} more</strong> on Vocalizr Access Pass.</p>
+                            {% endif %}
+                            <p>Upgrade to Access Pass for $10.99 to start working on Vocalizr</p>
+                            <p><a href="{{ path('membership') }}" class="btn btn-sm btn-primary">UPGRADE NOW</a></p>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+
+            {% if (app.user and not app.user.isSubscribed) or not app.user %}
+            <div class="banner-wrapper is-mrec">
+                <!-- /353537636/Vocalizr_MREC1_300x250 -->
+                <div id='div-gpt-ad-1494936661372-5' style='height:250px; width:300px;'>
+                    <script>
+                        googletag.cmd.push(function() { googletag.display('div-gpt-ad-1494936661372-5'); });
+                    </script>
+                </div>
+            </div>
+            {% endif %}
+
+        </div>
+    </div>
+
+    <div id="whatsnext" class="hide">
+        <div id="bidModal" class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">Gig Published!</h4>
+                </div>
+                <div class="modal-body" style="font-size: 13px;">
+                    {% if project.lookingFor == "vocalist" %}
+                        <div class="modal-row">
+                            <strong class="white-highlight">WHAT'S NEXT</strong>
+                            <ol style="padding-left: 17px; margin-bottom: 0;">
+                                <li>Once your Gig is published you will receive bids from vocalists that are willing to work 'for the amount they bid'.</li>
+                                <li>When you find a singer you like, award the Gig, and the money will be paid to our payment protection account, to ensure the work gets done by the
+                                    vocalist.</li>
+                                <li>You will head into the Vocalizr Collaboration Studio to begin work. Once the work is complete, release the funds to the vocalist.</li>
+                            </ol>
+                        </div>
+                    {% endif %}
+                    <div class="modal-row">
+                        <strong class="white-highlight">INVITE {{ project.lookingFor|upper }}S</strong>
+                        <p>Visit the '{{ project.lookingFor|capitalize }}s' page and start searching for {{ project.lookingFor }}s you might want to work with.
+                            If you like what you hear invite them to your gig to place a bid.</p>
+                        {% if project.lookingFor == "vocalist" %}
+                            <p><a href="{{ path('vocalists_gig', {project: project.uuid}) }}" class="btn btn-primary">Starting Inviting</a></p>
+                        {% else %}
+                            <p><a href="{{ path('producers_gig', {project: project.uuid}) }}" class="btn btn-primary">Starting Inviting</a></p>
+                        {% endif %}
+                    </div>
+                    <div class="modal-row">
+                        <strong class="white-highlight">SHARE ON SOCIAL MEDIA</strong>
+                        <p>Sharing your Gig will increase it's exposure and increase your chances of finding the perfect {{ project.lookingFor|upper }}!</p>
+                        <p><a href="https://www.facebook.com/dialog/feed?link={{ url('project_view', {uuid: project.uuid}) }}&redirect_uri={{ url('project_view', {uuid: project.uuid}) }}" target="_blank" class="btn btn-sm" style="background:#3c599b;color:#fff;font-size:12px;margin-right: 4px;"><i class="fab fa-facebook-f"></i> Share</a>
+                            <a href="http://www.twitter.com/share?url={{ url('project_view', {uuid: project.uuid}) }}" class="btn btn-sm" style="background:#55acee;color:#fff;font-size:12px;"><i class="fab fa-twitter"></i> Tweet</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {{ render(controller('App\\Controller\\HintController:showAction')) }}
+
+{% endblock %}

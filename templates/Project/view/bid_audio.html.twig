@@ -1,0 +1,87 @@
+{% if proBid is not defined %}
+    {% set proBid = true %}
+{% endif %}
+{% if proBid %}
+    {% set caption = null %}
+    {% set wide = true %}
+{% endif %}
+
+{% if not bid.path is empty %}
+    {% include "Project/view/include/waveformed_player.html.twig" with {audio: bid} %}
+{% elseif bid.userInfo.userAudio is defined %}
+    {% set userAudios = bid.userInfo.userAudio %}
+    {% if bid.titleAudio %}
+        {% set sortedUserAudios = [bid.titleAudio] %}
+        {% for audio in userAudios if audio.id != bid.titleAudio.getId %}
+            {% set sortedUserAudios = sortedUserAudios|merge([audio]) %}
+        {% endfor %}
+        {% set userAudios = sortedUserAudios %}
+    {% endif %}
+    {% if not proBid %}
+        {% set userAudios = userAudios|slice(0, subscriptionPlan.free.userAudioLimit) %}
+    {% endif %}
+        <div class="item-bottom">
+            <div class="cycle-slideshow"
+                 data-cycle-fx="scrollHorz"
+                 data-cycle-timeout="0"
+                 data-cycle-prev="#audio-{{ bid.id }}-prev"
+                 data-cycle-next="#audio-{{ bid.id }}-next"
+                 data-cycle-slides="> div.slide-container"
+                 data-cycle-log="false"
+            >
+                {% for userAudio in userAudios if proBid or userAudio.defaultAudio %}
+                    {% set played_callback_url = path('record_audio_play', {slug: userAudio.slug}) %}
+                    <div class="slide-container">
+                        {% if proBid %}
+                            {% set caption = userAudio.title %}
+                            {% set wide = true %}
+                        {% else %}
+                            {% set wide = false %}
+                        {% endif %}
+                        <div class="playlist">
+                            {% set attributes = {} %}
+                            {% if bid.highlightOption == 2 %}
+                                {% set attributes = {'reflection-color': '#8498a2'} %}
+                            {% elseif bid.highlightOption == 1 %}
+                                {% set attributes = {
+                                    'wave-color': '#BFD6E3',
+                                    'reflection-color': '#7A919D',
+                                    'progress-color': '#FFFFFF',
+                                    'progress-reflection-color': '#BCBEBF',
+                                } %}
+                            {% endif %}
+                            {% if not userAudio.scId %}
+                                {% include "Project/view/include/waveformed_player.html.twig" with {
+                                    audio: userAudio,
+                                    audioUrl: path('user_audio', {slug: userAudio.slug}),
+                                    data_attrs: attributes,
+                                } %}
+                            {% else %}
+                                {% include "Project/view/include/waveformed_player.html.twig" with {
+                                    audio: userAudio,
+                                    audioUrl: userAudio.scStreamUrl  ~ '?client_id=' ~ soundcloud_client_id,
+                                    is_full_url: true,
+                                    data_attrs: attributes,
+                                } %}
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+            {% if userAudios|length > 1 and proBid %}
+                <div class="audio-nav">
+                    <a href=# id="audio-{{ bid.id }}-prev" class="audio-prev btn btn-sm btn-default">
+                        <svg width="7" height="11" viewBox="0 0 7 11" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M0.68084 5.0724L5.29048 0.177021C5.51272 -0.0590071 5.87323 -0.0590071 6.09547 0.177021L6.63317 0.748074C6.85517 0.98385 6.8554 1.36573 6.63411 1.60201L2.9808 5.49987L6.63388 9.39799C6.8554 9.63427 6.85493 10.0161 6.63293 10.2519L6.09524 10.823C5.873 11.059 5.51248 11.059 5.29024 10.823L0.68084 5.92734C0.4586 5.69132 0.4586 5.30843 0.68084 5.0724Z" fill="white"/>
+                        </svg>
+                    </a>
+                    <a href=# id="audio-{{ bid.id }}-next" class="audio-next btn btn-sm btn-default">
+                        <svg width="7" height="11" viewBox="0 0 7 11" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M6.31916 5.9276L1.70952 10.823C1.48728 11.059 1.12677 11.059 0.904527 10.823L0.366834 10.2519C0.144832 10.0161 0.144595 9.63427 0.365886 9.39799L4.0192 5.50012L0.366124 1.602C0.144596 1.36572 0.145071 0.983847 0.367073 0.748072L0.904766 0.177019C1.12701 -0.0590095 1.48752 -0.0590095 1.70976 0.177019L6.31916 5.07265C6.5414 5.30868 6.5414 5.69157 6.31916 5.9276Z" fill="white"/>
+                        </svg>
+
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+{% endif %}

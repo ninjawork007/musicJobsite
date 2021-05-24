@@ -10,7 +10,9 @@ else
   exit 1
 fi
 
+composer self-update --2
 composer dump-autoload
+COMPOSER_MEMORY_LIMIT=-1 composer update -vvv
 php app/console cache:clear --env="${APP_ENV}"
 
 php app/console assetic:dump --env=dev
@@ -30,7 +32,7 @@ done
 php app/console doctrine:schema:update --force --env="${APP_ENV}"
 php app/console doctrine:mongodb:schema:update --env="${APP_ENV}"
 
-setfacl -R -m u:www-data:rwX -m u:"$(whoami)":rwX app/cache app/sessions app/logs uploads tmp web/uploads
+setfacl -R -m u:www-data:rwX -m u:"$(whoami)":rwX app/cache app/sessions app/logs
 
 crond -f -d 4 &
 

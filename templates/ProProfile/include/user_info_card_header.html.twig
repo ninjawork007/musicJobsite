@@ -1,0 +1,91 @@
+<!-- Card header -->
+<div class="card-top">
+    <div class="card-top__img-wrp">
+        <img class="card-top__img-avatar" src="{{ asset(user.thumbnailWebPath('large')) }}" alt="Avatar">
+        <span class="star-icon">
+                    <img src="{{ asset('bootstrap4/img/icon_star.svg') }}" alt="Star">
+                  </span>
+    </div>
+    <div class="card-top__tag-info">
+        <span>pro</span>
+    </div>
+    <div class="card-top__statistics">
+        <div class="info">
+            <p>{{ user.ratedCount }}<br><span class="gray">Review{{ user.ratedCount % 10 != 1 ? 's' }}</span></p>
+        </div>
+        <div class="info">
+            <p>{{ user.rating|number_format(1) }}<br><span class="gray">Star Rating</span></p>
+        </div>
+        <div class="info">
+            <p>{{ user.connectCount }}<br><span class="gray">Follower{{ user.connectCount % 10 != 1 ? 's' }}</span></p>
+        </div>
+    </div>
+    {% set basic_info = [
+        {
+            title: 'Gender',
+            value: user.gender == 'm' ? 'Male' : 'Female',
+            picture: asset('bootstrap4/img/logged/icon_gender.svg'),
+        },
+        {
+            title: 'Country',
+            value: user.country|countryName,
+            picture: asset('bootstrap4/img/logged/icon_contry.svg'),
+        },
+        {
+            title: 'Languages',
+            value: user.userLanguages|join(', '),
+            picture: asset('bootstrap4/img/logged/icon_languages.svg'),
+        },
+        {
+            title: 'Studio Access',
+            value: user.studioAccess ? 'YES' : 'NO',
+            picture: asset('bootstrap4/img/logged/icon_studio.svg'),
+        },
+        {
+            title: 'Microphone',
+            value: user.microphone,
+            picture: asset('bootstrap4/img/logged/icon_microphone.svg'),
+        },
+    ] %}
+    <div class="card-top__lists">
+        <div class="card-top__list">
+            <p>
+                <span class="img-wrp"><img src="{{ asset('bootstrap4/img/icon_music.svg') }}" alt="Music"></span>
+                <span class="value">{% if user.isProducer %}<span>Producer</span>{% endif %}{% if user.isVocalist %}<span>Vocalist</span>{% endif %}</span>
+            </p>
+        </div>
+        {% for type, link in user.proProfile.linksAsArray if link%}
+            <div class="card-top__list">
+                <a href="{{ link }}">
+                    <span class="img-wrp"><img src="{{ asset('bootstrap4/img/icon_' ~ type ~ '.svg') }}" alt="{{ type|capitalize }}"></span>
+                    <span class="value"><span>{{ type|capitalize }}</span></span>
+                </a>
+            </div>
+        {% endfor %}
+
+{#        {% for info in basic_info if info.value is not null and info.value != '' %}#}
+{#            <!-- List -->#}
+{#            <div class="card-top__list">#}
+{#                <p>#}
+{#                      <span class="img-wrp">#}
+{#                        <img src="{{ info.picture }}" alt="{{ info.title }}">#}
+{#                      </span>#}
+{#                    <span class="value">{{ info.title }}:<span>  {{ info.value }}</span></span>#}
+{#                </p>#}
+{#            </div>#}
+{#            <!-- END List -->#}
+{#        {% endfor %}#}
+    </div>
+    <div class="card-top__genres">
+        {% if user.genres is not empty %}
+            <p class="card-top__genres-title">Genres</p>
+            {% for genre in user.genres %}
+                <span class="card-top__genres-tag">{{ genre.title }}</span>
+            {% endfor %}
+        {% endif %}
+    </div>
+    {% if app.user and app.user.isAdmin %}
+        {% include 'ProProfile/include/_admin_actions.html.twig' with {userInfo: user} %}
+    {% endif %}
+</div>
+<!-- END Card header  -->

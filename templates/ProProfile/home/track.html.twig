@@ -1,0 +1,64 @@
+{% set played_callback_url = path('record_audio_play', {slug: audio.slug}) %}
+{% set played_counter = '.total-plays.' ~ audio.slug ~ '-count' %}
+
+<div class="lists__list js-vocalizr-player symmetric-player top-tracks"
+     data-played-url="{{ played_callback_url is defined ? played_callback_url }}"
+     data-played-counter="{{ played_counter is defined ? played_counter }}"
+>
+    <span class="lists__tb-1">
+        {% if audio.albumArt %}
+            <img class="lists__img-music" src="{{ asset(audio.albumArtWebPath) }}" alt="img">
+        {% else %}
+            <div class="lists__img-music is-empty">
+                <i class="far fa-music"></i>
+            </div>
+        {% endif %}
+    </span>
+    <span class="lists__tb-2 lists__number {{ loop.first ? 'playing' }}">
+        <p>0{{ loop.index }}.</p>
+        <span class="play js-play-btn play-btn">
+            <span class="play-shape"></span>
+{#            <img src="{{ asset('bootstrap4/img/icon_play.svg') }}" alt="play">#}
+        </span>
+    </span>
+    <div class="lists__tb-3 lists__name-track">
+        <p>{{ audio.title }}</p>
+            <div class="waveform-container">
+                {% include 'include/symmetric_waveform.html.twig' with {
+                    audioUrl: path('user_audio', {'slug': audio.slug}),
+                    waveformHeight: 22,
+                } %}
+            </div>
+    </div>
+    <span class="lists__tb-4">
+      <span class="lists__value">{{ audio.durationString }}</span>
+    </span>
+    <span class="lists__tb-5 likes-wrapper">
+        <a href="{{ path('audio_like', {
+            'slug': audio.slug,
+            'status': isAudioLiked ? 0 : 1,
+        }) }}" data-swap-href="{{ path('audio_like', {
+            'slug': audio.slug,
+            'status': isAudioLiked ? 1 : 0,
+        }) }}" class="lists__heart-like {{ isAudioLiked ? 'liked' }}">
+
+            <img class="img-svg"
+                 src="{{ asset('bootstrap4/img/icon_heart.svg') }}"
+                 alt="heart">
+        </a>
+        <span class="lists__value likes-count">{{ audio.totalLikes }}</span>
+    </span>
+    <span class="lists__tb-6">
+        <span class="lists__value total-plays {{ audio.slug }}-count">{{ audio.playCount }}</span>
+        <span class="volume-wrapper" style="display: none">
+            <input id="volume-slider" type="range" min="0" max="1" step="0.01" value="1">
+        </span>
+    </span>
+    <span class="lists__tb-7">
+        <a class="lists__link-dote" href="#">
+            <span></span>
+            <span></span>
+            <span></span>
+        </a>
+    </span>
+</div>

@@ -1,0 +1,98 @@
+{% block field_row %}
+{% spaceless %}
+    <div class="{% if errors %}error{% endif %}">
+        {{ form_label(form, null, { 'label_attr': { 'class': 'field-label' } }) }}
+        {{ form_widget(form) }}
+    </div>
+{% endspaceless %}
+{% endblock %}
+
+{% block form_widget_simple %}
+{% spaceless %}
+    {% set type = type|default('text') %}
+    
+    {% if type == 'text' or type == 'email' or type == 'password' %}
+        {% set attr = attr|merge({'class': (attr.class|default('') ~ ' input')|trim}) %}
+    {% endif %}
+    <input type="{{ type }}" {{ block('widget_attributes') }} {% if value is not empty %}value="{{ value }}" {% endif %}/>
+{% endspaceless %}
+{% endblock form_widget_simple %}
+    
+{% block form_label %}
+{% spaceless %}
+    {% if not compound %}
+        {% set label_attr = label_attr|merge({'for': id}) %}
+    {% endif %}
+    {% if required %}
+        {% set label_attr = label_attr|merge({'class': (label_attr.class|default('') ~ ' required')|trim}) %}
+    {% endif %}
+    {% if label is empty %}
+        {% set label = name|humanize %}
+    {% endif %}
+
+    <label{% for attrname, attrvalue in label_attr %} {{ attrname }}="{{ attrvalue }}"{% endfor %}>
+        {{ label|trans({}, translation_domain) }}
+        {{ form_errors(form) }}
+    </label>
+{% endspaceless %}
+{% endblock form_label %}
+    
+{% block form_errors %}
+{% spaceless %}
+    {% if errors|length == 1 %}
+        {% for error in errors %}
+            <span class="error">{{
+                error.messagePluralization is null
+                    ? error.messageTemplate|trans(error.messageParameters, 'validators')
+                    : error.messageTemplate|transchoice(error.messagePluralization, error.messageParameters, 'validators')
+            }}</span>
+        {% endfor %}
+    {% elseif errors|length > 1 %}
+    <ul>
+        {% for error in errors %}
+            <li>{{
+                error.messagePluralization is null
+                    ? error.messageTemplate|trans(error.messageParameters, 'validators')
+                    : error.messageTemplate|transchoice(error.messagePluralization, error.messageParameters, 'validators')
+            }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+{% endspaceless %}
+{% endblock form_errors %}
+
+{% block genre_select_widget %}
+{#    {% spaceless %}#}
+        <ul class="genre-list">
+            {% for group_label, choice in choices %}
+
+                <li data-select-val="{{ choice.value }}"{% if choice is selectedchoice(value) %} class="selected"{% endif %}>
+                    <input type="checkbox" class="genre-checkbox" name="{{ full_name }}" value="{{ choice.value }}"{% if choice is selectedchoice(value) %} checked="checked"{% endif %}>
+                    {{ choice.label|trans({}, translation_domain) }}<i class="icon-tick"></i>
+                </li>
+
+            {% endfor %}
+        </ul>
+{#    {% endspaceless %}#}
+{% endblock genre_select_widget %}
+
+{% block checkbox_widget %}
+{% spaceless %}
+    <label for="{{ id }}" class="checkbox inline"><input type="checkbox" {{ block('widget_attributes') }}{% if value is defined %} value="{{ value }}"{% endif %}{% if checked %} checked="checked"{% endif %} /> {{ label|trans }}</label>
+{% endspaceless %}
+{% endblock checkbox_widget %}
+
+{% block datetime_widget %}
+{% spaceless %}
+    {% if widget == 'single_text' %}
+        <input type="text" value="02/16/12" data-date-format="mm/dd/yy" class="datepicker" >
+    {% else %}
+        <div {{ block('widget_container_attributes') }}>
+            {{ form_errors(form.date) }}
+            {{ form_errors(form.time) }}
+            {{ form_widget(form.date) }}
+            {{ form_widget(form.time) }}
+        </div>
+    {% endif %}
+{% endspaceless %}
+{% endblock datetime_widget %}

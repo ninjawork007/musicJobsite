@@ -1,0 +1,42 @@
+{% extends 'app.html.twig' %}
+
+{% block javascript %}
+    <script type="text/javascript" src="{{ asset('js/jquery.geocomplete.min.js') }}"></script>
+        <script type="text/javascript" src="{{ asset('js/jquery.cycle2.js') }}"></script>
+        <script type="text/javascript" src="{{ asset('js/waveforms.js') }}"></script>
+        <script type="text/javascript" src="{{ asset('js/wavesurfer.min.js') }}"></script>
+        <script type="text/javascript" src="{{ asset('') }}"></script>
+    <script>
+        $('#geo-location').geocomplete({
+            details: "#search-form",
+            types: ['(cities)'],
+            blur: true,
+            detailsAttribute: "data-geo"
+        });
+    </script>
+{% endblock %}
+
+{% block stylesheet %}
+    <link rel="stylesheet" href="{{ asset('css/projects.css') }}" />
+{% endblock %}
+
+{% block body %}
+<div class="row">
+    <div class="col-sm-8 discover-items user-search">
+        <div id="activity-header">
+            {{ block('activity_header') }}
+        </div>
+        {{ block('search_results') }}
+    </div>
+    <div class="col-sm-4">
+        <div class="discover-filter-panel panel panel-default">
+            <div class="panel-heading">
+                REFINE YOUR SEARCH
+            </div>
+            <div class="panel-body padding">
+                {{ block('search_form') }}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,24 @@
+{#@var UserInfo userInfo#}
+{#@var UserAudio[] userAudios#}
+{#@var userConnect#}
+{#@var hasProjects#}
+{% extends 'include/user_audio_card.html.twig' %}
+{% block right_column %}
+    <div class="connection-count">
+        <i class="fa fa-users"></i> <a href="{{ path('user_view', {username: userInfo.username}) }}#connections">{{ userInfo.connectCount }} Connection{% if userInfo.connectCount != 1 %}s{% endif %}</a>
+    </div>
+    <div class="connect-status">
+        {{ render(controller('App\\Controller\\UserController:connectButtonAction', {userInfo: userInfo, userConnect: userConnect} )) }}
+    </div>
+{% endblock %}
+{% block actions_left %}
+    {% if app.user and app.user.id != userInfo.id %}
+        <a href="{{ path('project_hire', {username: userInfo.username}) }}" class="btn btn-sm btn-primary btn-hire-now"><span>HIRE NOW</span></a>
+            {{ render(controller('App\\Controller\\ProjectController:inviteToGigButtonAction', {userInfo: userInfo, projects: null, hasProjects: hasProjects} )) }}
+        {% if userInfo.id in favs %}
+            <a href="{{ path('user_favorite', {username: userInfo.username}) }}" class="btn btn-sm btn-default member-favourite roll-alt"><i class="fa fa-star"></i> <span>REMOVE FAVORITE</span></a>
+        {% else %}
+            <a href="{{ path('user_favorite', {username: userInfo.username}) }}" class="btn btn-sm btn-default member-favourite roll-alt"><i class="fa fa-star"></i> <span>ADD TO FAVORITES</span></a>
+        {% endif %}
+    {% endif %}
+{% endblock %}

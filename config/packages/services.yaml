@@ -1,0 +1,78 @@
+parameters:
+    mongo_database_name: '%env(MONGODB_DB)%'
+    mongo_client_url: '%env(MONGODB_CLIENT_URL)%'
+
+    locale: '%env(PARAM_LOCALE)%'
+    secret: '%env(PARAM_SECRET)%'
+
+    domain_base: '%env(DOMAIN_BASE)%'
+    router.request_context.host: '%env(ROUTER_REQUEST_CONTEST_HOST)%'
+    router.request_context.scheme: '%env(ROUTER_REQUEST_CONTEST_SCHEMA)%'
+
+    audio_recorder_key: '%env(AUDIO_RECORDER_KEY)%'
+
+    facebook_app_id: '%env(FACEBOOK_APP_ID)%'
+    facebook_app_secret: '%env(FACEBOOK_APP_SECRET)%'
+    facebook_app_scope: '%env(FACEBOOK_APP_SCOPE)%'
+
+    soundcloud_client_id: '%env(SOUNDECLOUD_CLIENT_ID)%'
+    soundcloud_client_secret: '%env(SOUNDECLOUD_CLIENT_SECRET)%'
+
+    admin_email: '%env(ADMIN_EMAIL)%'
+
+    mail_from_email: '%env(MAIL_FROM_EMAIL)%'
+    mail_from_name: '%env(MAIL_FROM_NAME)%'
+
+    mail_subject_activation: '%env(MAIL_SUBJECT_ACTIVATION)%'
+    mail_subject_change_email: '%env(MAIL_SUBJECT_CHANGE_EMAIL)%'
+    mail_subject_reset_pass: '%env(MAIL_SUBJECT_CHANGE_PASS)%'
+
+    paypal_primary_email: '%env(MAIL_SUBJECT_CHANGE_PASS)%'
+    paypal_url: '%env(resolve:PAYPAL_URL)%'
+    paypal_ipn_simulator_url: '%env(resolve:PAYPAL_IPN_SIMULATOR_URL)%'
+    paypal_test_mode: '%env(PAYPAL_TEST_MODE)%'
+    paypal_test_url: '%env(resolve:PAYPAL_TEST_URL)%'
+    paypal_currency: '%env(PAYPAL_CURRENCY)%'
+    paypal_notify_url: '%env(resolve:PAYPAL_NOTIFY_URL)%'
+
+    paypal_env: '%env(PAYPAL_ENV)%'
+
+    paypal_client_id: '%env(PAYPAL_CLIENT_ID)%'
+    paypal_client_Secret: '%env(PAYPAL_CLIENT_SECRET)%'
+
+    paypal_legacy_api_username: '%env(PAYPAL_LEGACY_API_USERNAME)%'
+    paypal_legacy_api_password: '%env(PAYPAL_LEGACY_API_PASSWORD)%'
+    paypal_legacy_signature:    '%env(PAYPAL_LEGACY_API_SIGNATURE)%'
+
+
+    default_currency: '%env(DEFAULT_CURRENCY)%'
+
+    upload_audio_allowed: '%env(UPLOAD_AUDIO_ALLOWED)%'
+    upload_assets_allowed: '%env(UPLOAD_ASSETS_ALLOWED)%'
+    upload_audio_allowed_extended: '%env(UPLOAD_AUDIO_ALLOWED_EXTENDED)%'
+
+
+    default_date_format: '%env(DEFAULT_DATE_FORMAT)%'
+
+    cdn_url: '%env(CDN_URL)%'
+
+    connect_default_msg: '%env(CONNECT_DEFAULT_MSG)%'
+
+    stripe_api_key: '%env(STRIPE_API_KEY)%'
+    stripe_checkout_key: '%env(STRIPE_CHECKOUT_KEY)%'
+
+    statistics_google_sheet_id: '%env(STATISTICS_GOOGLE_SHEET_ID)%'
+    statistics_google_list_name: '%env(STATISTICS_GOOGLE_LIST_NAME)%'
+
+    paypal_primary_email_subscriptions:       '%env(PAYPAL_PRIMARY_EMAIL_SUBSCRIPTIONS)%'
+    paypal_button_id:                         '%env(PAYPAL_BUTTON_ID)%'
+    paypal_legacy_api_username_subscriptions: '%env(PAYPAL_LEGACY_API_USERNAME_SUBSCRIPTIONS)%'
+    paypal_legacy_api_password_subscriptions: '%env(PAYPAL_LEGACY_API_PASSWORD_SUBSCRIPTIONS)%'
+    paypal_legacy_signature_subscriptions:    '%env(PAYPAL_LEGACY_SIGNATURE_SUBSCRIPTIONS)%'
+    paypal_stayhome_button_id:                '%env(PAYPAL_STAYHOME_BUTTON_ID)%'
+
+    pro_profile_enabled: '%env(PRO_PROFILE_ENABLED)%'
+
+    database_driver: '%env(DATABASE_DRIVER)%'
+
+    stripe_baseUrl: '%env(resolve:STRIPE_BASEURL)%'

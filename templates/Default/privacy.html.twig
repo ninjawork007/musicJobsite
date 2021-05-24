@@ -1,0 +1,179 @@
+{% extends 'website.html.twig' %}
+
+
+{% block body %}
+<div class="nav-wrapper">
+    <nav id="nav" class="navbar navbar-default" role="navigation">
+      <div class="container">
+          <a href="{{ path('home') }}"><img src="/images/logo_dark.png" alt="vocalizr" title="vocalizr logo" width="108" height="32"></a>
+          {% if app.user %}
+              <a href="{{ path('dashboard') }}" class="btn btn-login pull-right">Dashboard</a>
+          {% else %}
+          <a href="{{ path('login') }}" class="btn btn-login pull-right">Login</a><a href="{{ path('register') }}" class="btn btn-signup pull-right">Sign up</a>
+          {% endif %}
+      </div>
+    </nav>
+</div>
+<div class="std-content sub-page">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12 content-wrapper text-left privacy">
+
+
+
+                <h4><strong>Vocalizr Privacy Policy</strong><br><small>(Updated April 2016)</small></h4>
+                <p>&nbsp;</p>
+
+
+                <h4><strong>1. INTRODUCTION</strong></h4>
+                <p>Vocalizr Pty Ltd (Vocalizr) is committed to protecting and maintaining your privacy. Vocalizr collects your personal information for the purpose of creating your membership and allowing other Vocalizr members to see your profile and potentially work with you on a gig. This Privacy Policy (Policy) outlines the type of personal information that Vocalizr may collect and details how it is used, stored and disclosed. By clicking ‘I agree’, you agree to be bound by the Policy and the <a href="{{ path('website_terms') }}">Vocalizr Website Terms and Conditions of Use</a>. This Policy may be altered at any time and will take effect from the time that it is posted on the Vocalizr website (<strong>Website</strong>) and remain in effect during your use of the Site and/or membership of Vocalizr. You are responsible for ensuring that you regularly review the Policy as your continued use of the Website will be deemed to constitute your acceptance of any alterations. If you object to any alteration(s) or become dissatisfied with your membership, you can stop using the Website and/or terminate your membership in accordance with the <a href="{{ path('website_terms') }}">Vocalizr Website Terms and Conditions of Use</a>.
+                <p>This Policy sets out:</p>
+                <ul>
+                  <li>what is considered personal information;</li>
+                  <li>what personal information we collect and hold;</li>
+                  <li>information obtained via cookies;</li>
+                  <li>how we collect, hold, use or disclose personal information;</li>
+                  <li>the purposes for which we collect personal information;</li>
+                  <li>what happens if we are not able to collect personal information;</li>
+                  <li>how to seek access to and correct your personal information;</li>
+                  <li>whether we disclose personal information outside Australia;</li>
+                  <li>linked websites;</li>
+                  <li>changes to the Policy; </li>
+                  <li>our complaints process; and</li>
+                  <li>how to contact us.</li>
+                </ul>
+                <p>&nbsp;</p>
+
+<h4><strong>2. WHAT IS PERSONAL INFORMATION</strong></h4>
+<p>The term ‘personal information’ in this Policy has the same meaning as that given to it in the Australian Privacy Act 1988 (<strong>Act</strong>). Generally, it is any information that can be used to personally identify you. This may include (but is not limited to) your name, age, gender, postcode and contact details (including phone numbers and email addresses) and possibly financial information, including your bank account information provided by you. If the information we collect personally identifies you, or you are reasonably identifiable from it, the information will be considered personal information. Vocalizr does not consider any work performed, recorded and/or transmitted through the Vocalizr Website to be personal information. </p>
+<p>&nbsp;</p>
+
+<h4><strong>3. WHAT PERSONAL INFORMATION WE COLLECT AND HOLD</strong></h4>
+<p>We may collect the following types of personal information, including your:</p>
+<ul>
+  <li>name;</li>
+  <li>mailing or street address;</li>
+  <li>email address;</li>
+  <li>IP address;</li>
+  <li>your collection society member number;</li>
+  <li>telephone number;</li>
+  <li>age or birth date;</li>
+  <li>profession, occupation or job title;</li>
+  <li>details of the products and/or services you have purchased from us or which you have enquired about, together with any additional information necessary to deliver those products and/or services and to respond to your enquiries;</li>
+  <li>any additional information relating to you that you provide to us directly through our Website or indirectly through use of our Website or online presence through our representatives or otherwise;</li>
+  <li>information you provide to us through your attendance at our premises or surveys.</li>
+</ul>
+<p>&nbsp;</p>
+
+<h4><strong>4. INFORMATION OBTAINED VIA COOKIES</strong></h4>
+<p>We may collect your personal information through the use of cookies. When you access our website, we may send a ‘cookie’ which contains your unique computer ID and/or your IP address. This enables us to recognise your computer so that you do not need to re-register to use the Website. It also helps us keep track of products or services you view, so that we can send you news about those products or services. We also use cookies to measure Website page visits to measure total visits from all Website users. This research is used to research Website usage and improve our online services. We may also collect anonymous data (which is not personal information) relating to your activity on our Website (including IP addresses) via cookies, or we may collect information from you in response to a survey. We use this information to report statistics, analyse trends, administer our services, diagnose problems, target and improve the quality of our products and services. To the extent this information does not constitute personal information because it does not identify you or anyone else, the Australian Privacy Principles do not apply and we may use this information for any purpose and by any means whatsoever.</p>
+<p>&nbsp;</p>
+
+<h4><strong>5. HOW WE COLLECT, HOLD, USE OR DISCLOSE PERSONAL INFORMATION</strong></h4>
+<p>We collect your personal information directly from you unless it is unreasonable or impractical to do so. We do this in ways including:</p>
+<ul>
+  <li>through your access and use of our Website, apps or sending SMS/MMS to us;</li>
+  <li>through someone else who has provided us with your information;</li>
+  <li>during conversations between you and our representatives; and</li>
+  <li>when you complete an application or purchase order.</li>
+</ul>
+<p>We may also collect personal information from third parties including:</p>
+<ul>
+  <li>third party companies such as affiliate companies, credit reporting agencies, law enforcement agencies and other government entities;</li>
+  <li>advertisers;</li>
+  <li>mailing lists;</li>
+  <li>recruitment agencies;</li>
+  <li>contractors and business partners.</li>
+</ul>
+<p>&nbsp;</p>
+
+<p>We will take commercially reasonable steps to protect the personal information that we hold from misuse, loss, or unauthorised access, including by means of firewalls, password access, secure servers and encryption of credit card transactions. If you suspect any misuse or loss of, or unauthorised access to your personal information, please let us know immediately.</p>
+
+<p>We may send you direct marketing communications and information about products and services that we consider may be of interest to you. These communications may be sent in various forms, including mail, SMS or email, in accordance with applicable marketing laws. If you indicate a preference for a method of communication, we will endeavour to use that method whenever practical to do so. You may at any time opt-out of receiving marketing communications from us by contacting us either by clicking the unsubscribe link, updating your registration preferences, or otherwise contacting us via the details below. We will then ensure that your name is removed from the relevant mailing list. We do not provide your personal information to other organisations for the purposes of direct marketing unless expressly authorised by you. If you receive communications from us that you believe have been sent to you other than in accordance with this Policy, or in breach of any law, please contact us.</p>
+
+<p>We may disclose your personal information to:</p>
+<ul>
+  <li>other members of the website who you have agreed to work with; </li>
+  <li>specific third parties authorised by you to receive information held by us;</li>
+  <li>our employees, related bodies corporate, contractors or external service providers for the operation of our Website or our business, fulfilling requests by you, and otherwise provide products and services to you, including without limitation, web hosting providers, IT systems administrators, mailing houses, couriers, payment processors, photographic analysers, data entry service providers, electronic network administrators, debt collectors, and professional advisers such as accountants, lawyers, business advisors and consultants;</li>
+  <li>our existing or potential agents, business partners or joint venture entities or partners;</li>
+  <li>our sponsors, or promoters of any competition that we conduct or promote via our services;</li>
+  <li>the police, any relevant authority or enforcement body, or your Internet Service Provider or network administrator, for example, if we have reason to suspect that you have committed a breach of any of our terms and conditions, or have otherwise been engaged in any unlawful activity, and we reasonably believe that disclosure is necessary; and/or</li>
+  <li>as required or permitted by any law including the Act.</li>
+</ul>
+<p>&nbsp;</p>
+
+<h4><strong>6. THE PURPOSES FOR WHICH WE COLLECT PERSONAL INFORMATION</strong></h4>
+<p>The primary purpose for which we collect information about you is to enable us to perform our business activities and functions and to provide best possible quality of customer service. Your personal information will not be shared, sold, rented or disclosed other than as described in this Policy. We collect, hold, use and disclose your personal information for the following purposes:</p>
+<ul>
+  <li>to ensure the enforceability of any Agreement entered into by you;</li>
+  <li>to communicate with you including by email, mail or telephone;</li>
+  <li>to verify your identity and to provide your updated personal information to us, our contractors or external service providers;</li>
+  <li>to provide products and services to you including management and enhancement of our products and services;</li>
+  <li>to provide you with news, information or advice about our existing and new products and services;</li>
+  <li>to provide you with access to protected areas of our Website including personalisation and customisation of your experience;</li>
+  <li>to conduct competitions or promotions on behalf of Vocalizr and selected third parties;</li>
+  <li>to provide as part of business data to third parties if you have authorised us to do so, including marketing (including direct marketing), promotional, planning, product/service development, quality control and research purposes, or those of our contractors or external service providers;</li>
+  <li>to conduct business processing functions for operation of our Website or our business;</li>
+  <li>to investigate any complaints about or made by you, or if we have reason to suspect that you are in breach of any of our terms and conditions or that you are or have been otherwise engaged in any unlawful activity; and/or</li>
+  <li>as required or permitted by any law including the Act.</li>
+</ul>
+<p>&nbsp;</p>
+
+<h4><strong>7. WHAT HAPPENS IF WE ARE NOT ABLE TO COLLECT PERSONAL INFORMATION</strong></h4>
+<p>If you do not provide us with the personal information described in this Policy, the following may happen:</p>
+<ul>
+  <li>we may not be able to provide you with the products or services you requested, either to the same standard, or at all;</li>
+  <li>we may not be able to provide you with information about products and services that you may want, including information about discounts sales or special promotions; or</li>
+  <li>we may be unable to tailor the content of our Website to your preferences and your experience may not be as enjoyable or useful.</li>
+</ul>
+<p>&nbsp;</p>
+
+<h4><strong>8. HOW TO SEEK ACCESS TO AND CORRECT YOUR PERSONAL INFORMATION</strong></h4>
+<p>You may request access to any personal information we hold about you at any time by contacting us (details below). Where we hold information that you are entitled to access, we will try to provide you with suitable means of accessing it (for example, by mailing or emailing it to you). We will not charge for simply making a request and will not charge for making any corrections to your personal information. If you make an access request, we will ask you to verify your identity. There may be instances where we cannot grant you access to the personal information we hold. For example, we may need to refuse access if granting access would interfere with the privacy of others, or if it would result in a breach of confidentiality. If that happens, we will give you written reasons for any refusal. If you believe that personal information we hold about you is incorrect, incomplete or inaccurate, then you may request us to amend it. We will consider if the information requires amendment. If we do not agree that there are grounds for amendment, then we will add a note to the personal information stating that you disagree with it.  </p>
+<p>&nbsp;</p>
+
+<h4><strong>9. WHETHER WE DISCLOSE PERSONAL INFORMATION OUTSIDE AUSTRALIA</strong></h4>
+<p>We may disclose personal information to our related bodies corporate and external service providers located overseas for some of the purposes listed above. We take reasonable steps to ensure that the overseas recipients of your personal information do not breach the privacy obligations relating to your personal information. We may disclose your personal information to entities located outside of Australia, including our data hosting and Cloud-based IT service providers.</p>
+<p>&nbsp;</p>
+
+<h4><strong>10. LINKED WEBSITES</strong></h4>
+<p>The Website may contain links to other websites operated by third parties. We make no representations or warranties in relation to the privacy practices of any third party website and we are not responsible for the privacy policies or the content of any third party website. Third party websites are responsible for informing you about their own privacy practices.</p>
+<p>&nbsp;</p>
+
+<h4><strong>11.	CHANGES TO THE POLICY</strong></h4>
+<p>We may change this Policy from time to time. Any updated versions of this Policy will be posted on the Website. This Policy was last updated in March 2016.</p>
+<p>&nbsp;</p>
+
+<h4><strong>12.	OUR COMPLAINTS PROCESS</strong></h4>
+<p>If you believe your privacy has been breached by us and/or have any questions or concerns about our Policy, please contact us using the contact information below and provide details of your complaint so that we can investigate it. Our representative will contact you within a reasonable time after receipt of your complaint to discuss your concerns and outline options regarding how they may be resolved. If a breach is found, we will escalate the matter to senior management so that the process can be rectified to prevent any further breaches. We will also contact you to inform you of the outcome of the investigation. We will endeavour to resolve all investigations in a fair and reasonable manner and as quickly as possible. All complaints are treated confidentially.</p>
+<p>&nbsp;</p>
+
+<h4><strong>13. HOW TO CONTACT US</strong></h4>
+<p>You have the right to obtain access to any personal information that Vocalizr holds about you and to advise Vocalizr of any inaccuracy. If you have any questions about this Policy, the practices of Vocalizr, dealings with Vocalizr or you want access to your personal information held by us, please contact us via the <a href="{{ path('website_contact') }}">Contact Us</a> page.</p>
+
+            </div>
+        </div>
+    </div>
+</div>
+<nav class="footer" role="navigation">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12">
+                © Copyright Vocalizr {{ "now"|date('Y') }}
+
+                <ul id="footer-nav">
+                    <li class="share"><a href="https://www.facebook.com/Vocalizr"><i class="fab fa-facebook-square"></i></a></li>
+                    <li class="share"><a href="https://twitter.com/vocalizr"><i class="fab fa-twitter-square"></i></a></li>
+                    <li><a href="http://support.vocalizr.com/" target="_blank">Help</a></li>
+                    <li><a href="{{ path('membership') }}">Membership</a></li>
+                    <li><a href="http://blog.vocalizr.com/" target="_blank">Blog</a></li>
+                    <li><a href="{{ path('website_fees') }}">Fees & Charges</a></li>
+                    <li><a href="{{ path('website_terms') }}">Terms</a></li>
+                    <li><a href="{{ path('website_privacy') }}">Privacy</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</nav>
+{% endblock %}

@@ -1,0 +1,28 @@
+{% extends 'Admin/layout.html.twig' %}
+
+{% block admin_content %}
+    <h1>User Subscriptions</h1>
+    <div class="light-content">
+
+        {{ form_start(form) }}
+            <div class="form-group">
+                {{ form_row(form.file) }}
+            </div>
+            <button class="btn btn-default">Upload</button>
+            {{ form_rest(form) }}
+        {{ form_end(form) }}
+    </div>
+    <div class="results-container">
+        {% if submitted %}
+            <div class="result clearfix">
+                <div class="info col-sm-6">
+                    <ul>
+                        {% for title, message in messages %}
+                            <li>{{ title }}: <span>{{ message }}</span></li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}

@@ -1,0 +1,78 @@
+{% extends 'website.html.twig' %}
+
+{% block title %}Beta Launch, Press Release{% endblock %}
+
+{% block body %}
+<div class="nav-wrapper">
+    <nav id="nav" class="navbar navbar-default" role="navigation">
+      <div class="container">
+          <a href="{{ path('home') }}"><img src="/images/logo_dark.png" alt="vocalizr" title="vocalizr logo" width="108" height="32"></a>
+          {% if app.user %}
+            <a href="{{ path('dashboard') }}" class="btn btn-login pull-right">Dashboard</a>
+          {% else %}
+            <a href="{{ path('login') }}" class="btn btn-login pull-right">Login</a><a href="{{ path('register') }}" class="btn btn-signup pull-right">Sign up</a>
+          {% endif %}
+      </div>
+    </nav>
+</div>
+<div class="std-content sub-page">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12 content-wrapper text-left press">
+                
+            <h3>Press Release</h3>
+            <h4>Beta Launch</h4>
+            
+                <p>Vocalists launching their careers are set to benefit in a world-first initiative to connect them with the best in the music industry hierarchy.</p>
+
+                <p>Launched Friday 21 February 2014, Vocalizr (www.vocalizr.com) will connect vocalists around the world with key players in the music industry keen to discover new talent.
+                    Through an online database, music producers will be connect with singers looking for a break while vocalists will also be able bid to work on projects that producers
+                    are looking for vocalists on.</p>
+
+                <p>Renowned dance music producer and DJ, Luke Chable, who has developed Vocalizr, said today "There has always been a gap in the music industry, making it very difficult 
+                    to quickly locate talent. It's an industry that has relied heavily on word-of-mouth but this revolutionary technology takes the chance and
+                    luck out of finding the best new talent"</p>
+
+                <p>"Using this technology, a vocalist from Melbourne, Australia could find and work with a producer from London, LA or anywhere in the world without ever meeting
+                    each other face-to-face".</p>
+
+                <p>Using key global players in the music industry, Chable developed the groundbreaking website with his brother, Matt and two mystery website developers, and expects to 
+                    have more than 50,000 members in its first year. Offering free membership is expected to attract strong interest from both those established
+                    in the industry and those seeking to enter it. Within days of launch the Vocalizr site saw activity with members creating 
+                    their profiles, uploading samples, posting gigs and submitting bids.</p>
+
+                <p>"Giving people the opportunity to develop a professional online profile means they can present their best to producers. It also means they can hear what interests them
+                    the most."</p>
+
+                <p>"We want to help build musical partnerships, and to do that you need to build access to the music industry. I think we've achieved that" Matt Chable said.</p>
+
+                <hr>
+
+                <p>Media contact: <a href="http://vocalizr.com/u/LukeChable" target="blank">Luke Chable</a>, Co-Founder, Ph: + 61 408 539 197, Email: <a href="mailto:luke@vocalizr.com">luke@vocalizr.com</a><br>
+                Twitter: <a href="http://www.twitter.com/vocalizr" target="_blank">@vocalizr</a>, Instagram: <a href="http://instagram.com/vocalizr" target="_blank">@vocalizr</a>, Facebook:  <a href="http://www.facebook.com/vocalizr" target="_blank">http://www.facebook.com/vocalizr</a></p>
+            </div>
+        </div>
+    </div>
+</div>
+<nav class="footer navbar navbar-default navbar-fixed-bottom" role="navigation">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12">
+                © Copyright Vocalizr {{ "now"|date('Y') }}
+
+                <ul id="footer-nav">
+                    <li class="share"><a href="https://www.facebook.com/Vocalizr"><i class="fab fa-facebook-square"></i></a></li>
+                    <li class="share"><a href="https://twitter.com/vocalizr"><i class="fab fa-twitter-square"></i></a></li>
+                    <li><a href="http://support.vocalizr.com/" target="_blank">Help</a></li>
+                    <li><a href="{{ path('membership') }}">Membership</a></li>
+                    <li><a href="http://blog.vocalizr.com/" target="_blank">Blog</a></li>
+                    <li><a href="{{ path('website_fees') }}">Fees & Charges</a></li>
+                    <li><a href="{{ path('website_terms') }}">Terms</a></li>
+                    <li><a href="{{ path('website_privacy') }}">Privacy</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</nav>
+
+{% endblock %}

@@ -1,0 +1,102 @@
+{% extends 'app.html.twig' %}
+
+{% block title %}Invites, Gig Center{% endblock %}
+
+{% block body %}
+    <div class="col-sm-12">
+        <h1>Gig Center</h1>
+
+        <div class="row">
+            <div class="col-sm-12">
+                <ul class="nav nav-tabs gig-center-tabs">
+                    <li><a href="{{ path("project_center") }}">Gigs / Contests {% if app.user.unreadProjectActivity %}<span class="gig-center-status new">NEW</span>{% endif %}</a></li>
+                    <li><a href="{{ path("project_center_bids") }}">Bids / Entries</a></li>
+                    <li class="active"><a href="{{ path("project_center_invites") }}">Invitations {% if app.user.unseenProjectInvitation %}<span class="gig-center-status new">NEW</span>{% endif %}</a></li>
+                </ul>
+                
+                <div class="tab-content tab-gig-center">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="gig-center-list {% if invites|length == 0 %}empty{% endif %}">
+                                {% if invites|length > 0 %}
+                                    
+                                    {% for invite in invites %}
+                                        <div class="gig-center-item invitations{% if invite.readAt is null %} unread{% endif %}">
+                                            <div class="gig-info">
+                                                <a href="{{ path('project_view', {'uuid' : invite.project.uuid}) }}" class="gig-title invite-project">{{ invite.project.title }}</a><br>
+                                                {% if invite.project.bidsDue|timeLeftSingle %}
+                                                    <div class="deadline bids">BIDDING ENDS IN {{ invite.project.bidsDue|timeLeftSingle.num }} {{ invite.project.bidsDue|timeLeftSingle.text|upper }}</div><br>
+                                                {% else %}
+                                                    <div class="deadline bids soon">BIDDING HAS ENDED</div><br>
+                                                {% endif %}
+                                                <div class="item">Invited: <span class="highlight">{{ invite.createdAt|timeAgoString }} ago</span></div>
+                                                <div class="item">Bids: <span class="highlight">{{ invite.project.numBids }}</span></div>
+                                                {% if invite.project.projectType == 'paid' %}
+                                                    {% if invite.project.numBids > 0 %}
+                                                        <div class="item">Avg Bid: <span class="highlight">${{ ((invite.project.bidTotal / invite.project.numBids) / 100)|number_format(2) }}</span></div>
+                                                    {% endif %}
+                                                    <div class="item">Budget: <span class="highlight">${{ invite.project.budgetFrom|number_format(2) }}{% if invite.project.budgetTo > 0 %} - ${{ invite.project.budgetTo|number_format(2) }}{% else %}+{% endif %}</span></div>
+                                                {% else %}
+                                                    <span class="badge badge-orange">CONTEST</span>
+                                                {% endif %}
+                                                {% if invite.project.royalty > 0 %}
+                                                    <div class="item">Royalty: 
+                                                        <span class="highlight">{{ invite.project.royalty }}%</span>
+                                                        {% if invite.project.royaltyMechanical %}
+                                                            <span class="icon-royalty-mechanical" data-text="Mechanical royalties offered">M</span>
+                                                        {% endif %}
+                                                        {% if invite.project.royaltyPerformance %}
+                                                            <span class="icon-royalty-performance" data-text="Performance royalties offered">P</span>
+                                                        {% endif %}
+                                                    </div>
+                                                {% endif %}
+                                            </div>
+
+                                            <div class="gig-info pull-right">
+                                                <div class="item user-info">
+                                                    <a href="{{ path('user_view', {'username':invite.project.userInfo.username}) }}">{{ invite.project.userInfo.displayName }}</a>
+                                                    <div class="avatar">
+                                                        {% if invite.project.userInfo.path is null %}
+                                                            <img src="{{ asset('images/default_avatar.svg') }}" width="42" height="42" class="img-circle">
+                                                        {% else %}
+                                                            <img src="{{ asset('uploads/avatar/small/' ~ invite.project.userInfo.path ) }}" width="42" height="42" class="img-circle  avatar-sm-{{ invite.project.userInfo.username }}">
+                                                        {% endif %}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                
+                                
+                                
+                                    {% endfor %}
+                                {% else %}
+                                    You do not have any gig invitations
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                                
+            </div>
+        </div>
+        
+        
+    </div>
+    {% if not can_hire_now() %}
+        <div id="hire_now_modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="vocalizr-modal" aria-hidden="true">
+            {% include 'include/panel/hire_now_panel.html.twig' %}
+        </div>
+    {% endif %}
+{% endblock %}
+{% block javascript %}
+    <script>
+        {% if not can_hire_now() %}
+            $('.invite-project').click(function (e) {
+                showModal(e, '#hire_now_modal')
+            });
+            {% if app.session.flashBag().get('hire_now_modal') %}
+                showModal(null, '#hire_now_modal');
+            {% endif %}
+        {% endif %}
+    </script>
+{% endblock %}

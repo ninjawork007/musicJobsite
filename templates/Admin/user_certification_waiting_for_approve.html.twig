@@ -1,0 +1,122 @@
+{% extends 'app.html.twig' %}
+
+{% block title %}Admin{% endblock %}
+
+{% block stylesheet %}
+    <style>
+        .form-inline {
+            display: flex;
+        }
+    </style>
+{% endblock %}
+
+{% block javascript %}
+<script type="text/javascript" src="{{ asset('js/admin.js') }}"></script>
+<script type="text/javascript">
+    $('.withdraw-action').on('click', function(e) {
+        e.preventDefault();
+        var $trigger = $(this);
+        if ($trigger.hasClass('approve-action')) {
+            $('.deny').hide();
+            $('.approve').show();
+        } else {
+            $('.approve').hide();
+            $('.deny').show();
+        }
+        var $modal   = $('#confirm_action_modal');
+        var $confirmBtn = $modal.find('.confirm-withdraw');
+        var $cancelBtn  = $modal.find('.cancel-withdraw');
+
+        $confirmBtn.off('click');
+        $cancelBtn.off('click');
+
+        $modal.fadeIn(300);
+        $cancelBtn.on('click', function(e) {
+            $modal.fadeOut(300);
+        });
+        $confirmBtn.on('click', function(e) {
+            location.href = $trigger.data('href');
+        });
+    });
+</script>
+{% endblock %}
+
+{% block body %}
+    <div class="row">
+        <div class="col-sm-12">
+            <h1 class="d-b">User certification</h1>
+            <div class="d-b" style="min-height: 130px">
+                <div class="withdrawal-buttons">
+                    <a href="{{ path('admin') }}" class="btn btn-default back-admin">Back to Admin</a>
+                    <a href="{{ path('userConfirmationApproveAll') }}" class="btn btn-primary back-admin">Approve All</a>
+                </div>
+            </div>
+
+            {% if app.session.flashbag.has('notice') %}
+                {% for message in app.flashes('notice') %}
+                    <div class="alert alert-success">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+            {% if app.session.flashbag.has('error') %}
+                {% for message in app.flashes('error') %}
+                    <div class="alert alert-error">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+            <table cellspacing="0" cellpadding="0" border="0" class="table table-dark withdrawals" width="100%">
+
+                <thead>
+                <tr>
+                    <th>UserName</th>
+                    <th>Spotify</th>
+                    <th>Soundcloud</th>
+                    <th>Facebook</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for result in pagination %}
+                    <tr>
+                        <td><a href="{{ path('user_view', {username: result.UserInfo.getUsername()}) }}">{{ result.userName }}</a></td>
+                        <td>{{ result.spotifyOrAppleMusicLink }}</td>
+                        <td>{{ result.soundcloudLink }}</td>
+                        <td>{{ result.facebookPage }}</td>
+                        <td>
+                            <a href="#" data-href="{{ path('userConfirmationApprove', {id : result.id}) }}" class="btn btn-primary withdraw-action approve-action">Approve</a>
+                            <a href="#" data-href="{{ path('userConfirmationDeny', {id : result.id}) }}" class="btn btn-danger withdraw-action deny-action">Do not certify</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+
+            {{ knp_pagination_render(pagination) }}
+        </div>
+    </div>
+    <div id="confirm_action_modal" class="modal" tabindex="-1" role="dialog" aria-labelledby="vocalizr-modal" aria-hidden="true">
+        <div class="modal-dialog popup-panel">
+            <div class="voc-panel">
+                <div class="heading">
+                    <div class="right-block approve" style="display: none">Confirm Approve</div>
+                    <div class="right-block deny" style="display: none">Confirm Deny</div>
+                </div>
+                <div class="content" style="font-size: 13px">
+                    <div class="main deny"  style="display: none">
+                        If the user refuses to be certified a refund will be made and the user will be unsubscribed
+                    </div>
+                    <div class="main approve"  style="display: none">
+                        When approving the certification the user will be assigned the Certified status
+                    </div>
+                    <div class="content-footer">
+                        <button class="btn btn-primary confirm-withdraw">Confirm</button>
+                        <button class="btn btn-default cancel-withdraw">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

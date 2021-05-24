@@ -1,0 +1,11 @@
+{% extends 'include/panel/upgrade_to_unlock_panel.html.twig' %}
+{% block note %}UPGRADE TO <b>ACCESS PASS</b> TO UNLOCK CONNECTIONS{% endblock %}
+{% block benefits_li %}
+    <li>60 Connections Per Month & Unlimited Messaging</li>
+    <li>10% Reduction in platform fees</li>
+    <li>24hr withdrawals to PayPal</li>
+{% endblock %}
+{% block footer_link %}{{ path('user_upgrade', {
+    'source': constant('App\\Service\\MembershipSourceHelper::SUB_SOURCE_UNLIMITED_CONNECTIONS_MODAL'),
+    'return': true
+}) }}{% endblock %}

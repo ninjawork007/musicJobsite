@@ -1,0 +1,259 @@
+{% extends 'app.html.twig' %}
+
+{% block stylesheet %}
+        <link rel="stylesheet" href="{{ asset('css/publish-project.css') }}" />
+{% endblock %}
+{% block javascript %}
+    <script type="text/javascript" src="{{ asset('js/uploader/plupload.full.min.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('js/audio-uploader.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('js/publish-project.js') }}"></script>
+
+<script>
+$(document).on('ready', function() {
+    calcPaymentSummary();
+
+})
+</script>
+<script src="https://js.stripe.com/v3/"></script>
+<script>
+var stripe = Stripe("{{ stripe_checkout_key }}");
+
+$('#publish-form').on('submit', function (e) {
+    e.preventDefault();
+
+    $.post($(this).attr('action'), $(this).serialize(), function (data) {
+        if (!$('#payment').hasClass('hide')) {
+
+            $.ajax({
+                url: "{{ path('stipe_session_checkout') }}",
+                data: {'fees_amount': parseInt($('#total-price').text()) * 100, 'uuid': $('#publish-form').data('uuid')},
+                success: function (data) {
+                    if (data.success) {
+                        stripe.redirectToCheckout({ sessionId: data.ssid })
+                    }
+                }
+            });
+        } else {
+            window.location = $('#publish').data('confirm');
+        }
+    });
+});
+</script>
+{% endblock %}
+
+{% block body %}
+    <div class="publish-container row">
+        <div class="col-sm-8">
+            <div class="row">
+                <div class="col-sm-6">
+                    <h1>{% block title %}Publish your Job{% endblock %}</h1>
+                </div>
+                <div class="col-sm-2 col-sm-offset-4">
+                    {% block edit_button %}
+                    <a href="{{ path('project_new', {uuid: project.uuid}) }}" class="btn btn-default pull-right edit-job">Edit Job</a>
+                    {% endblock %}
+                </div>
+            </div>
+            {% include 'messages_app.html.twig' %}
+
+
+            <div class="row">
+                <div class="col-sm-12">
+                    {% if not app.request.get('success', false) %}
+                        <h2>{{ project.title }}</h2>
+
+                        <div class="headers">
+                            <div class="free-header">Free Users</div>
+                            <div class="pro-header"><b>Pro</b> Subscribers</div>
+                        </div>
+                        <form {% if app.user.isSubscribed %}class="subscribed" {% endif %}id="publish-form" action="{{ path('project_new_publish', {uuid: project.uuid}) }}" method="post" data-uuid="{{ project.uuid }}">
+                            {{ form_row(form._token) }}
+
+                            {% embed 'Project/include/addon_item.html.twig' with {
+                                'isChecked': form.vars.value.restrictToPreferences ? true : false,
+                                'inputName' : form.restrict_to_preferences.vars.full_name,
+                                'inputValue' : 1,
+                                'proPrice' : prices.PRO.restrict,
+                                'freePrice' : prices.FREE.restrict
+                            } %}
+                                {% block icon %}
+                                    <div class="addon-icon"><i class="fas fa-hand-paper"></i></div>
+                                {% endblock %}
+                                {% block info %}
+                                    <div class="addon-title">RESTRICT ENTRIES TO JOB PREFERENCES</div>
+                                    <div class="addon-desc">Only users matching your brief / criteria can enter</div>
+                                {% endblock %}
+                            {% endembed %}
+
+                            {% embed 'Project/include/addon_item.html.twig' with {
+                                'isChecked': form.vars.value.toFavorites ? true : false,
+                                'inputName' : form.to_favorites.vars.full_name,
+                                'inputValue' : 1,
+                                'proPrice' : prices.PRO.favorites,
+                                'freePrice' : prices.FREE.favorites
+                            } %}
+                                {% block icon %}
+                                    <div class="addon-icon"><i class="fab fa-telegram-plane bigger"></i></div>
+                                {% endblock %}
+                                {% block info %}
+                                    <div class="addon-title">INVITE FAVORITES</div>
+                                    <div class="addon-desc">Invite all your favorites to this job instantly</div>
+                                {% endblock %}
+                            {% endembed %}
+
+                            {% embed 'Project/include/addon_item.html.twig' with {
+                                'isChecked': form.vars.value.publishType == "private" ? true : false,
+                                'inputName' : form.publish_type.vars.full_name,
+                                'inputValue' : 'private',
+                                'proPrice' : prices.PRO.private,
+                                'freePrice' : prices.FREE.private
+                            } %}
+                                {% block icon %}
+                                    <div class="addon-icon"><i class="fas fa-eye-slash"></i></div>
+                                {% endblock %}
+                                {% block info %}
+                                    <div class="addon-title">Make job private</div>
+                                    <div class="addon-desc"> Your job will be invite only and hidden from search</div>
+                                {% endblock %}
+                                {% block input_options %}
+                                    id="check-private"
+                                {% endblock %}
+                            {% endembed %}
+
+                            <div class="public-upgrades">
+                                {% embed 'Project/include/addon_item.html.twig' with {
+                                    'isChecked': form.vars.value.highlight ? true : false,
+                                    'inputName' : form.highlight.vars.full_name,
+                                    'inputValue' : 1,
+                                    'proPrice' : prices.PRO.highlight,
+                                    'freePrice' : prices.FREE.highlight
+                                } %}
+                                    {% block icon %}
+                                        <div class="addon-icon"><i class="fas fa-sun"></i></div>
+                                    {% endblock %}
+                                    {% block info %}
+                                        <div class="addon-title">HIGHLIGHT</div>
+                                        <div class="addon-desc">Make your job stand out from the rest with a bright border</div>
+                                    {% endblock %}
+                                {% endembed %}
+
+                                {% embed 'Project/include/addon_item.html.twig' with {
+                                    'isChecked': form.vars.value.messaging ? true : false,
+                                    'inputName' : form.messaging.vars.full_name,
+                                    'inputValue' : 1,
+                                    'proPrice' : prices.PRO.messaging,
+                                    'freePrice' : prices.FREE.messaging
+                                } %}
+                                    {% block icon %}
+                                        <div class="addon-icon"><i class="fas fa-comments"></i></div>
+                                    {% endblock %}
+                                    {% block info %}
+                                        <div class="addon-title">BID & ENTRY MESSAGING</div>
+                                        <div class="addon-desc">Message users & discuss their Gig bid or Contest entry</div>
+                                    {% endblock %}
+                                {% endembed %}
+
+                                {% embed 'Project/include/addon_item.html.twig' with {
+                                    'isChecked': form.vars.value.featured ? true : false,
+                                    'inputName' : form.featured.vars.full_name,
+                                    'inputValue' : 1,
+                                    'proPrice' : prices.PRO.feature,
+                                    'freePrice' : prices.FREE.feature
+                                } %}
+                                    {% block icon %}
+                                        <div class="addon-icon"><i class="fas fa-bookmark"></i></div>
+                                    {% endblock %}
+                                    {% block info %}
+                                        <div class="addon-title">FEATURED</div>
+                                        <div class="addon-desc">Attract more entries, shown at the top for 7 days</div>
+                                        <div class="blue-line"></div>
+                                    {% endblock %}
+                                {% endembed %}
+
+                                {% embed 'Project/include/addon_item.html.twig' with {
+                                    'isChecked': form.vars.value.lockToCert ? true : false,
+                                    'inputName' : form.lock_to_cert.vars.full_name,
+                                    'inputValue' : 1,
+                                    'proPrice' : prices.PRO.lock_to_cert,
+                                    'freePrice' : prices.FREE.lock_to_cert
+                                } %}
+                                    {% block item_classes %}
+                                        lock-cert
+                                    {% endblock %}
+                                    {% block icon %}
+                                        <img class="vocalizr-certified-stamp-clipped" style="width: 30px; margin-left: 0; margin-bottom: 1px" src="{{ asset('images/certified_pro_stamp_clipped.svg') }}" alt="" data-text="<div class='tip-header'>Vocalizr Certified Professional</div>A 'Certified Professional’ is deemed a professional by the experts at Vocalizr. The stamp is based on ability, experience, and skill level.<br><a href='{{ path('get_certified') }}' class='get-certified-now' style='color: #01c2e5;'>Get Certified Now</a>">
+                                    {% endblock %}
+                                    {% block info %}
+                                        <div class="addon-title">LOCK JOB TO CERTIFIED PROFESSIONALS</div>
+                                        <div class="addon-desc">Only high quality Vocalizr certified professionals will be able to bid or enter</div>
+                                    {% endblock %}
+                                {% endembed %}
+                            </div>
+                            {% if not app.user.isSubscribed %}
+                                <div class="subscription">
+                                    <p class="hide" id="subscription-promo">Unlock savings & messaging with Vocalizr Pro <img src="{{ asset('images/vocalizr_pro_stamp.svg') }}" class="svg-stamp-pro in-profile" alt="pro"> for 10.99</p>
+                                    <p class="hide" id="could-save">You could save $<span id="could-save-amount">-11</span> with Vocalizr Pro <img src="{{ asset('images/vocalizr_pro_stamp.svg') }}" class="svg-stamp-pro in-profile" alt="pro"> for 10.99</p>
+                                    <a href="{{ path('membership') }}" class="btn btn-upgrade-pro">UPGRADE NOW</a>
+                                </div>
+                            {% endif %}
+                            <div class="block-fees headers">
+                                <div class="commission-header">
+                                    + Vocalizr Commission Fee
+                                </div>
+                                <div class="free-header">
+                                    Free Users <span class="free-commission">20</span>%
+                                </div>
+                                <div class="pro-header">
+                                    <b>PRO</b> <span class="pro-commission">10</span>%
+                                </div>
+                            </div>
+                            <div class="total-upgrades">
+                                <div class="upgrades-label">
+                                    Total
+                                </div>
+                                <div class="upgrades-value">
+                                    $<span id="total-price">0</span>
+                                </div>
+                            </div>
+                            <div class="form-actions">
+                                {% block actions %}
+                                <div id="payment" class="pull-right hide">
+                                    <a href="{{ path('project_new_cancel', {uuid: project.uuid}) }}" class="link-cancel" onclick="return confirm('Are you sure? All data for this gig will be lost.');">Cancel Job</a>
+                                    <button type="submit" name="pay" class="btn btn-primary pull-right" value="Pay & Publish">Pay & Publish Job</button>
+                                </div>
+                                <div id="publish" class="pull-right" data-confirm="{{ path('project_publish_confirm', {uuid: project.uuid}) }}">
+                                    <a href="{{ path('project_new_cancel', {uuid: project.uuid}) }}" class="link-cancel" onclick="return confirm('Are you sure? All data for this gig will be lost.');">Cancel Job</a>
+                                    <button type="submit" name="publish" class="btn btn-primary pull-right" value="Publish Now">Publish Job</button>
+                                </div>
+                                {% endblock %}
+                            </div>
+                            <div id="userwallet-total" class="hide">{{ app.user.wallet }}</div>
+                            <div id="price-amount" class="hide">0</div>
+                        </form>
+                    {% else %}
+                        <h2>{{ project.title }}</h2>
+                        <p>Payment for your gig has been successful.</p>
+
+                        <div class="form-actions">
+                            <a href="{{ path('project_publish_confirm', {uuid: project.uuid}) }}" class="btn btn-primary">Publish Job</a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+        </div>
+        <div class="col-sm-4">
+            {% block right_promo %}{% endblock %}
+            <div class="panel panel-default welcome-panel">
+                <div class="panel-heading">
+                    UPGRADE YOUR LISTING!
+                </div>
+                <div class="panel-body">
+                    <p>Add upgrades to your listing to increase the exposure of your gig and improve the quality and number of bids you receive.</p>
+                    <p>Listing upgrades are not refundable.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

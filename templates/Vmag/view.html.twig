@@ -1,0 +1,135 @@
+{% extends 'vmag.html.twig' %}
+
+{% block javascript %}
+<script type="text/javascript" src="{{ asset('js/jquery.cycle2.js') }}"></script>
+
+{% endblock %}
+
+{% block shareImage %}
+<meta property="og:image" content="http://{{ domain_base }}/{{ article.webPath }}"/>
+<meta property="og:image:secure_url" content="https://{{ domain_base }}/{{ article.webPath }}" />
+{% endblock %}
+
+
+{% block title %}{% if article.seoTitle %}{{ article.seoTitle }}{% else %}{{ article.title }}{% endif %}{% endblock %}
+
+{% block description %}{% if article.seoDesc %}{{ article.seoDesc }}{% else %}{{ article.shortDesc|striptags|slice(0, 150) }}{% endif %}{% endblock %}
+
+{% block body %}
+    <div class="varticle-view">
+        <div class="row">
+            <div class="col-xs-12 col-sm-8 main-col">
+                <div class="varticle">
+                    {% if article.path %}
+                        <img src="{{ asset('/' ~ article.webPath) }}{% if article.updatedAt %}&{{ article.updatedAt|date('U') }}{% endif %}" class="img-responsive article-image" alt="{{ article.title }}" />
+                    {% endif %}
+
+
+                    <div class="varticle-content">
+                        <div class="varticle-title">
+                            <span class="category-badge">{{ article.articleCategory.title }}</span>
+                            <h1>{{ article.title }}</h1>
+                            <div class="varticle-woff">
+                                {{ article.shortDesc }}
+                            </div>
+
+                            <div class="varticle-author">
+                                <strong>By {{ article.author.name }}</strong><br>
+                                <span class="varticle-date">{{ article.publishedAt|date('D, jS F Y') }}</span>
+                            </div>
+                            <div class="varticle-share">
+
+                            </div>
+                        </div>
+                        <div class="varticle-body">
+                            {{ article.content }}
+                        </div>
+                    </div>
+
+                    {% if article.spotlightUser and false %}
+                        <div class="varticle-tracks">
+                            {% set userInfo = article.spotlightUser %}
+
+                            <h3>Showreel audio for <a href="{{ path('user_view', {username: userInfo.username}) }}" class="stat-user-avatar">{{ userInfo.displayName }}</a></h3>
+
+                            {% if userInfo.userAudio|length %}
+                                {% set userAudios = userInfo.userAudio %}
+                                {% if not userInfo.isSubscribed %}
+                                    {% set userAudios = userInfo.userAudio|slice(0, freePlan.userAudioLimit) %}
+                                {% endif %}
+                                <div class="user-audio-wrap">
+                                <div class="cycle-slideshow"
+                                     data-cycle-fx="scrollHorz"
+                                     data-cycle-timeout="0"
+                                     data-cycle-prev="#audio-{{ userInfo.id }}-prev"
+                                     data-cycle-next="#audio-{{ userInfo.id }}-next"
+                                     data-cycle-slides="> div"
+                                     >
+                                    {% for userAudio in userAudios %}
+                                    <div class="user-list-track">
+                                        <div class="track-label">
+                                            <span>{{ userAudio.title }}</span>
+                                        </div>
+                                        <div class="playlist track-waveform small clearfix">
+                                            {% if userAudio.scId %}
+                                                <a href="{{ userAudio.scStreamUrl }}?client_id={{ soundcloud_client_id }}" type="audio/mp3" class="track" data-user="{{ userAudio.slug }}">PLAY</a>
+                                            {% else %}
+                                                <a href="{{ cdn_url }}{{ path('user_audio', {slug: userAudio.slug}) }}" type="audio/mp3" class="track"  data-user="{{ userAudio.slug }}">PLAY</a>
+                                            {% endif %}
+                                            <div class="waveform-wrap">
+                                                {% if userAudio.waveGenerated %}
+                                                    <img src="{{ cdn_url }}/waveform/{{ userAudio.slug }}.png" class="waveform-main">
+                                                    <img src="{{ cdn_url }}/waveform/{{ userAudio.slug }}-roll.png" class="roll hide">
+                                                {% else %}
+                                                    <img src="{{ cdn_url }}/images/default-waveform.png" class="waveform-main">
+                                                    <img src="{{ cdn_url }}/images/default-waveform-roll.png" class="roll hide">
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                        <div id="{{ userAudio.slug }}-actions" class="user-audio-actions clearfix">
+                                            <div class="user-audio-like">
+                                                {% if app.user and app.user.id != userInfo.id %}
+                                                    <a href="{{ path('audio_like', {slug: userAudio.slug, status: 0} ) }}" class="btn btn-unlike btn-sm btn-default roll-alt{% if userAudio.id not in audioLikes %} hide{% endif %}">UNLIKE</a>
+                                                    <a href="{{ path('audio_like', {slug: userAudio.slug, status: 1} ) }}" class="btn btn-like btn-sm btn-default{% if userAudio.id in audioLikes %} hide{% endif %}">LIKE</a>
+                                                {% endif %}
+                                                {#<i class="vocalizr-icon icon-light-thumb"></i>#}
+                                                <span class="like-text"><span class="members-like"><a class="allow-audio-play" data-toggle="vmodal" href="{{ path('audio_likes', {slug: userAudio.slug}) }}"><span class="total-likes">{{ userAudio.totalLikes }}</span> <span class="member-text">member{% if userAudio.totalLikes != 1 %}s{% endif %}</span></a></span> like this audio</span>
+                                            </div>
+                                            <div class="user-audio-plays" title="{{ userAudio.playCount }} play{% if userAudio.playCount != 1 %}s{% endif %}">
+                                                <i class="fa fa-play"></i> <span class="total-plays {{ userAudio.slug }}-count">{{ userAudio.playCount }}<span class="play-text"> audio play{% if userAudio.playCount != 1 %}s{% endif %}</span></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                                {% if userInfo.userAudio|length > 1 %}
+                                <div class="audio-nav">
+                                    <a href=# id="audio-{{ userInfo.id }}-prev" class="audio-prev btn btn-sm btn-default"><i class="fa fa-chevron-left"></i></a>
+                                    <a href=# id="audio-{{ userInfo.id }}-next" class="btn btn-sm btn-default audio-next"><i class="fa fa-chevron-right"></i></a>
+                                </div>
+                                {% endif %}
+                                </div>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+            <div class="col-xs-12 col-sm-4 side-col">
+
+
+                <div class="banner-wrapper">
+                    <!-- /353537636/VMag_MREC1_300x250 -->
+                    <div id='div-gpt-ad-1495588781098-1' style='height:250px; width:300px;'>
+                        <script>
+                            googletag.cmd.push(function() { googletag.display('div-gpt-ad-1495588781098-1'); });
+                        </script>
+                    </div>
+                </div>
+                {{ render(controller('App\\Controller\\VmagController:_sidebarAction', {article: article} )) }}
+            </div>
+        </div>
+    </div>
+{% endblock %}

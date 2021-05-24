@@ -1,0 +1,34 @@
+<div>
+    <div class="reviews__card">
+        <a href="{{ path('user_view', {'username': review.reviewedBy.username}) }}">
+            <img src="{{ asset(review.reviewedBy.thumbnailWebPath('large')) }}"
+                 alt="avatar reviews " class="reviews__card-img">
+
+        <p class="reviews__card-name">{{ review.reviewedBy.displayName }}</p>
+        </a>
+        <span class="reviews__card-link">
+            {% if review.project.publishType == 'private' %}
+                <span>Private {{ review.project.projectType == 'contest' ? 'contest' : 'gig' }}</span>
+            {% else %}
+                <a href="{{ path('project_view', {uuid: review.project.uuid}) }}">{{ review.project.title|length > 25 ? review.project.title|slice(0, 22) : review.project.title }}</a>{% if review.project.title|length > 25 %}<span class="gray">...</span>{% endif %}
+            {% endif %}
+
+            {{ review.createdAt|timeAgoString }} ago
+        </span>
+        <div class="reviews__card-text-wrp">
+            <p class="reviews__card-text">"{{
+                review.content|length > 115 ? review.content|slice(0, 110) ~ '...' : review.content
+                }}"</p>
+        </div>
+        <p class="reviews__card-rating">{{ review.rating|number_format(1) }}</p>
+        <div class="reviews__card-star">
+            {% for i in 1..5 %}
+                {% if i > review.rating %}
+                    <img src="{{ asset('bootstrap4/img/icon_star_gray.png') }}" alt="Star">
+                {% else %}
+                    <img src="{{ asset('bootstrap4/img/icon_star.png') }}" alt="Star">
+                {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+</div>
