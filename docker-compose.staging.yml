@@ -1,0 +1,14 @@
+version: '3.4'
+
+services:
+    nginx:
+        ports:
+            - "127.0.0.1:11012:80"
+
+    php:
+        command: [demo]
+        environment:
+            - APP_ENV=prod
+
+volumes:
+    mysql-data:

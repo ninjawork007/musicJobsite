@@ -30,7 +30,7 @@ class ProProfileController extends AbstractController
     public function indexAction(UserInfo $profileUser)
     {
         if (
-            !$this->container->getParameter('pro_profile_enabled') ||
+            !$this->getParameter('pro_profile_enabled') ||
             !$profileUser->isProProfileEnabled() ||
             !$profileUser->getProProfile()
         ) {

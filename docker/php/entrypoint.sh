@@ -1,39 +1,31 @@
 #!/bin/sh
 set -e
 
-if [ $1 = "dev" ]; then
-  APP_ENV="dev"
-elif [ $1 = "demo" ]; then
-  APP_ENV="prod"
-else
-  echo "Unknown env"
-  exit 1
-fi
-
-composer self-update --2
-composer dump-autoload
-COMPOSER_MEMORY_LIMIT=-1 composer update -vvv
-php app/console cache:clear --env="${APP_ENV}"
-
-php app/console assetic:dump --env=dev
+#php bin/console assetic:dump --env=dev
 if [ "${APP_ENV}" = "dev" ]; then
+  composer install
   watch_assetic.sh &
+  php bin/console assets:install --symlink
 else
-  php app/console assets:install --env=prod
+  composer install -ao
+  php bin/console assets:install
 fi
 
-php app/console assets:install --symlink --env="${APP_ENV}"
+php bin/console cache:clear
 
-until php app/console doctrine:query:sql "select 1" >/dev/null 2>&1; do
+until php bin/console doctrine:query:sql "select 1" >/dev/null 2>&1; do
     (>&2 echo "Waiting for MySQL to be ready...")
   sleep 1
 done
 
-php app/console doctrine:schema:update --force --env="${APP_ENV}"
-php app/console doctrine:mongodb:schema:update --env="${APP_ENV}"
+php bin/console doctrine:schema:update --force
+php bin/console doctrine:mongodb:schema:update
 
-setfacl -R -m u:www-data:rwX -m u:"$(whoami)":rwX app/cache app/sessions app/logs
+mkdir -p tmp
 
-crond -f -d 4 &
+setfacl -R -m u:www-data:rwX -m u:"$(whoami)":rwX var tmp
+setfacl -dR -m u:www-data:rwX -m u:"$(whoami)":rwX var tmp
+
+crond -f -d 8 &
 
 exec php-fpm

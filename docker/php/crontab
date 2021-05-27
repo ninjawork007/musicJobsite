@@ -1,17 +1,17 @@
 # m h  dom mon dow   command
 
 # Test Scripts
-*/5 * * * * /usr/local/bin/php /srv/vocalizr/app/console --env=prod vocalizr:email-bid-notifications > /srv/vocalizr/app/logs/email-bid-notifications.log 2>&1
-*/5 * * * * /usr/local/bin/php /srv/vocalizr/app/console --env=prod vocalizr:email-studio-activity > /srv/vocalizr/app/logs/email-studio-activity.log 2>&1
-*/5 * * * * /usr/local/bin/php /srv/vocalizr/app/console --env=prod vocalizr:make-payouts > 2>&1
-*/10 * * * * /usr/local/bin/php /srv/vocalizr/app/console --env=prod vocalizr:email-unread-messages > /srv/vocalizr/app/logs/email-unread-messages.log 2>&1
-#0 0 1-31/3 * * /usr/local/bin/php /srv/vocalizr/app/console --env=prod vocalizr:email-vocalist-recommendations
-5 0 * * * /usr/local/bin/php /srv/vocalizr/app/console --env=prod vocalizr:email-bids-ended > /srv/vocalizr/app/logs/email-bids-ended.log 2>&1
-5 0 * * * /usr/local/bin/php /srv/vocalizr/app/console --env=prod vocalizr:email-rego-follow-up > /srv/vocalizr/app/logs/email-rego-follow-up.log 2>&1
-5 0 * * * /usr/local/bin/php /srv/vocalizr/app/console --env=prod vocalizr:email-review-user-reminder  > /srv/vocalizr/app/logs/email-review-user-reminder.log 2>&1
-5 0 * * * /usr/local/bin/php /srv/vocalizr/app/console --env=prod vocalizr:email-project-award-reminder > /srv/vocalizr/app/logs/email-project-award-reminder.log 2>&1
-*/20 * * * * /usr/local/bin/php /srv/vocalizr/app/console --env=prod vocalizr:email-tag-vote-notifications > /srv/vocalizr/app/logs/email-tag-vote-notifications.log 2>&1
-10 0 * * * /usr/local/bin/php /srv/vocalizr/app/console --env=prod vocalizr:email-project-bidding-check > /srv/vocalizr/app/logs/email-project-bidding-check.log 2>&1
-*/10 * * * * /usr/local/bin/php /srv/vocalizr/app/console --env=prod vocalizr:email-connect-invites > /srv/vocalizr/app/logs/email-connect-invites.log 2>&1
-*/5 * * * * /usr/local/bin/php /srv/vocalizr/app/console --env=prod vocalizr:project-asset-previews-all > /srv/vocalizr/app/logs/project-asset-previews-all.log 2>&1
-*/5 * * * * /usr/local/bin/php /srv/vocalizr/app/console --env=prod vocalizr:email-studio-activity > /srv/vocalizr/app/logs/email-studio-activity.log 2>&1
+*/5 * * * * /usr/local/bin/php /srv/vocalizr/bin/console vocalizr:email-bid-notifications > /srv/vocalizr/var/log/email-bid-notifications.log 2>&1
+*/5 * * * * /usr/local/bin/php /srv/vocalizr/bin/console vocalizr:email-studio-activity > /srv/vocalizr/var/log/email-studio-activity.log 2>&1
+*/5 * * * * /usr/local/bin/php /srv/vocalizr/bin/console vocalizr:make-payouts > 2>&1
+*/10 * * * * /usr/local/bin/php /srv/vocalizr/bin/console vocalizr:email-unread-messages > /srv/vocalizr/var/log/email-unread-messages.log 2>&1
+#0 0 1-31/3 * * /usr/local/bin/php /srv/vocalizr/bin/console vocalizr:email-vocalist-recommendations
+5 0 * * * /usr/local/bin/php /srv/vocalizr/bin/console vocalizr:email-bids-ended > /srv/vocalizr/var/log/email-bids-ended.log 2>&1
+5 0 * * * /usr/local/bin/php /srv/vocalizr/bin/console vocalizr:email-rego-follow-up > /srv/vocalizr/var/log/email-rego-follow-up.log 2>&1
+5 0 * * * /usr/local/bin/php /srv/vocalizr/bin/console vocalizr:email-review-user-reminder  > /srv/vocalizr/var/log/email-review-user-reminder.log 2>&1
+5 0 * * * /usr/local/bin/php /srv/vocalizr/bin/console vocalizr:email-project-award-reminder > /srv/vocalizr/var/log/email-project-award-reminder.log 2>&1
+*/20 * * * * /usr/local/bin/php /srv/vocalizr/bin/console vocalizr:email-tag-vote-notifications > /srv/vocalizr/var/log/email-tag-vote-notifications.log 2>&1
+10 0 * * * /usr/local/bin/php /srv/vocalizr/bin/console vocalizr:email-project-bidding-check > /srv/vocalizr/var/log/email-project-bidding-check.log 2>&1
+*/10 * * * * /usr/local/bin/php /srv/vocalizr/bin/console vocalizr:email-connect-invites > /srv/vocalizr/var/log/email-connect-invites.log 2>&1
+*/5 * * * * /usr/local/bin/php /srv/vocalizr/bin/console vocalizr:project-asset-previews-all > /srv/vocalizr/var/log/project-asset-previews-all.log 2>&1
+*/5 * * * * /usr/local/bin/php /srv/vocalizr/bin/console vocalizr:email-studio-activity > /srv/vocalizr/var/log/email-studio-activity.log 2>&1

@@ -83,7 +83,7 @@ h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
     height: 100%;
 }
 .home-splash {
-    background: url(../../public/images/website/new-website-header.jpg?v2) no-repeat center center #23313a;
+    background: url(../images/website/new-website-header.jpg?v2) no-repeat center center #23313a;
     background-size: cover;
     width: 100%;
     padding-top: 95px;
@@ -255,11 +255,11 @@ h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
     margin-bottom: 20px;
 }
 .profile-info {
-    background: url(../../public/images/website/profile_bg.png) no-repeat center center;
+    background: url(../images/website/profile_bg.png) no-repeat center center;
     background-size: cover;
 }
 .start-project {
-    background: url(../../public/images/website/project_bg.png) no-repeat center center;
+    background: url(../images/website/project_bg.png) no-repeat center center;
     background-size: cover;
 }
 .studio-and-safe {
@@ -314,7 +314,7 @@ h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
     overflow: hidden;
 }
 .screenshot.with-bg {
-    background: url(../../public/images/website/screenshot_bg.png) no-repeat center center;
+    background: url(../images/website/screenshot_bg.png) no-repeat center center;
     width: 764px;
     height: 435px;
     position: relative;

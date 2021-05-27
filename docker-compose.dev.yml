@@ -1,0 +1,41 @@
+services:
+    mysql:
+        image: percona:5.7
+        command: --sql_mode=''
+        environment:
+            - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD:-nopassword}
+            - MYSQL_DATABASE=vocalizr
+            - MYSQL_USER=vocalizr
+            - MYSQL_PASSWORD=${MYSQL_PASSWORD:-nopassword}
+        volumes:
+            - mysql-data:/var/lib/mysql
+        ports:
+            - "3309:3306"
+
+    nginx:
+        ports:
+            - "11012:80"
+
+    php:
+        depends_on:
+            - mongodb
+            - mysql
+        environment:
+            - APP_ENV=dev
+            - DATABASE_URL=mysql://vocalizr:nopassword@mysql:3306/vocalizr
+            - MONGODB_CLIENT_URL=mongodb://mongodb:27017
+            - MONGODB_URL=mongodb://mongodb:27017/vocalizr
+            - MONGODB_DB=vocalizr
+        ports:
+            - '9998:80'
+
+    mongodb:
+        image: mvertes/alpine-mongo:latest
+        volumes:
+            - ./docker/mongo/data:/data/db
+        environment:
+            - MONGODB_URL=mongodb://mongodb:27017/vocalizr
+            - MONGODB_DB=vocalizr
+
+volumes:
+    mysql-data:

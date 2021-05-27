@@ -149,7 +149,7 @@
 .ui360,
 .ui360 .sm2-360btn-default,
 .ui360 .sm2-360ui.sm2_paused .sm2-360btn {
- background:transparent url(../../public/images/play-sm2.png) no-repeat;
+ background:transparent url(../images/play-sm2.png) no-repeat;
 }
 
 .ui360 {
@@ -158,13 +158,13 @@
   background image will be removed via JS, in threeSixyPlayer.init()
  */
  background-position: 14px 50%;
- _background:transparent url(../../public/images/play-sm2.png) no-repeat 14px 50%; /* IE 6-only: special crap GIF */
+ _background:transparent url(../images/play-sm2.png) no-repeat 14px 50%; /* IE 6-only: special crap GIF */
 }
 
 .ui360 .sm2-360btn-default,
 .ui360 .sm2-360ui.sm2_paused .sm2-360btn {
  background-position:50% 50%;
- _background:transparent url(../../public/images/play-sm2.png) no-repeat 50% 50%; /* IE 6-only: special crap GIF */
+ _background:transparent url(../images/play-sm2.png) no-repeat 50% 50%; /* IE 6-only: special crap GIF */
 }
 
 .ui360 .sm2-360btn-default,
@@ -174,14 +174,14 @@
 
 .ui360 .sm2-360btn-default:hover,
 .ui360 .sm2-360ui.sm2_paused .sm2-360btn:hover {
- background:transparent url(../../public/images/play-sm-hover2.png) no-repeat 50% 50%;
- _background:transparent url(../../public/images/play-sm-hover2.png) no-repeat 50% 50%;
+ background:transparent url(../images/play-sm-hover2.png) no-repeat 50% 50%;
+ _background:transparent url(../images/play-sm-hover2.png) no-repeat 50% 50%;
  cursor:pointer;
 }
 
 .ui360 .sm2-360ui.sm2_playing .sm2-360btn:hover,
 .ui360 .sm2-360btn-playing:hover {
- background:transparent url(../../public/images/pause-sm2.png) no-repeat 50% 50%;
+ background:transparent url(../images/pause-sm2.png) no-repeat 50% 50%;
  cursor:pointer;
 }
 
@@ -216,7 +216,7 @@
 
 .ui360 .sm2-360ui.sm2_buffering .sm2-360btn,
 .ui360 .sm2-360ui.sm2_buffering .sm2-360btn:hover {
-  background:transparent url(../../public/images/icon_loading_spinner.gif) no-repeat 50% 50%;
+  background:transparent url(../images/icon_loading_spinner.gif) no-repeat 50% 50%;
   opacity:0.5;
   visibility:visible;
 }

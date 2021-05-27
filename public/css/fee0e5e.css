@@ -103,7 +103,7 @@
 
 .edit-contest-panel .iradio_polaris, .black-check .iradio_polaris {
     margin-left: 9px;
-    background-image: url('../../public/images/polaris_black.png');
+    background-image: url('../../images/polaris_black.png');
 }
 
 .btn.btn-show-bid-highlight-modal {
@@ -120,7 +120,7 @@ only screen and (-moz-min-device-pixel-ratio: 1.5),
 only screen and (-o-min-device-pixel-ratio: 3/2),
 only screen and (min-device-pixel-ratio: 1.5) {
     .edit-contest-panel .iradio_polaris {
-        background-image: url('../../public/images/polaris_black2x.png');
+        background-image: url('../../images/polaris_black2x.png');
     }
 }
 

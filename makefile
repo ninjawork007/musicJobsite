@@ -26,6 +26,9 @@ stop:
 start:
 	docker-compose $(DC_PARAMETERS) -p $(PROJECT_NAME) up -d
 
+rebuild:
+	docker-compose build --no-cache --pull
+
 build :
 	docker-compose up --build
 
